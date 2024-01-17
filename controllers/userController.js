@@ -7,6 +7,22 @@ const loadIndex = async(req,res) =>{
     }
 }
 
+const loadLogin = async(req,res) =>{
+    try {
+        res.render('login')
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+const loadRegister = async(req,res) =>{
+    try {
+        res.render('register')
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
 const loadShop = async(req,res) =>{
     try {
         res.render('shop')
@@ -65,6 +81,8 @@ const loadProductDetails = async(req,res) =>{
 
 module.exports = {
     loadIndex,
+    loadLogin,
+    loadRegister,
     loadShop,
     loadAbout,
     loadBlog,

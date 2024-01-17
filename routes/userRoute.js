@@ -10,6 +10,8 @@ userRoute.set('views',path.join(__dirname, '../views/user'))
 
 
 userRoute.get('/',userController.loadIndex)
+userRoute.get('/login',userController.loadLogin)
+userRoute.get('/register',userController.loadRegister)
 userRoute.get('/shop',userController.loadShop)
 userRoute.get('/about',userController.loadAbout)
 userRoute.get('/cart',userController.loadCart)
