@@ -1,16 +1,11 @@
 const mongoose = require('mongoose');
 
 const userSchema = mongoose.Schema({
-    username: {
-        type: String,
-        required: true,
-        unique: true
-    },
     fullname: {
         type: String,
         required: true
     },
-    phoneNumber: {
+    mobile: {
         type: Number,
         required: true,
         unique: true
@@ -24,9 +19,9 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true,
     },
-    addressId: {
+     // addressId: {
 
-    },
+    // },
     isVerified: {
         type: Number,
         default: 0,
