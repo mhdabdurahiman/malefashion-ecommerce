@@ -1,3 +1,19 @@
+const bcrypt = require('bcrypt')
+const User = require('../models/userModel')
+require('dotenv').config();
+
+// Hashing password
+
+const securePassword = async (password) => {
+    try {
+        const passwordHash = await bcrypt.hash(password, 10);
+        return passwordHash;
+    }
+    catch (error) {
+        throw new Error("Error while hashing password");
+    }
+}
+
 
 const loadIndex = async(req,res) =>{
     try {
