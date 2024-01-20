@@ -10,6 +10,7 @@ const securePassword = async (password) => {
         return passwordHash;
     }
     catch (error) {
+        console.log(error.message)
         throw new Error("Error while hashing password");
     }
 }
@@ -38,6 +39,38 @@ const loadRegister = async(req,res) =>{
         console.log(error.message)
     }
 }
+
+// Registering new user
+
+const doRegister = async(req,res) =>{
+    try {
+        const email = req.body.email;
+        const existingUser = await User.findOne({email: email});
+        if (existingUser) {
+            res.json({ existUser: true});
+        }
+        else {
+            const spassword = await securePassword(req.body.password);
+            const userData = new User({
+                fullname: req.body.name,
+                mobile: req.body.mobile,
+                email: req.body.email,
+                password: spassword,
+            })
+            const userSave = await userData.save();
+            if (userSave) {
+                console.log('Data saved to database successfully');
+            }
+            else{
+                console.log('Data not saved');
+            }
+        }
+        
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 
 const loadShop = async(req,res) =>{
     try {
@@ -105,5 +138,6 @@ module.exports = {
     loadCheckout,
     loadContact,
     loadProductDetails,
-    loadCart
+    loadCart,
+    doRegister,
 }
