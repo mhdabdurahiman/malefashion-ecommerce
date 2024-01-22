@@ -87,7 +87,7 @@ const doLogin = async(req,res) =>{
             return res.status(401).json({ error: 'Authentication failed' });
         }
         const token = jwt.sign({ userId: user._id }, process.env.TOKEN_SECRET, {expiresIn: '3600s',});
-        res.cookie("jwt",token,{
+        res.cookie('jwt',token,{
             httpOnly:true,
             maxAge:24*60*60*1000  // ms
           })
@@ -100,6 +100,19 @@ const doLogin = async(req,res) =>{
     }
 
 }
+
+// Logout functionality
+
+const doLogout = async(req,res) => {
+    try {
+        res.cookie('jwt','',{ maxAge: 1});
+        res.redirect('/');    
+    } catch (error) {
+        console.log(error.message)
+    }
+    
+}
+
 const loadShop = async(req,res) =>{
     try {
         res.render('shop')
@@ -169,4 +182,5 @@ module.exports = {
     loadCart,
     doRegister,
     doLogin,
+    doLogout
 }

@@ -25,6 +25,7 @@ userRoute.get('/product',userAuthMiddleware, userController.loadProductDetails)
 userRoute.get('/blog',userController.loadBlog)
 userRoute.get('/checkout',userController.loadCheckout)
 userRoute.get('/contact',userController.loadContact)
+userRoute.get('/logout',userController.doLogout)
 
 userRoute.post('/register',userController.doRegister)
 userRoute.post('/login', userController.doLogin)
