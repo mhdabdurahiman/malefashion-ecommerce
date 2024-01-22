@@ -1,5 +1,6 @@
-const bcrypt = require('bcrypt')
-const User = require('../models/userModel')
+const bcrypt = require('bcrypt');
+const User = require('../models/userModel');
+const jwt = require('jsonwebtoken')
 require('dotenv').config();
 
 // Hashing password
@@ -71,7 +72,34 @@ const doRegister = async(req,res) =>{
     }
 }
 
+// User login
 
+const doLogin = async(req,res) =>{
+    try {
+        console.log('entered into login function')
+        const {email, password} = req.body;
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(401).json({ error:'Authentication failed'});
+        }
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (!passwordMatch) {
+            return res.status(401).json({ error: 'Authentication failed' });
+        }
+        const token = jwt.sign({ userId: user._id }, process.env.TOKEN_SECRET, {expiresIn: '3600s',});
+        res.cookie("jwt",token,{
+            httpOnly:true,
+            maxAge:24*60*60*1000  // ms
+          })
+        res.redirect('cart');
+
+            
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).json({ error: 'Login failed' })
+    }
+
+}
 const loadShop = async(req,res) =>{
     try {
         res.render('shop')
@@ -140,4 +168,5 @@ module.exports = {
     loadProductDetails,
     loadCart,
     doRegister,
+    doLogin,
 }
