@@ -1,4 +1,5 @@
 const userController = require("../controllers/userController");
+const otpController = require("../controllers/otpController");
 const userAuthMiddleware = require("../middleware/userAuthMiddleware");
 const cookieParser = require("cookie-parser");
 
@@ -14,9 +15,9 @@ userRoute.use(bodyParser.json());
 userRoute.use(bodyParser.urlencoded({ extended: true }));
 userRoute.use(cookieParser());
 
-userRoute.get("/", userController.loadIndex);
-userRoute.get("/login", userController.loadLogin);
-userRoute.get("/register", userController.loadRegister);
+userRoute.get("/", userController.LoadHome);
+userRoute.get("/login", userController.loadUserLogin);
+userRoute.get("/register", userController.loadUserRegister);
 userRoute.get("/shop", userController.loadShop);
 userRoute.get("/about", userController.loadAbout);
 userRoute.get("/cart", userAuthMiddleware, userController.loadCart);
@@ -24,10 +25,10 @@ userRoute.get("/product", userAuthMiddleware, userController.loadProductDetails)
 userRoute.get("/blog", userController.loadBlog);
 userRoute.get("/checkout", userController.loadCheckout);
 userRoute.get("/contact", userController.loadContact);
-userRoute.get("/logout", userController.doLogout);
-userRoute.get("/enter-otp", userController.loadOTP);
+userRoute.get("/logout", userController.doUserLogout);
+userRoute.get("/enter-otp", userController.loadVerifyOTP);
 
-userRoute.post("/register", userController.doRegister);
-userRoute.post("/login", userController.doLogin);
+userRoute.post("/register", userController.doUserRegister);
+userRoute.post("/login", userController.doUserLogin);
 
 module.exports = userRoute;

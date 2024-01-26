@@ -15,7 +15,7 @@ const securePassword = async (password) => {
   }
 };
 
-const loadIndex = async (req, res) => {
+const LoadHome = async (req, res) => {
   try {
     res.render("index");
   } catch (error) {
@@ -23,7 +23,7 @@ const loadIndex = async (req, res) => {
   }
 };
 
-const loadLogin = async (req, res) => {
+const loadUserLogin = async (req, res) => {
   try {
     res.render("login");
   } catch (error) {
@@ -31,7 +31,7 @@ const loadLogin = async (req, res) => {
   }
 };
 
-const loadRegister = async (req, res) => {
+const loadUserRegister = async (req, res) => {
   try {
     res.render("register");
   } catch (error) {
@@ -41,7 +41,7 @@ const loadRegister = async (req, res) => {
 
 // Registering new user
 
-const doRegister = async (req, res) => {
+const doUserRegister = async (req, res) => {
   try {
     const email = req.body.email;
     const existingUser = await User.findOne({ email: email });
@@ -58,6 +58,7 @@ const doRegister = async (req, res) => {
       const userSave = await userData.save();
       if (userSave) {
         console.log("Data saved to database successfully");
+        res.json({ success: true, message: "User registered successfully"})
       } else {
         console.log("Data not saved");
       }
@@ -69,7 +70,7 @@ const doRegister = async (req, res) => {
 
 // User login
 
-const doLogin = async (req, res) => {
+const doUserLogin = async (req, res) => {
   try {
     console.log("entered into login function");
     const { email, password } = req.body;
@@ -97,7 +98,7 @@ const doLogin = async (req, res) => {
 
 // Logout functionality
 
-const doLogout = async (req, res) => {
+const doUserLogout = async (req, res) => {
   try {
     res.cookie("jwt", "", { maxAge: 1 });
     res.redirect("/");
@@ -106,7 +107,7 @@ const doLogout = async (req, res) => {
   }
 };
 
-const loadOTP = async (req, res) => {
+const loadVerifyOTP = async (req, res) => {
   try {
     res.render("enterotp");
   } catch (error) {
@@ -171,9 +172,9 @@ const loadProductDetails = async (req, res) => {
 };
 
 module.exports = {
-  loadIndex,
-  loadLogin,
-  loadRegister,
+  LoadHome,
+  loadUserLogin,
+  loadUserRegister,
   loadShop,
   loadAbout,
   loadBlog,
@@ -181,8 +182,8 @@ module.exports = {
   loadContact,
   loadProductDetails,
   loadCart,
-  doRegister,
-  doLogin,
-  doLogout,
-  loadOTP,
+  doUserRegister,
+  doUserLogin,
+  doUserLogout,
+  loadVerifyOTP,
 };
