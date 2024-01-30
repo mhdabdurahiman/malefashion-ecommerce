@@ -1,5 +1,4 @@
 const userController = require("../controllers/userController");
-const otpController = require("../controllers/otpController");
 const userAuthMiddleware = require("../middleware/userAuthMiddleware");
 const cookieParser = require("cookie-parser");
 
@@ -28,7 +27,8 @@ userRoute.get("/contact", userController.loadContact);
 userRoute.get("/logout", userController.doUserLogout);
 userRoute.get("/enter-otp", userController.loadVerifyOTP);
 
-userRoute.post("/register", userController.doUserRegister);
+userRoute.post("/register", userController.enterUserDetails);
 userRoute.post("/login", userController.doUserLogin);
+userRoute.post("/send-otp", userController.doVerfiyOtp)
 
 module.exports = userRoute;

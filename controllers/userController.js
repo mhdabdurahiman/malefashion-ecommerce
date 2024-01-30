@@ -1,6 +1,8 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
+const otpCreation = require("../utils/otpCreation");
+const OTP = require('../models/otpModel')
 require("dotenv").config();
 
 // Hashing password
@@ -39,30 +41,73 @@ const loadUserRegister = async (req, res) => {
   }
 };
 
-// Registering new user
+// Enter user details function.
+// Whenever user enters infomation for registration, otp generates and send to the email given by user at the time of registration.
 
-const doUserRegister = async (req, res) => {
+const enterUserDetails = async (req, res) => {
   try {
-    const email = req.body.email;
+    const {
+       fullname,
+       email,
+       mobile, 
+       password} = req.body;
     const existingUser = await User.findOne({ email: email });
     if (existingUser) {
       res.json({ existUser: true });
     } else {
-      const spassword = await securePassword(req.body.password);
-      const userData = new User({
-        fullname: req.body.name,
-        mobile: req.body.mobile,
-        email: req.body.email,
+      const spassword = await securePassword(password);
+
+      const otpbody = await otpCreation(req, res);
+      console.log(otpbody);
+
+      res.render("enterotp", {
+        otpMessage: "OTP Sent to mail",
+        fullname: fullname,
+        email: email,
+        mobile: mobile,
         password: spassword,
       });
-      const userSave = await userData.save();
-      if (userSave) {
-        console.log("Data saved to database successfully");
-        res.json({ success: true, message: "User registered successfully"})
-      } else {
-        console.log("Data not saved");
-      }
     }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+//OTP verification and User data save to the database.
+// The user data will only be saved whenever the otp is verified
+
+const doVerfiyOtp = async (req, res) => {
+  console.log('Entered into verifyotp function');
+  try {
+    console.log('user:',req.body)
+    const {otp,
+        fullname,
+        email,
+        mobile, 
+        password} = req.body;
+        console.log(otp);
+
+        const response = await OTP.find({otp}).sort({createdAt: -1}).limit(1);
+        console.log("email response", response);
+        if(response.length === 0 || otp !== response[0].otp) {
+          console.log('OTP Error');
+          return res.render('enterotp', {message:'The OTP is not valid', fullname, email, mobile, password});
+        }
+        else{
+          console.log('OTP found in Mongo');
+
+          const user = new User({
+            fullname: fullname,
+            email: email,
+            mobile: mobile,
+            password: password,
+          });
+          console.log(user);
+
+          const userData = await user.save();
+          console.log(userData);
+          res.redirect('/login')
+        }
   } catch (error) {
     console.log(error.message);
   }
@@ -182,8 +227,9 @@ module.exports = {
   loadContact,
   loadProductDetails,
   loadCart,
-  doUserRegister,
+  enterUserDetails,
   doUserLogin,
   doUserLogout,
+  doVerfiyOtp,
   loadVerifyOTP,
 };

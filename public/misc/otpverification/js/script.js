@@ -66,3 +66,4 @@ inputs.forEach((input, index1) => {
     }
   });
 });
+
