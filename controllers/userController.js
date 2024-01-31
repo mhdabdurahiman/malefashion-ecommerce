@@ -17,7 +17,7 @@ const securePassword = async (password) => {
   }
 };
 
-const LoadHome = async (req, res) => {
+const loadHome = async (req, res) => {
   try {
     res.render("index");
   } catch (error) {
@@ -119,15 +119,15 @@ const doUserLogin = async (req, res) => {
   try {
     console.log("entered into login function");
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
-    if (!user) {
+    const userData = await User.findOne({ email });
+    if (!userData) {
       return res.status(401).json({ error: "Authentication failed" });
     }
-    const passwordMatch = await bcrypt.compare(password, user.password);
+    const passwordMatch = await bcrypt.compare(password, userData.password);
     if (!passwordMatch) {
       return res.status(401).json({ error: "Authentication failed" });
     }
-    const token = jwt.sign({ userId: user._id }, process.env.TOKEN_SECRET, {
+    const token = jwt.sign({ userId: userData._id }, process.env.TOKEN_SECRET, {
       expiresIn: "3600s",
     });
     res.cookie("jwt", token, {
@@ -217,7 +217,7 @@ const loadProductDetails = async (req, res) => {
 };
 
 module.exports = {
-  LoadHome,
+  loadHome,
   loadUserLogin,
   loadUserRegister,
   loadShop,

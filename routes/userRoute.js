@@ -1,5 +1,5 @@
 const userController = require("../controllers/userController");
-const userAuthMiddleware = require("../middleware/userAuthMiddleware");
+const authMiddleware = require("../middleware/authMiddleware");
 const cookieParser = require("cookie-parser");
 
 const express = require("express");
@@ -14,21 +14,21 @@ userRoute.use(bodyParser.json());
 userRoute.use(bodyParser.urlencoded({ extended: true }));
 userRoute.use(cookieParser());
 
-userRoute.get("/", userController.LoadHome);
-userRoute.get("/login", userController.loadUserLogin);
-userRoute.get("/register", userController.loadUserRegister);
+userRoute.get("/", userController.loadHome);
+userRoute.get("/login", authMiddleware.userLoggedOut, userController.loadUserLogin);
+userRoute.get("/register", authMiddleware.userLoggedOut, userController.loadUserRegister);
 userRoute.get("/shop", userController.loadShop);
 userRoute.get("/about", userController.loadAbout);
-userRoute.get("/cart", userAuthMiddleware, userController.loadCart);
-userRoute.get("/product", userAuthMiddleware, userController.loadProductDetails);
+userRoute.get("/cart", authMiddleware.userAuth, userController.loadCart);
+userRoute.get("/product", authMiddleware.userAuth, userController.loadProductDetails);
 userRoute.get("/blog", userController.loadBlog);
-userRoute.get("/checkout", userController.loadCheckout);
+userRoute.get("/checkout", authMiddleware.userAuth, userController.loadCheckout);
 userRoute.get("/contact", userController.loadContact);
-userRoute.get("/logout", userController.doUserLogout);
-userRoute.get("/enter-otp", userController.loadVerifyOTP);
+userRoute.get("/logout", authMiddleware.userAuth, userController.doUserLogout);
+// userRoute.get("/enter-otp", authMiddleware.userLoggedOut, userController.loadVerifyOTP);
 
-userRoute.post("/register", userController.enterUserDetails);
-userRoute.post("/login", userController.doUserLogin);
-userRoute.post("/send-otp", userController.doVerfiyOtp)
+userRoute.post("/register", authMiddleware.userLoggedOut, userController.enterUserDetails);
+userRoute.post("/login", authMiddleware.userLoggedOut, userController.doUserLogin);
+userRoute.post("/send-otp", authMiddleware.userLoggedOut, userController.doVerfiyOtp)
 
 module.exports = userRoute;
