@@ -30,7 +30,7 @@ require("dotenv").config();
 
 module.exports = {
   userAuth: (req, res, next) => {
-    const token = req.cookies.jwt;
+    const token = req.session.token;
 
 
     if (!token) {
@@ -46,15 +46,18 @@ module.exports = {
 
       next();
     } catch (error) {
-      console.error(error);
-      res.status(401).redirect('/login');
+      if(error.name === 'TokenExpiredError') {
+        return res.status(401).redirect('/login');
+      }
+      else {
+        console.error(error);
+        res.status(401).redirect('/login');
+      }
     }
   },
 
   adminAuth: (req, res, next) => {
-    console.log("entered into admin auth middlware")
-    const token = req.cookies.jwt;
-    console.log(token);
+    const token = req.session.token;
 
     if (!token) {
       return res.redirect('/admin/login');
@@ -73,13 +76,17 @@ module.exports = {
         return res.redirect('/admin/login')
       }
     } catch (error) {
-      console.error(error);
-      res.status(401).redirect('/admin/login');
+      if(error.name === 'TokenExpiredError') {
+        return res.status(401).redirect('/admin/login');
+      }
+      else{
+        console.error(error);
+        res.status(401).redirect('/admin/login')}
     }
   },
 
   userLoggedOut: (req, res, next) => {
-    if (req.cookies.jwt) {
+    if (req.cookies.session) {
       return res.redirect('/');
     }
 
@@ -87,7 +94,7 @@ module.exports = {
   },
 
   adminLoggedOut: (req, res, next) => {
-    if (req.cookies.jwt) {
+    if (req.cookies.session) {
       return res.redirect('/admin/dashboard');
     }
 

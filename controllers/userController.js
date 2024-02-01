@@ -3,7 +3,6 @@ const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const otpCreation = require("../utils/otpCreation");
 const OTP = require('../models/otpModel')
-require("dotenv").config();
 
 // Hashing password
 
@@ -121,23 +120,20 @@ const doUserLogin = async (req, res) => {
     const { email, password } = req.body;
     const userData = await User.findOne({ email });
     if (!userData) {
-      return res.status(401).json({ error: "Authentication failed" });
+      return res.status(401).render('login',{ message: "Authentication failed" });
     }
     const passwordMatch = await bcrypt.compare(password, userData.password);
     if (!passwordMatch) {
-      return res.status(401).json({ error: "Authentication failed" });
+      return res.status(401).render('login',{message: "authentication failed"});
     }
     const token = jwt.sign({ userId: userData._id }, process.env.TOKEN_SECRET, {
       expiresIn: "3600s",
     });
-    res.cookie("jwt", token, {
-      httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000, // ms
-    });
+    req.session.token = token;
     res.redirect("cart");
   } catch (error) {
     console.log(error.message);
-    res.status(500).json({ error: "Login failed" });
+    res.status(500).render({ message: "Login failed" });
   }
 };
 
@@ -145,8 +141,8 @@ const doUserLogin = async (req, res) => {
 
 const doUserLogout = async (req, res) => {
   try {
-    res.cookie("jwt", "", { maxAge: 1 });
-    res.redirect("/");
+    req.session.token = null;
+    res.redirect ('/login')
   } catch (error) {
     console.log(error.message);
   }
