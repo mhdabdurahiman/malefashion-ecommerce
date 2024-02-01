@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 
+
 const loadAdminLogin = async (req, res) => {
     try {
         res.render("adminLogin")
@@ -18,6 +19,8 @@ const loadAdminDashboard = async (req, res) => {
         console.log(error.message);
     }
 };
+
+
 
 // const doAdminLogin = async (req, res) => {
 //     try {
@@ -70,11 +73,7 @@ const doAdminLogin = async (req, res) => {
                     { expiresIn: "3600s" }
                 );
 
-                res.cookie("jwt", token, {
-                    httpOnly: true,
-                    maxAge: 24 * 60 * 60 * 1000, // ms
-                });
-
+                req.session.token = token;
                 res.redirect('/admin/dashboard');
             } else {
                 res.render('adminLogin', {
@@ -94,16 +93,59 @@ const doAdminLogin = async (req, res) => {
 
 const doAdminLogout = async (req, res) => {
     try {
-        res.cookie("jwt", "", { maxAge: 1 });
+        req.session.token = null;
         res.redirect("/admin/login");
       } catch (error) {
         console.log(error.message);
       }
 };
 
+const loadUserList = async (req, res) => {
+    try {
+        const userList = await User.find( {isAdmin: 0} )
+        res.render("adminUserList",{
+            userList : userList,
+        })
+    } catch (error) {
+        console.log(error.message)
+    }
+};
+
+const doBlockUser = async (req, res) => {
+    console.log("params id:",req.params['id'])
+    try {
+        console.log("entered into block funcion");
+        const userId = req.params.id;
+        console.log(userId);
+        const userData = await User.findById( userId );
+        await userData.updateOne({ $set : { is_blocked : true }})
+        res.json( { success: true} )
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+const doUnblockUser = async (req, res) => {
+    
+    try {
+
+        const userId = req.params.id;
+        console.log(userId);
+        const userData = await User.findById( userId );
+        await userData.updateOne({ $set : { is_blocked : false }})
+        res.json( { success: true} )
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
 module.exports = {
     loadAdminLogin,
     loadAdminDashboard,
+    loadUserList,
     doAdminLogin,
     doAdminLogout,
+    doBlockUser,
+    doUnblockUser
+
 };
