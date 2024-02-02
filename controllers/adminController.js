@@ -14,7 +14,9 @@ const loadAdminLogin = async (req, res) => {
 
 const loadAdminDashboard = async (req, res) => {
     try {
-        res.render("adminDashboard")
+        res.render(
+            "adminDashboard",
+            {page_name: 'dashboard'})
     } catch (error) {
         console.log(error.message);
     }
@@ -87,7 +89,7 @@ const doAdminLogin = async (req, res) => {
         }
     } catch (error) {
         console.log(error.message);
-        res.status(500).json({ error: 'Login failed' });  // Send an error response in case of an exception
+        res.status(500).send('Internal server error');  // Send an error response in case of an exception
     }
 };
 
@@ -104,6 +106,7 @@ const loadUserList = async (req, res) => {
     try {
         const userList = await User.find( {isAdmin: 0} )
         res.render("adminUserList",{
+            page_name : 'usermanagement',
             userList : userList,
         })
     } catch (error) {

@@ -1,0 +1,146 @@
+<%- include('../partials/adminPartials/adminHead') -%>
+
+<%- include('../partials/adminPartials/adminSideNavbar') -%>
+
+<%- include('../partials/adminPartials/adminNavbarHead') -%>
+
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Categories</h2>
+            <p>Add, edit or delete a category</p>
+        </div>
+        <div>
+            <input type="text" placeholder="Search Categories" class="form-control bg-white" />
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <form action="/admin/add-category" method="POST">
+                        <div class="mb-4">
+                            <label for="categoryName" class="form-label">Name</label>
+                            <input type="text" id="categoryName" name="categoryName" placeholder="Type here" class="form-control" />
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label">Description</label>
+                            <textarea name="categoryDescription" id="categoryDescription" placeholder="Type here" class="form-control"></textarea>
+                        </div>
+                        <div class="d-grid">
+                            <button class="btn btn-primary">Create category</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-9">
+                    <div id="category-list-div" class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th class="text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% for( let category of categoryList ) { %>
+                                    <tr>
+                                        <td><b><%= category.name %></b></td>
+                                        <td><%= category.description %></td>
+                                        <%= console.log(category.isList) %>
+                                        <td class="text-end">
+                                            <div class="action-buttons">
+                                                <% if (category.isList == true) { %>
+                                                    <button type="button" class="btn list-unlist-btn btn-secondary btn-sm"  style="padding: 5px; width: 50px" data-category-id="<%= category._id %>" data-is-list ="<%= category.isList %>">Unlist</button>
+                                                <% } else { %>
+                                                    <button type="button" class="btn list-unlist-btn btn-secondary btn-sm"  style="padding: 5px; width: 50px" data-category-id="<%= category._id %>" data-is-list ="<%= category.isList %>">List</button>
+                                                <% } %>
+                                                <!-- <button type="button" class="btn edit-btn btn-primary btn-sm" style="padding: 5px;" >Edit</button> -->
+                                                <button type="button" class="btn delete-btn btn-danger btn-sm"  style="padding: 5px;" data-category-id="<%= category._id %>" >Delete</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- .col// -->
+            </div>
+            <!-- .row // -->
+        </div>
+        <!-- card body .// -->
+    </div>
+    <!-- card .// -->
+</section>
+<!-- content-main end// -->
+
+<script>
+    $(document).ready(function () {
+
+        $("form").submit(function (event) {
+            var formData = {
+                categoryName: $("#categoryName").val(),
+                categoryDescription: $("#categoryDescription").val(),
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "/admin/add-category",
+                data: JSON.stringify(formData),
+                contentType: 'application/json',
+            }).success(function () {
+                    $("#category-list-div").load("/admin/category #category-list-div")
+            }).error((err) =>{
+                console.error(err);
+            });
+
+            event.preventDefault();
+        });
+
+        $("#category-list-div").on('click', '.list-unlist-btn', function () {
+            var categoryId = $(this).data('category-id');
+            var isList = $(this).data('is-list');
+
+            toggleCategoryListing(categoryId, isList)
+        });
+
+        function toggleCategoryListing(categoryId, isList) {
+            console.log('categoryId:',categoryId)
+            var url = isList ? '/admin/unlist-category/' : '/admin/list-category/'
+            $.ajax({
+                url: url+categoryId,
+                type: 'PATCH',
+                success: function () {
+                    $("#category-list-div").load("/admin/category #category-list-div")
+                },
+                error: function(error) {
+                    console.error('Error updating user status:', error);
+                }
+
+            });
+        }
+        $("#category-list-div").on('click', '.delete-btn', function () {
+            var categoryId = $(this).data('category-id');
+
+            deleteCategory(categoryId)
+        });
+
+        function deleteCategory(categoryId) {
+            console.log('categoryId:',categoryId)
+            $.ajax({
+                url: '/admin/delete-category/'+categoryId,
+                type: 'DELETE',
+                success: function () {
+                    $("#category-list-div").load("/admin/category #category-list-div")
+                },
+                error: function(error) {
+                    console.error('Error updating user status:', error);
+                }
+
+            });
+        }
+    });
+</script>
+
+<%- include('../partials/adminPartials/adminFooter') -%>
