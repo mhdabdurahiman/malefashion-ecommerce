@@ -22,7 +22,7 @@ adminRoute.use(bodyParser.urlencoded({ extended: true }));
 adminRoute.use(cookieParser());
 
 // Authentication-routes
-adminRoute.get("/login", authMiddleware.adminLoggedOut, authenticationController.loadAdminLogin);
+adminRoute.get("/login", authMiddleware.isAdminAlreadyLoggedIn ,authMiddleware.adminLoggedOut, authenticationController.loadAdminLogin);
 adminRoute.get("/logout",  authenticationController.doAdminLogout);
 adminRoute.post("/login", authMiddleware.adminLoggedOut, authenticationController.doAdminLogin);
 

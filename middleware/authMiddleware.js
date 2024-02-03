@@ -86,7 +86,7 @@ module.exports = {
   },
 
   userLoggedOut: (req, res, next) => {
-    if (req.cookies.session) {
+    if (req.session.token) {
       return res.redirect('/');
     }
 
@@ -94,10 +94,28 @@ module.exports = {
   },
 
   adminLoggedOut: (req, res, next) => {
-    if (req.cookies.session) {
+    if (req.session.token) {
       return res.redirect('/admin/dashboard');
     }
 
     next();
   },
+
+  isAlreadyLoggedIn: (req, res, next) => {
+    if (req.session && req.session.token) {
+      res.redirect('/');
+    } else {
+      next();
+    }
+  },
+
+  isAdminAlreadyLoggedIn: (req, res, next) => {
+    if (req.session && req.session.token) {
+      res.redirect('/admin/dashboard');
+    } else {
+      next();
+    }
+  }
 };
+
+  

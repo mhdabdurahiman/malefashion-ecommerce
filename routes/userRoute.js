@@ -26,7 +26,7 @@ userRoute.get("/blog", userController.loadBlog);
 userRoute.get("/checkout", authMiddleware.userAuth, userController.loadCheckout);
 userRoute.get("/contact", userController.loadContact);
 
-userRoute.get("/login", authMiddleware.userLoggedOut, authenticationController.loadUserLogin);
+userRoute.get("/login", authMiddleware.isAlreadyLoggedIn ,authMiddleware.userLoggedOut, authenticationController.loadUserLogin);
 userRoute.get("/register", authMiddleware.userLoggedOut, authenticationController.loadUserRegister);
 userRoute.post("/register", authMiddleware.userLoggedOut, authenticationController.enterUserDetails);
 userRoute.post("/login", authMiddleware.userLoggedOut, authenticationController.doUserLogin);
