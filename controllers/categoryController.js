@@ -15,8 +15,9 @@ const loadCategory = async (req, res) => {
     }
 }
 
-const addCategory = async (req, res) => {
+const doAddCategory = async (req, res) => {
     try {
+        console.log("Called do Add category")
         const {
             categoryName,
             categoryDescription
@@ -32,7 +33,8 @@ const addCategory = async (req, res) => {
             })
 
             const categoryData = await category.save();
-            res.redirect('/admin/category')
+            // res.redirect('/admin/category')
+            res.status(200).json({success: true});
         } 
     } catch (error) {
         console.log(error.message);
@@ -61,7 +63,38 @@ const doUnlistCategory = async (req, res) => {
     }
 }
 
-const deleteCategory = async (req, res) => {
+const loadEditCategory = async (req, res) => {
+    try {
+        const categoryId = req.params.id;
+        const CategoryData = await Category.findById( categoryId );
+        res.render('adminEditCategory', {
+            category : CategoryData
+        })
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const doEditCategory = async (req, res) => {
+    try {
+        const {
+            categoryName,
+            categoryId,
+            categoryDescription
+        } = req.body;
+        console.log(`id:${categoryId}, name:${categoryName},description:${categoryDescription}`)
+        const categoryData = await Category.findById( categoryId );
+        await categoryData.updateOne( {$set: 
+            {name: categoryName,
+             description: categoryDescription}
+            })
+            res.redirect('/admin/category')
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const doDeleteCategory = async (req, res) => {
     try {
         const categoryId = req.params.id;
         await Category.deleteOne({ _id:categoryId });
@@ -73,8 +106,10 @@ const deleteCategory = async (req, res) => {
 
 module.exports = {
     loadCategory,
-    addCategory,
+    doAddCategory,
     doListCategory,
     doUnlistCategory,
-    deleteCategory,
+    doDeleteCategory,
+    loadEditCategory,
+    doEditCategory,
 }

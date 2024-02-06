@@ -36,14 +36,18 @@ adminRoute.patch("/unblockuser/:id", authMiddleware.adminAuth, adminController.d
 
 // Category-management-routes
 adminRoute.get("/category", authMiddleware.adminAuth, categoryController.loadCategory);
-adminRoute.post("/add-category", authMiddleware.adminAuth, categoryController.addCategory);
+adminRoute.post("/add-category", authMiddleware.adminAuth, categoryController.doAddCategory);
 adminRoute.patch("/list-category/:id", authMiddleware.adminAuth, categoryController.doListCategory);
 adminRoute.patch("/unlist-category/:id", authMiddleware.adminAuth, categoryController.doUnlistCategory);
-adminRoute.delete("/delete-category/:id", authMiddleware.adminAuth, categoryController.deleteCategory);
+adminRoute.delete("/delete-category/:id", authMiddleware.adminAuth, categoryController.doDeleteCategory);
+adminRoute.get("/edit-category/:id", authMiddleware.adminAuth, categoryController.loadEditCategory); 
+adminRoute.post("/edit-category", authMiddleware.adminAuth, categoryController.doEditCategory)
 
 // Product-management-routes
 adminRoute.get( '/products', authMiddleware.adminAuth, productController.loadProductList);
 adminRoute.get( '/add-products', authMiddleware.adminAuth, upload.array('image',4), productController.loadAddProducts);
 adminRoute.post( '/add-products', authMiddleware.adminAuth, productController.doAddProducts);
 adminRoute.delete( '/delete-products/:id', authMiddleware.adminAuth, productController.doDeleteProducts);
+
+
 module.exports = adminRoute;
