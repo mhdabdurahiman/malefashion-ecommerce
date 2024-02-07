@@ -16,6 +16,10 @@ include('../partials/adminPartials/adminNavbarHead') -%>
       />
     </div>
   </div>
+  <!-- alert container -->
+  <div class="container mb-4 d-none" id="alertContainer">
+    <div id="myAlert" class="" role="alert"></div>
+  </div>
   <div class="card">
     <div class="card-body">
       <div class="row">
@@ -37,20 +41,15 @@ include('../partials/adminPartials/adminNavbarHead') -%>
             </div>
             <div class="mb-4">
               <label class="form-label">Description</label>
-              <textarea
-                name="categoryDescription"
-                id="categoryDescription"
-                placeholder="Type here"
-                class="form-control"
-              ></textarea>
+              <textarea name="categoryDescription" id="categoryDescription" placeholder="Type here" class="form-control"></textarea>
             </div>
             <div class="d-grid">
               <button type="submit" class="btn btn-primary">
                 Create category
               </button>
             </div>
-          </form>
-        </div>
+            </form>
+            </div>
         <div class="col-md-9">
           <div id="category-list-div" class="table-responsive">
             <table class="table table-hover">
@@ -153,6 +152,7 @@ include('../partials/adminPartials/adminNavbarHead') -%>
 <!-- content-main end// -->
 
 <script>
+
   function bindEventHandlers() {
     
 
@@ -226,12 +226,37 @@ include('../partials/adminPartials/adminNavbarHead') -%>
       data: JSON.stringify(formData),
       contentType: "application/json",
     })
-      .done(function () {
-        // Reload the dynamically loaded content
-        $.get("/admin/category", function (data) {
-          $(".card-body").html($(data).find(".card-body").html());
-          bindEventHandlers(); // Rebind event handlers after content is loaded
+      .done(function (response) {
+        var alertContainer = $("#alertContainer");
+        var myAlert = $("#myAlert");
+        
+        if (response.success){
+          alertContainer.removeClass("d-none").addClass("d-block");
+          myAlert.attr("class", "alert alert-success");
+          $(`<p>${response.message}</p>`).appendTo(myAlert);
+          setTimeout( () =>{
+            alertContainer.removeClass("d-block").addClass("d-none");
+          }, 3000)
+
+
+          // Reload the dynamically loaded content
+          $.get("/admin/category", function (data) {
+            $(".card-body").html($(data).find(".card-body").html());
+            bindEventHandlers(); // Rebind event handlers after content is loaded
+          
+          
+
         });
+          
+        } else {
+          alertContainer.removeClass("d-none").addClass("d-block");
+          myAlert.attr("class", "alert alert-danger");
+          $(`<p>${response.message}</p>`).appendTo(myAlert);
+          setTimeout( () =>{
+            alertContainer.removeClass("d-block").addClass("d-none");
+          }, 3000)
+        }
+
       })
       .fail(function (err) {
         console.error(err);

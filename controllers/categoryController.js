@@ -3,11 +3,10 @@ const Category = require('../models/categoryModel')
 const loadCategory = async (req, res) => {
     try {
         const categoryList = await Category.find();
-        console.log(categoryList)
         res.render(
             'adminCategory',{
                 page_name: 'category',
-                categoryList: categoryList
+                categoryList: categoryList,
             }
             )
     } catch (error) {
@@ -25,7 +24,7 @@ const doAddCategory = async (req, res) => {
         
         const existingCategory = await Category.findOne({ name: categoryName});
         if(existingCategory){
-            res.render('adminCategory',{message: "Category already exist"})
+            res.status(200).json({success: false, message: 'Category already exists'});
         } else {
             const category = new Category({
                 name: categoryName,
@@ -33,8 +32,7 @@ const doAddCategory = async (req, res) => {
             })
 
             const categoryData = await category.save();
-            // res.redirect('/admin/category')
-            res.status(200).json({success: true});
+            res.status(200).json({success: true, message: 'Category added successfully'});
         } 
     } catch (error) {
         console.log(error.message);
