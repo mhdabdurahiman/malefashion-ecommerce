@@ -4,7 +4,6 @@ const categoryController = require("../controllers/categoryController");
 const authMiddleware = require("../middleware/authMiddleware");
 const productController = require("../controllers/productController");
 const cookieParser = require("cookie-parser");
-const multer = require('multer')
 const upload = require( "../middleware/multer" )
 
 
@@ -45,8 +44,8 @@ adminRoute.post("/edit-category", authMiddleware.adminAuth, categoryController.d
 
 // Product-management-routes
 adminRoute.get( '/products', authMiddleware.adminAuth, productController.loadProductList);
-adminRoute.get( '/add-products', authMiddleware.adminAuth, upload.array('image',4), productController.loadAddProducts);
-adminRoute.post( '/add-products', authMiddleware.adminAuth, productController.doAddProducts);
+adminRoute.get( '/add-products', authMiddleware.adminAuth, productController.loadAddProducts);
+adminRoute.post( '/add-products', authMiddleware.adminAuth, upload.array('images',4), productController.doAddProducts);
 adminRoute.delete( '/delete-products/:id', authMiddleware.adminAuth, productController.doDeleteProducts);
 
 
