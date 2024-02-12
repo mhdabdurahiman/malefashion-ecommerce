@@ -6,11 +6,15 @@ const dbConnect = require('./config/dbConnect')
 const session = require('express-session');
 const userRoute = require('./routes/userRoute');
 const adminRoute = require('./routes/adminRoute');
+const morgan = require('morgan');
+const flash = require('connect-flash');
 
 
 const port = process.env.PORT || 3000;
 
+
 app.use(express.static('./public'));
+app.use(morgan('tiny'));
 
 // db connection
 dbConnect();
@@ -26,6 +30,9 @@ app.use( session ({
     saveUninitialized: false
     
 }))
+
+// Configuring flash middleware
+app.use(flash());
 
 
 // User Route

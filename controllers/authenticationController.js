@@ -106,9 +106,9 @@ const securePassword = async (password) => {
   
   const doUserLogin = async (req, res) => {
     try {
-      console.log("entered into login function");
       const { email, password } = req.body;
       const userData = await User.findOne({ email });
+
       if (!userData) {
         return res.status(401).render('login',{ message: "Authentication failed" });
       }
@@ -116,11 +116,11 @@ const securePassword = async (password) => {
       if (!passwordMatch) {
         return res.status(401).render('login',{message: "authentication failed"});
       }
-      const token = jwt.sign({ userId: userData._id }, process.env.TOKEN_SECRET, {
-        expiresIn: "3600s",
-      });
+      const token = jwt.sign({ userId: userData._id }, process.env.TOKEN_SECRET, 
+        {expiresIn: "7200s",}
+      );
       req.session.token = token;
-      res.redirect("cart");
+      res.redirect("/");
     } catch (error) {
       console.log(error.message);
       res.status(500).render({ message: "Login failed" });
@@ -167,7 +167,7 @@ const doAdminLogin = async (req, res) => {
                 const token = jwt.sign(
                     { userId: adminData._id, isAdmin: adminData.isAdmin },
                     process.env.TOKEN_SECRET,
-                    { expiresIn: "3600s" }
+                    { expiresIn: "7200s" }
                 );
 
                 req.session.token = token;
