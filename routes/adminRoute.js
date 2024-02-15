@@ -44,9 +44,12 @@ adminRoute.post("/edit-category", authMiddleware.adminAuth, categoryController.d
 
 // Product-management-routes
 adminRoute.get( '/products', authMiddleware.adminAuth, productController.loadProductList);
-adminRoute.get( '/add-products', authMiddleware.adminAuth, productController.loadAddProducts);
-adminRoute.post( '/add-products', authMiddleware.adminAuth, upload.array('images',4), productController.doAddProducts);
-adminRoute.delete( '/delete-products/:id', authMiddleware.adminAuth, productController.doDeleteProducts);
+adminRoute.get( '/add-product', authMiddleware.adminAuth, productController.loadAddProducts);
+adminRoute.post( '/add-product', authMiddleware.adminAuth, upload.array('images',4), productController.doAddProducts);
+adminRoute.get( '/edit-product/:id', authMiddleware.adminAuth, productController.loadEditProduct );
+adminRoute.patch( '/list-product/:id', authMiddleware.adminAuth, productController.doListProduct);
+adminRoute.patch( '/unlist-product/:id', authMiddleware.adminAuth, productController.doUnlistProduct );
+adminRoute.delete( '/delete-product/:id', authMiddleware.adminAuth, productController.doDeleteProducts);
 
 
 module.exports = adminRoute;

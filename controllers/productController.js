@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const Category = require("../models/categoryModel");
 const Product = require("../models/productModel");
+const { render } = require("ejs");
 
 const loadProductList = async (req, res) => {
   try {
@@ -16,7 +17,6 @@ const loadProductList = async (req, res) => {
 const loadAddProducts = async (req, res) => {
   try {
     const categoryList = await Category.find({ isList: true });
-    console.log(categoryList);
     res.render("adminAddProduct", { categories: categoryList });
   } catch (error) {
     console.log(error.message);
@@ -47,8 +47,54 @@ const doAddProducts = async (req, res) => {
   }
 };
 
+const doListProduct = async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const productData = await Product.findById( productId );
+    await productData.updateOne( {$set: { isList : true } } );
+    res.json( {success:true} )
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+const doUnlistProduct = async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const productData = await Product.findById( productId );
+    await productData.updateOne( {$set: { isList : false } } )
+    res.json( {success:true} )
+  } catch (error) {
+      console.log(error.message)
+  }
+}
+
+const loadEditProduct = async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const productData = await Product.findById( productId ).populate('category').exec();
+    const categoryList = await Category.find({ isList:true })
+    res.render('adminEditProduct', {product:productData, categories:categoryList})
+  } catch (error) {
+    console.log(error.message)
+  }
+}
+
+
+const doEditProduct = async (req, res) => {
+  try {
+    const productData = await Product.findById( req.body.productId );
+    
+  } catch (error) {
+    console.log(error.message)
+  }
+}
+
 const doDeleteProducts = async (req, res) => {
   try {
+    const productId = req.params.id;
+    await Product.deleteOne({ _id:productId });
+    res.json({success:true})
   } catch (error) {
     console.log(error.message);
   }
@@ -58,6 +104,10 @@ module.exports = {
   loadProductList,
   loadAddProducts,
   doAddProducts,
+  doListProduct,
+  doUnlistProduct,
+  loadEditProduct,
+  doEditProduct,
   doDeleteProducts,
 };
 
