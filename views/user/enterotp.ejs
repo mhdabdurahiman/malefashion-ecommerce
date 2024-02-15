@@ -28,16 +28,25 @@
                 <h4>Verify</h4>
                 <p>Your code was sent to you via email</p>
 
-                <div class="otp-field mb-4">
-                  <input type="number" />
-                  <input type="number" disabled />
-                  <input type="number" disabled />
-                  <input type="number" disabled />
-                  <input type="number" disabled />
-                  <input type="number" disabled />
-                </div>
+                <form id="otpForm" onsubmit="concatenateAndSubmit(event)" action="/send-otp" method="post">
+                  <input type="hidden" name="fullname" value="<%= fullname  %>">
+                  <input type="hidden" name="email" value="<%= email  %>">
+                  <input type="hidden" name="mobile" value="<%= mobile  %>">
+                  <input type="hidden" name="password" value="<%= password  %>">
+                  <div class="otp-field mb-4">
+                    <input type="number" name="digit1"  />
+                    <input type="number" name="digit2" disabled />
+                    <input type="number" name="digit3" disabled />
+                    <input type="number" name="digit4" disabled />
+                    <input type="number" name="digit5" disabled />
+                    <input type="number" name="digit6" disabled />
+                  </div>
+                  
+                  <button type="submit" class="btn btn-dark mb-3" >Verify</button>
+                </form>
+                
 
-                <button class="btn btn-dark mb-3">Verify</button>
+
 
                 <p class="resend text-muted mb-0">
                   Didn't receive code? <a href="">Request again</a>
@@ -52,6 +61,37 @@
 
     <!-- Script JS -->
     <script src="/misc/otpverification/js/script.js"></script>
+    <script>
+      function concatenateAndSubmit(event) {
+        event.preventDefault();
+    
+        // Get values from input fields
+        const digit1 = document.getElementsByName('digit1')[0].value;
+        const digit2 = document.getElementsByName('digit2')[0].value;
+        const digit3 = document.getElementsByName('digit3')[0].value;
+        const digit4 = document.getElementsByName('digit4')[0].value;
+        const digit5 = document.getElementsByName('digit5')[0].value;
+        const digit6 = document.getElementsByName('digit6')[0].value;
+    
+        // Combine digits to form OTP
+        const otp = digit1 + digit2 + digit3 + digit4 + digit5 + digit6;
+    
+        // Set the concatenated OTP as the value for a hidden input field
+        const hiddenInput1 = document.createElement('input');
+        hiddenInput1.type = 'hidden';
+        hiddenInput1.name = 'otp';
+        hiddenInput1.value = otp;
+
+        
+        
+        const form = document.getElementById('otpForm')
+    
+        form.appendChild(hiddenInput1);
+
+        form.submit();
+
+      }
+    </script>
     <!--$%analytics%$-->
   </body>
 </html>

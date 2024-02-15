@@ -1,0 +1,112 @@
+<%- include('../partials/adminPartials/adminHead') -%>
+
+    <%- include('../partials/adminPartials/adminSideNavbar') -%>
+
+        <%- include('../partials/adminPartials/adminNavbarHead') -%>
+
+            <section class="content-main">
+                <div class="content-header">
+                    <div>
+                        <h2 class="content-title card-title">Products List</h2>
+                        <p>Add, edit, delete products.</p>
+                    </div>
+                    <div>
+                        <a href="/admin/add-product" class="btn btn-primary btn-sm rounded">Add new product</a>
+                    </div>
+                </div>
+                <div class="card mb-4">
+                    <div id="product-list-div">
+                        <header class="card-header">
+                            <div class="row align-items-center">
+    
+                                <div class="col-lg-4 col-sm-4 col-8 flex-grow-1">Product</div>
+                                <div class="col-lg-2 col-sm-2 col-4">Price</div>
+                                <div class="col-lg-2 col-sm-2 col-4">Status</div>
+                                <div class="col-lg-1 col-sm-2 col-4">Stock</div>
+                                <div class="col-lg-2 col-sm-2 col-4 text-end">Action</div>
+                            </div>
+                        </header>
+                        <!-- card-header end// -->
+                        <!-- itemlist  .// -->
+                        <% for( let product of products ) { %>
+                            <article class="itemlist">
+                                <div class="row align-items-center">
+                                    <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
+                                        <a class="itemside" href="#">
+                                            <div class="left">
+                                                <img src="/images/product-images/<%= product.image[0] %>"
+                                                    class="img-sm img-thumbnail" alt="Item" />
+                                            </div>
+                                            <div class="info">
+                                                <h6 class="mb-0">
+                                                    <%= product.name %>
+                                                </h6>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <div class="col-lg-2 col-sm-2 col-4 col-price"><span>
+                                            <%= product.price %>
+                                        </span></div>
+                                    <div class="col-lg-2 col-sm-2 col-4 col-status">
+                                        <span class="badge rounded-pill alert-warning">Archived</span>
+                                    </div>
+                                    <div class="col-lg-1 col-sm-2 col-4 col-stock">
+                                        <span>
+                                            <%= product.stock %>
+                                        </span>
+                                    </div>
+                                    <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
+                                        <div class="action-buttons">
+                                            <% if (product.isList==true) { %>
+                                                <button type="button" class="btn list-unlist-btn btn-secondary btn-sm"
+                                                    style="padding: 5px; width: 50px" data-product-id="<%= product._id %>"
+                                                    data-is-list="<%= product.isList %>">
+                                                    Unlist
+                                                </button>
+                                            <% } else { %>
+                                                <button type="button" class="btn list-unlist-btn btn-secondary btn-sm"
+                                                    style="padding: 5px; width: 50px"
+                                                    data-product-id="<%= product._id %>"
+                                                    data-is-list="<%= product.isList %>">
+                                                    List
+                                                </button>
+                                            <% } %>
+                                            <a href="/admin/edit-product/<%= product._id %>">
+                                                <button type="button" class="btn edit-btn btn-primary btn-sm"
+                                                    style="padding: 5px" data-product-id="<%= product._id %>">
+                                                    Edit
+                                                </button></a>
+                                            <button type="button" class="btn delete-btn btn-danger btn-sm"
+                                                style="padding: 5px" data-product-id="<%= product._id %>">
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- row .// -->
+                            </article>
+                                <!-- itemlist  .// -->
+                        <% } %>
+                    </div>
+                </div>
+                <!-- card-body end// -->
+
+                <div class="pagination-area mt-30 mb-50">
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-start">
+                            <li class="page-item active"><a class="page-link" href="#">01</a></li>
+                            <li class="page-item"><a class="page-link" href="#">02</a></li>
+                            <li class="page-item"><a class="page-link" href="#">03</a></li>
+                            <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                            <li class="page-item"><a class="page-link" href="#">16</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </section>
+
+            <script src="/admin/js/productList.js" type="text/javascript"></script>
+
+            <%- include('../partials/adminPartials/adminFooter') -%>

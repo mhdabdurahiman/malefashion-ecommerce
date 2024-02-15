@@ -34,7 +34,7 @@
     <div class="offcanvas-menu-wrapper">
         <div class="offcanvas__option">
             <div class="offcanvas__links">
-                <a href="#">Sign in</a>
+                <a href="/login">Sign in</a>
                 <a href="#">FAQs</a>
             </div>
             <div class="offcanvas__top__hover">
@@ -72,7 +72,7 @@
                     <div class="col-lg-6 col-md-5">
                         <div class="header__top__right">
                             <div class="header__top__links">
-                                <a href="#">Sign in</a>
+                                <a href="/login">Sign in</a>
                                 <a href="#">FAQs</a>
                             </div>
                             <div class="header__top__hover">
@@ -89,7 +89,7 @@
             </div>
         </div>
         <div class="container">
-            <div class="row">
+            <div class="row d-flex justify-content-between">
                 <div class="col-lg-3 col-md-3">
                     <div class="header__logo">
                         <a href="./"><img src="/user/img/logo.png" alt=""></a>
@@ -98,7 +98,7 @@
                 <div class="col-lg-6 col-md-6">
                     <nav class="header__menu mobile-menu">
                         <ul>
-                            <li class="active"><a href="./">Home</a></li>
+                            <li class=""><a href="./">Home</a></li>
                             <li><a href="./shop">Shop</a></li>
                             <li><a href="#">Pages</a>
                                 <ul class="dropdown">
@@ -114,13 +114,34 @@
                         </ul>
                     </nav>
                 </div>
-                <div class="col-lg-3 col-md-3">
-                    <div class="header__nav__option">
+                <!-- <div class="col-lg-3 col-md-3"> -->
+                    <!-- <div class="header__nav__option">
                         <a href="#" class="search-switch"><img src="/user/img/icon/search.png" alt=""></a>
                         <a href="#"><img src="/user/img/icon/heart.png" alt=""></a>
-                        <a href="#"><img src="/user/img/icon/cart.png" alt=""> <span>0</span></a>
-                        <div class="price">$0.00</div>
-                    </div>
+                            <a class="profile-dropdown" href="#"><i class="fa fa-user" style="color: black;"></i></a>
+                            <div class="profile-dropdown-content">
+                                
+                                
+                            </div>
+                    </div> -->
+                    
+                <!-- </div> -->
+                <div >
+                    <nav class="header__menu mobile-menu">
+                        <ul>
+                            <li><a href="#"><img src="/user/img/icon/heart.png" alt=""></a></li>
+                            <li><a href="#"><i class="fa fa-user" style="color: black;"></i></a>
+                                <ul class="dropdown">
+                                    <li><a href="/user-profile">Profile</a></li>
+                                    <li><a href="/logout">Logout</a></li>
+                                    <!-- <li><a href="./cart">Shopping Cart</a></li>
+                                    <li><a href="./checkout">Check Out</a></li>
+                                    <li><a href="./blog-details">Blog Details</a></li> -->
+                                </ul>
+                            </li>
+                            
+                        </ul>
+                    </nav>
                 </div>
             </div>
             <div class="canvas__open"><i class="fa fa-bars"></i></div>

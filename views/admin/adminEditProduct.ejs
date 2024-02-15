@@ -1,0 +1,200 @@
+<%- include('../partials/adminPartials/adminHead') -%>
+
+    <%- include('../partials/adminPartials/adminSideNavbar') -%>
+
+        <%- include('../partials/adminPartials/adminNavbarHead') -%>
+
+            <style>
+                #imagePreview .image {
+                    height: 100px;
+                    width: 100px;
+                }
+
+                #imagePreview .image img {
+                    height: 100%;
+                    width: 100%;
+                }
+
+                #imagePreview .image span {
+                    position: absolute;
+                    cursor: pointer;
+                    font-size: 22px;
+                    color: rgb(255, 0, 0);
+                }
+
+                #imagePreview .image span:hover {
+                    opacity: 0.8;
+                }
+
+                #imagePreview .span--hidden {
+                    visibility: hidden;
+                }
+            </style>
+
+            <section class="content-main">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="content-header">
+                            <h2 class="content-title">Edit Product</h2>
+                            <div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <form method="POST" action="/admin/add-product" enctype="multipart/form-data"
+                                    id="add-product-form">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <h6>1. General info</h6>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <div class="mb-4">
+                                                <label class="form-label">Product Name</label>
+                                                <input id="name" name="name" type="text" value="<%= product.name %>"
+                                                    class="form-control">
+                                            </div>
+                                            <div class="mb-4">
+                                                <label class="form-label">Description</label>
+                                                <textarea id="description" name="description" class="form-control"
+                                                    rows="4"><%= product.description %></textarea>
+                                            </div>
+                                            <div class="mb-4">
+                                                <label class="form-label">Brand Name</label>
+                                                <input id="brand" name="brand" type="text" value="<%= product.brand %>"
+                                                    class="form-control">
+                                            </div>
+                                            <div class="mb-4">
+                                                <label class="form-label">Size</label>
+                                                <input id="size" name="size" type="text" value="<%= product.size %>"
+                                                    class="form-control">
+                                            </div>
+                                        </div> <!-- col.// -->
+                                    </div> <!-- row.// -->
+                                    <hr class="mb-4 mt-0">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <h6>2. Pricing</h6>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <div class="mb-4">
+                                                <label class="form-label">Cost in Rupees</label>
+                                                <input name="price" type="text" value="<%= product.price %>"
+                                                    class="form-control">
+                                            </div>
+                                        </div> <!-- col.// -->
+                                    </div> <!-- row.// -->
+                                    <hr class="mb-4 mt-0">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <h6>3. Category</h6>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <div class="mb-4">
+                                                <select id="category" name="categoryId"
+                                                    value="<%= product.category.name %>" class="form-select">
+                                                    <% for( let category of categories ) { %>
+                                                        <option value="<%= category._id %>">
+                                                            <%= category.name %>
+                                                        </option>
+                                                        <% } %>
+                                                </select>
+                                            </div>
+                                        </div> <!-- col.// -->
+                                    </div> <!-- row.// -->
+                                    <hr class="mb-4 mt-0">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <h6>4. Inventory</h6>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <div class="mb-4">
+                                                <label class="form-label">Stock quantity</label>
+                                                <input id="stock" name="stock" type="text" value="<%= product.stock %>"
+                                                    class="form-control">
+                                            </div>
+                                        </div> <!-- col.// -->
+                                    </div> <!-- row.// -->
+                                    <hr class="mb-4 mt-0">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <h6>5. Media</h6>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <div class="mb-4">
+                                                <label class="form-label">Images</label>
+                                                <input name="images" id="inputImage" class="form-control" type="file"
+                                                    multiple="multiple" accept="image/jpeg, image/png, image/jpg">
+                                            </div>
+                                        </div> <!-- col.// -->
+                                    </div>
+                                    <!-- Image preview div -->
+                                    <div id="imagePreview" class="row">
+                                    </div>
+                                    <hr class="mb-4 mt-0">
+                                    <div class="row">
+                                        <div class="col-md-3 offset-md-8">
+                                            <button type="submit" class="btn btn-md rounded font-sm">Add
+                                                product</button>
+                                        </div> <!-- col.// -->
+                                    </div> <!-- .row end// -->
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </section> <!-- content-main end// -->
+
+            <script>
+                const output = document.getElementById("imagePreview");
+                const input = document.getElementById("inputImage");
+                imagesString = "<%=product.image%>"
+                let imagesArray = imagesString.split(',')
+                console.log(imagesArray);
+
+                displayDbImages();
+                displayImages()
+
+                function displayDbImages() {
+                    let images = "";
+                    imagesArray.forEach((image, index) => {
+                        images += `<div class="col-md-3 m-3 image" >
+                            <img src="/images/product-images/${image}" alt="image">
+                            <span onclick="deleteImage(${index})">&times;</span>
+                        </div>`
+                    })
+                    output.innerHTML = images;
+                }
+
+                input.addEventListener("change", () => {
+                    const files = input.files;
+                    for (let i = 0; i < files.length; i++) {
+                        imagesArray.push(files[i]);
+                    }
+                    displayImages()
+                });
+
+                function displayImages() {
+                    let fileImages = "";
+                    imagesArray.forEach((image, index) => {
+                        images += `<div class="col-md-3 m-3 image" >
+                                <img src="${URL.createObjectURL(image)}" alt="image">
+                                <span onclick="deleteImage(${index})">&times;</span>
+                            </div>`
+                    })
+                    output.innerHTML = images;
+                }
+
+
+                function deleteImage(index) {
+                    imagesArray.splice(index, 1)
+                    displayDbImages()
+                }
+            </script>
+
+
+            <%- include('../partials/adminPartials/adminFooter') -%>

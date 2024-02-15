@@ -8,7 +8,6 @@ const userSchema = mongoose.Schema({
   mobile: {
     type: Number,
     required: true,
-    unique: true,
   },
   email: {
     type: String,
@@ -18,11 +17,16 @@ const userSchema = mongoose.Schema({
   password: {
     type: String,
     required: true,
+    unique: true,
   },
   // addressId: {
 
   // },
   isVerified: {
+    type: Number,
+    default: 0,
+  },
+  isAdmin: {
     type: Number,
     default: 0,
   },

@@ -1,0 +1,264 @@
+<%- include('../partials/adminPartials/adminHead') -%> <%- include('../partials/adminPartials/adminSideNavbar') -%> <%-
+      include('../partials/adminPartials/adminNavbarHead') -%>
+
+      <section class="content-main">
+        <div class="content-header">
+          <div>
+            <h2 class="content-title card-title">Categories</h2>
+            <p>Add, edit or delete a category</p>
+          </div>
+          <div>
+            <input type="text" placeholder="Search Categories" class="form-control bg-white" />
+          </div>
+        </div>
+        <!-- alert container -->
+        <div class="container mb-4 d-none" id="alertContainer">
+          <div id="myAlert" class="" role="alert"></div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-3">
+                <form action="/admin/add-category" method="POST" onsubmit="return false;">
+                  <div class="mb-4">
+                    <label for="categoryName" class="form-label">Name</label>
+                    <input type="text" id="categoryName" name="categoryName" placeholder="Type here"
+                      class="form-control" />
+                  </div>
+                  <div class="mb-4">
+                    <label class="form-label">Description</label>
+                    <textarea name="categoryDescription" id="categoryDescription" placeholder="Type here"
+                      class="form-control"></textarea>
+                  </div>
+                  <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">
+                      Create category
+                    </button>
+                  </div>
+                </form>
+              </div>
+              <div class="col-md-9">
+                <div id="category-list-div" class="table-responsive">
+                  <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th class="text-end">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% for( let category of categoryList ) { %>
+                        <tr>
+                          <td><b>
+                              <%= category.name %>
+                            </b></td>
+                          <td>
+                            <%= category.description %>
+                          </td>
+                          <%= console.log(category.isList) %>
+                            <td class="text-end">
+                              <div class="action-buttons">
+                                <% if (category.isList==true) { %>
+                                  <button type="button" class="btn list-unlist-btn btn-secondary btn-sm"
+                                    style="padding: 5px; width: 50px" data-category-id="<%= category._id %>"
+                                    data-is-list="<%= category.isList %>">
+                                    Unlist
+                                  </button>
+                                  <% } else { %>
+                                    <button type="button" class="btn list-unlist-btn btn-secondary btn-sm"
+                                      style="padding: 5px; width: 50px" data-category-id="<%= category._id %>"
+                                      data-is-list="<%= category.isList %>">
+                                      List
+                                    </button>
+                                    <% } %>
+                                      <a href="/admin/edit-category/<%= category._id %>">
+                                        <button type="button" class="btn edit-btn btn-primary btn-sm"
+                                          style="padding: 5px" data-category-id="<%= category._id %>">
+                                          Edit
+                                        </button></a>
+                                      <button type="button" class="btn delete-btn btn-danger btn-sm"
+                                        style="padding: 5px" data-category-id="<%= category._id %>">
+                                        Delete
+                                      </button>
+                              </div>
+                            </td>
+                        </tr>
+                        <% } %>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <!-- .col// -->
+            </div>
+            <!-- .row // -->
+          </div>
+          <!-- card body .// -->
+        </div>
+        <!-- card .// -->
+        <div class="modal fade" id="editCategoryModal" tabindex="-1" role="dialog"
+          aria-labelledby="editCategoryModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="editCategoryModalLabel">Edit Category</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form id="editCategoryForm">
+                  <div class="mb-4">
+                    <label for="editCategoryName" class="form-label">Name</label>
+                    <input type="text" id="editCategoryName" name="editCategoryName" class="form-control">
+                  </div>
+                  <div class="mb-4">
+                    <label for="editCategoryDescription" class="form-label">Description</label>
+                    <textarea id="editCategoryDescription" name="editCategoryDescription"
+                      class="form-control"></textarea>
+                  </div>
+                  <div class="d-grid">
+                    <button type="button" class="btn btn-primary" onclick="updateCategory()">Save changes</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- content-main end// -->
+
+      <script>
+
+        function bindEventHandlers() {
+
+
+          $("#category-list-div").on("click", ".list-unlist-btn", function () {
+            console.log("List/Unlist button clicked");
+            var categoryId = $(this).data("category-id");
+            var isList = $(this).data("is-list");
+
+            toggleCategoryListing(categoryId, isList);
+          });
+
+          $("#category-list-div").on("click", ".delete-btn", function () {
+            var categoryId = $(this).data("category-id");
+            deleteCategory(categoryId);
+          });
+
+        }
+
+        function toggleCategoryListing(categoryId, isList) {
+          console.log("categoryId:", categoryId);
+          var url = isList ? "/admin/unlist-category/" : "/admin/list-category/";
+          $.ajax({
+            url: url + categoryId,
+            type: "PATCH",
+            success: function () {
+              $("#category-list-div").load(
+                "/admin/category #category-list-div",
+                function () {
+                  bindEventHandlers(); // Rebind event handlers after content is loaded
+                }
+              );
+            },
+            error: function (error) {
+              console.error("Error updating user status:", error);
+            },
+          });
+        }
+
+        function deleteCategory(categoryId) {
+          console.log("categoryId:", categoryId);
+          Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+          }).then((result) => {
+            if (result.isConfirmed) {
+              $.ajax({
+                url: "/admin/delete-category/" + categoryId,
+                type: "DELETE",
+                success: function () {
+                  $("#category-list-div").load(
+                    "/admin/category #category-list-div",
+                    function () {
+                      bindEventHandlers(); // Rebind event handlers after content is loaded
+                    }
+                  );
+                },
+                error: function (error) {
+                  console.error("Error updating user status:", error);
+                },
+              });
+              Swal.fire({
+                title: "Deleted!",
+                text: "Your file has been deleted.",
+                icon: "success"
+              });
+            }
+          });
+        }
+
+        $(document).on("submit", "form", function (event) {
+          event.preventDefault();
+
+          console.log("Form submitted");
+
+          var formData = {
+            categoryName: $("#categoryName").val(),
+            categoryDescription: $("#categoryDescription").val(),
+          };
+
+          $.ajax({
+            type: "POST",
+            url: "/admin/add-category",
+            data: JSON.stringify(formData),
+            contentType: "application/json",
+          })
+            .done(function (response) {
+              var alertContainer = $("#alertContainer");
+              var myAlert = $("#myAlert");
+
+              if (response.success) {
+                alertContainer.removeClass("d-none").addClass("d-block");
+                myAlert.attr("class", "alert alert-success");
+                $(`<p>${response.message}</p>`).appendTo(myAlert);
+                setTimeout(() => {
+                  alertContainer.removeClass("d-block").addClass("d-none");
+                }, 3000)
+
+
+                // Reload the dynamically loaded content
+                $.get("/admin/category", function (data) {
+                  $(".card-body").html($(data).find(".card-body").html());
+                  bindEventHandlers(); // Rebind event handlers after content is loaded
+
+
+
+                });
+
+              } else {
+                alertContainer.removeClass("d-none").addClass("d-block");
+                myAlert.attr("class", "alert alert-danger");
+                $(`<p>${response.message}</p>`).appendTo(myAlert);
+                setTimeout(() => {
+                  alertContainer.removeClass("d-block").addClass("d-none");
+                }, 3000)
+              }
+
+            })
+            .fail(function (err) {
+              console.error(err);
+            });
+        });
+
+        // Initial binding
+        bindEventHandlers();
+      </script>
+
+      <%- include('../partials/adminPartials/adminFooter') -%>
