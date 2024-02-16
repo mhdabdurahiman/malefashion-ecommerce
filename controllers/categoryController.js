@@ -4,7 +4,7 @@ const loadCategory = async (req, res) => {
     try {
         const categoryList = await Category.find();
         res.render(
-            'adminCategory',{
+            'admin/adminCategory',{
                 page_name: 'category',
                 categoryList: categoryList,
             }
@@ -65,7 +65,7 @@ const loadEditCategory = async (req, res) => {
     try {
         const categoryId = req.params.id;
         const CategoryData = await Category.findById( categoryId );
-        res.render('adminEditCategory', {
+        res.render('admin/adminEditCategory', {
             category : CategoryData
         })
     } catch (error) {

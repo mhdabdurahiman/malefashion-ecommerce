@@ -16,7 +16,7 @@ const securePassword = async (password) => {
 
   const loadUserLogin = async (req, res) => {
     try {
-      res.render("login");
+      res.render("auth/login");
     } catch (error) {
       console.log(error.message);
     }
@@ -24,7 +24,7 @@ const securePassword = async (password) => {
   
   const loadUserRegister = async (req, res) => {
     try {
-      res.render("register");
+      res.render("auth/register");
     } catch (error) {
       console.log(error.message);
     }
@@ -49,7 +49,7 @@ const securePassword = async (password) => {
         const otpbody = await otpCreation(req, res);
         console.log(otpbody);
   
-        res.render("enterotp", {
+        res.render("auth/enterotp", {
           otpMessage: "OTP Sent to mail",
           fullname: fullname,
           email: email,
@@ -80,7 +80,7 @@ const securePassword = async (password) => {
           console.log("email response", response);
           if(response.length === 0 || otp !== response[0].otp) {
             console.log('OTP Error');
-            return res.render('enterotp', {message:'The OTP is not valid', fullname, email, mobile, password});
+            return res.render('auth/enterotp', {message:'The OTP is not valid', fullname, email, mobile, password});
           }
           else{
             console.log('OTP found in Mongo');
@@ -110,11 +110,11 @@ const securePassword = async (password) => {
       const userData = await User.findOne({ email });
 
       if (!userData) {
-        return res.status(401).render('login',{ message: "Authentication failed" });
+        return res.status(401).render('auth/login',{ message: "Authentication failed" });
       }
       const passwordMatch = await bcrypt.compare(password, userData.password);
       if (!passwordMatch) {
-        return res.status(401).render('login',{message: "authentication failed"});
+        return res.status(401).render('auth/login',{message: "authentication failed"});
       }
       const token = jwt.sign({ userId: userData._id }, process.env.TOKEN_SECRET, 
         {expiresIn: "7200s",}
@@ -140,7 +140,7 @@ const securePassword = async (password) => {
   
   const loadVerifyOTP = async (req, res) => {
     try {
-      res.render("enterotp");
+      res.render("auth/enterotp");
     } catch (error) {
       console.log(error.message);
     }
@@ -148,7 +148,7 @@ const securePassword = async (password) => {
 
 const loadAdminLogin = async (req, res) => {
     try {
-        res.render("adminLogin")
+        res.render("auth/adminLogin")
     } catch (error) {
         console.log(error.message);
     }
@@ -173,12 +173,12 @@ const doAdminLogin = async (req, res) => {
                 req.session.token = token;
                 res.redirect('/admin/dashboard');
             } else {
-                res.render('adminLogin', {
+                res.render('auth/adminLogin', {
                     err: 'Incorrect Email or Password'
                 });
             }
         } else {
-            res.render('adminLogin', {
+            res.render('auth/adminLogin', {
                 err: 'Incorrect Email or Password'
             });
         }

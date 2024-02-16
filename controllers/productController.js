@@ -8,7 +8,7 @@ const loadProductList = async (req, res) => {
   try {
     const productList = await Product.find({});
     console.log(productList);
-    res.render("adminProductList", { products: productList });
+    res.render("admin/adminProductList", { products: productList });
   } catch (error) {
     console.log(error.message);
   }
@@ -17,7 +17,7 @@ const loadProductList = async (req, res) => {
 const loadAddProducts = async (req, res) => {
   try {
     const categoryList = await Category.find({ isList: true });
-    res.render("adminAddProduct", { categories: categoryList });
+    res.render("admin/adminAddProduct", { categories: categoryList });
   } catch (error) {
     console.log(error.message);
   }
@@ -74,7 +74,7 @@ const loadEditProduct = async (req, res) => {
     const productId = req.params.id;
     const productData = await Product.findById( productId ).populate('category').exec();
     const categoryList = await Category.find({ isList:true })
-    res.render('adminEditProduct', {product:productData, categories:categoryList})
+    res.render('admin/adminEditProduct', {product:productData, categories:categoryList})
   } catch (error) {
     console.log(error.message)
   }
@@ -84,7 +84,25 @@ const loadEditProduct = async (req, res) => {
 const doEditProduct = async (req, res) => {
   try {
     const productData = await Product.findById( req.body.productId );
-    
+    if (req.files){
+      const img = [];
+      for (let items of req.files);
+      img.push(items.filename);
+    }
+    await productData.updateOne( 
+      {
+        $set : {
+          name: req.body.name,
+          description: req.body.description,
+          brand: req.body.brand,
+          size: req.body.size,
+          image: img,
+          category: req.body.categoryId,
+          stock: req.body.stock,
+          price: req.body.price,
+        }
+      });
+      res.redirect('/admin/products')
   } catch (error) {
     console.log(error.message)
   }

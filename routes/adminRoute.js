@@ -3,27 +3,19 @@ const adminController = require("../controllers/adminController");
 const categoryController = require("../controllers/categoryController");
 const authMiddleware = require("../middleware/authMiddleware");
 const productController = require("../controllers/productController");
-const cookieParser = require("cookie-parser");
-const upload = require( "../middleware/multer" )
+const multer = require('multer');
+const upload = require( "../middleware/multer" );
 
 
 
 const express = require("express");
-const path = require("path");
 const adminRoute = express();
 
-adminRoute.set("view engine", "ejs");
-adminRoute.set("views", path.join(__dirname, "../views/admin"));
-
-const bodyParser = require("body-parser");
-adminRoute.use(bodyParser.json());
-adminRoute.use(bodyParser.urlencoded({ extended: true }));
-adminRoute.use(cookieParser());
-
-// Authentication-routes
+// Admin-Authentication-routes
 adminRoute.get("/login", authMiddleware.isAdminAlreadyLoggedIn ,authMiddleware.adminLoggedOut, authenticationController.loadAdminLogin);
 adminRoute.get("/logout",  authenticationController.doAdminLogout);
 adminRoute.post("/login", authMiddleware.adminLoggedOut, authenticationController.doAdminLogin);
+
 
 // Dashboard
 adminRoute.get("/dashboard", authMiddleware.adminAuth, adminController.loadAdminDashboard);
@@ -47,6 +39,7 @@ adminRoute.get( '/products', authMiddleware.adminAuth, productController.loadPro
 adminRoute.get( '/add-product', authMiddleware.adminAuth, productController.loadAddProducts);
 adminRoute.post( '/add-product', authMiddleware.adminAuth, upload.array('images',4), productController.doAddProducts);
 adminRoute.get( '/edit-product/:id', authMiddleware.adminAuth, productController.loadEditProduct );
+adminRoute.post( '/edit-product', authMiddleware.adminAuth, upload.array('images',4),productController.doEditProduct )
 adminRoute.patch( '/list-product/:id', authMiddleware.adminAuth, productController.doListProduct);
 adminRoute.patch( '/unlist-product/:id', authMiddleware.adminAuth, productController.doUnlistProduct );
 adminRoute.delete( '/delete-product/:id', authMiddleware.adminAuth, productController.doDeleteProducts);

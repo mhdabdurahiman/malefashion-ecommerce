@@ -132,7 +132,10 @@
                                         </div> <!-- col.// -->
                                     </div>
                                     <!-- Image preview div -->
-                                    <div id="imagePreview" class="row">
+                                    <div id="imagePreview1" class="row">
+                                    </div>
+                                    <!-- Image preview div 2 -->
+                                    <div id="imagePreview2" class="row">
                                     </div>
                                     <hr class="mb-4 mt-0">
                                     <div class="row">
@@ -150,25 +153,31 @@
             </section> <!-- content-main end// -->
 
             <script>
-                const output = document.getElementById("imagePreview");
+                const output1 = document.getElementById("imagePreview1");
+                const output2 = document.getElementById("imagePreview2");
                 const input = document.getElementById("inputImage");
                 imagesString = "<%=product.image%>"
-                let imagesArray = imagesString.split(',')
-                console.log(imagesArray);
+                let imagesArrayDB = imagesString.split(',')
+                let imagesArray = []
+
 
                 displayDbImages();
                 displayImages()
-
+                
                 function displayDbImages() {
                     let images = "";
-                    imagesArray.forEach((image, index) => {
+                    images = '<p>Images in DB</p>'
+                    imagesArrayDB.forEach((image, index) => {
                         images += `<div class="col-md-3 m-3 image" >
                             <img src="/images/product-images/${image}" alt="image">
                             <span onclick="deleteImage(${index})">&times;</span>
                         </div>`
                     })
-                    output.innerHTML = images;
+                    
+                    output1.innerHTML = images;
                 }
+
+
 
                 input.addEventListener("change", () => {
                     const files = input.files;
@@ -180,13 +189,14 @@
 
                 function displayImages() {
                     let fileImages = "";
+                    fileImages = '<p>Images selected now</p>'
                     imagesArray.forEach((image, index) => {
-                        images += `<div class="col-md-3 m-3 image" >
+                        fileImages += `<div class="col-md-3 m-3 image" >
                                 <img src="${URL.createObjectURL(image)}" alt="image">
                                 <span onclick="deleteImage(${index})">&times;</span>
                             </div>`
                     })
-                    output.innerHTML = images;
+                    output2.innerHTML = fileImages;
                 }
 
 
