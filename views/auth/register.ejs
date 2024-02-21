@@ -1,52 +1,125 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<title>Register</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		
-		<!-- MATERIAL DESIGN ICONIC FONT -->
-		<link rel="stylesheet" href="misc/register/fonts/material-design-iconic-font/css/material-design-iconic-font.min.css">
 
-		<!-- STYLE CSS -->
-		<link rel="stylesheet" href="misc/register/css/style.css">
-	</head>
+<head>
+    <meta charset="utf-8">
+    <title>Register</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-	<body>
+    <!-- MATERIAL DESIGN ICONIC FONT -->
+    <link rel="stylesheet" href="misc/register/fonts/material-design-iconic-font/css/material-design-iconic-font.min.css">
 
-		<div class="wrapper" style="background-image: url('misc/register/images/bg-registration-form-1.jpg');">
-			<div class="inner">
-				<div class="image-holder">
-					<img src="misc/register/images/registration-form-1.jpg" alt="">
-				</div>
-				<form action="" method="post">
-					<h3>Registration Form</h3>
-					<div class="form-wrapper">
-						<input type="text" name="fullname" placeholder="Fullname" class="form-control" required >
-                        <i class="zmdi zmdi-account"></i>
-					</div>
-					<div class="form-wrapper">
-						<input type="text" name="email" placeholder="Email Address" class="form-control" required >
-						<i class="zmdi zmdi-email"></i>
-					</div>
-                    <div class="form-wrapper">
-						<input type="number" name="mobile" placeholder="Mobile" class="form-control" required >
-                        <i class="zmdi zmdi-phone"></i>
-					</div>
-					<div class="form-wrapper">
-						<input type="password" name="password" placeholder="Password" class="form-control" required >
-						<i class="zmdi zmdi-lock"></i>
-					</div>
-					<div class="form-wrapper">
-						<input type="password" name="confirmPassword" placeholder="Confirm Password" class="form-control" required >
-						<i class="zmdi zmdi-lock"></i>
-					</div>
-					<button>Register
-						<i class="zmdi zmdi-arrow-right"></i>
-					</button>
-				</form>
-			</div>
-		</div>
-		
-	</body><!-- This templates was made by Colorlib (https://colorlib.com) -->
+    <!-- STYLE CSS -->
+    <link rel="stylesheet" href="misc/register/css/style.css">
+    <style>
+        .error-message {
+            color: red;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="wrapper" style="background-image: url('misc/register/images/bg-registration-form-1.jpg');">
+        <div class="inner">
+            <div class="image-holder">
+                <img src="misc/register/images/registration-form-1.jpg" alt="">
+            </div>
+            <form action="" method="post" id="registrationForm" onsubmit="return validateForm()">
+                <h3>Registration Form</h3>
+                <div class="form-wrapper">
+                    <input type="text" name="fullname" id="fullname" placeholder="Fullname" class="form-control">
+                    <i class="zmdi zmdi-account"></i>
+                    <div class="error-message" id="fullnameError"></div>
+                </div>
+                <div class="form-wrapper">
+                    <input type="text" name="email" id="email" placeholder="Email Address" class="form-control">
+                    <i class="zmdi zmdi-email"></i>
+                    <div class="error-message" id="emailError"></div>
+                </div>
+                <div class="form-wrapper">
+                    <input type="tel" name="mobile" id="mobile" placeholder="Mobile" class="form-control">
+                    <i class="zmdi zmdi-phone"></i>
+                    <div class="error-message" id="mobileError"></div>
+                </div>
+                <div class="form-wrapper">
+                    <input type="password" name="password" id="password" placeholder="Password" class="form-control">
+                    <i class="zmdi zmdi-lock"></i>
+                    <div class="error-message" id="passwordError"></div>
+                </div>
+                <div class="form-wrapper">
+                    <input type="password" name="confirmPassword" id="confirmPassword"
+                        placeholder="Confirm Password" class="form-control">
+                    <i class="zmdi zmdi-lock"></i>
+                    <div class="error-message" id="confirmPasswordError"></div>
+                </div>
+                <button>Register <i class="zmdi zmdi-arrow-right"></i></button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function validateForm() {
+            var fullname = document.getElementById("fullname").value;
+            var email = document.getElementById("email").value;
+            var mobile = document.getElementById("mobile").value;
+            var password = document.getElementById("password").value;
+            var confirmPassword = document.getElementById("confirmPassword").value;
+
+            var fullnameError = document.getElementById("fullnameError");
+            var emailError = document.getElementById("emailError");
+            var mobileError = document.getElementById("mobileError");
+            var passwordError = document.getElementById("passwordError");
+            var confirmPasswordError = document.getElementById("confirmPasswordError");
+
+            var isValid = true;
+
+            // Validate Fullname
+            if (!/^[A-Za-z ]+$/.test(fullname)) {
+                fullnameError.innerHTML = "Only alphabets and spaces are allowed";
+                isValid = false;
+            } else {
+                fullnameError.innerHTML = "";
+            }
+
+            // Validate Email
+            if (!/\S+@\S+\.\S+/.test(email)) {
+                emailError.innerHTML = "Invalid email address";
+                isValid = false;
+            } else {
+                emailError.innerHTML = "";
+            }
+
+            // Validate Mobile
+            if (!/^[0-9]{10}$/.test(mobile)) {
+                mobileError.innerHTML = "Please enter a 10-digit phone number";
+                isValid = false;
+            } else {
+                mobileError.innerHTML = "";
+            }
+
+            // Validate Password
+            if (!/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+])[a-zA-Z0-9!@#$%^&*()_+]{8,}$/.test(password)) {
+                passwordError.innerHTML = "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character";
+                isValid = false;
+            } else {
+                passwordError.innerHTML = "";
+            }
+
+            // Validate Confirm Password
+            if (password !== confirmPassword) {
+                confirmPasswordError.innerHTML = "Passwords do not match";
+                isValid = false;
+            } else {
+                confirmPasswordError.innerHTML = "";
+            }
+
+            return isValid;
+        }
+    </script>
+
+</body>
+<!-- This template was made by Colorlib (https://colorlib.com) -->
+
 </html>

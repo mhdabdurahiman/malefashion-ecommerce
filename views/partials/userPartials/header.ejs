@@ -11,7 +11,7 @@
 
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap"
-    rel="stylesheet">
+        rel="stylesheet">
 
     <!-- Css Styles -->
     <link rel="stylesheet" href="/user/css/bootstrap.min.css" type="text/css">
@@ -23,6 +23,7 @@
     <link rel="stylesheet" href="/user/css/slicknav.min.css" type="text/css">
     <link rel="stylesheet" href="/user/css/style.css" type="text/css">
 </head>
+
 <body>
     <!-- Page Preloder -->
     <div id="preloder">
@@ -34,16 +35,9 @@
     <div class="offcanvas-menu-wrapper">
         <div class="offcanvas__option">
             <div class="offcanvas__links">
-                <a href="/login">Sign in</a>
-                <a href="#">FAQs</a>
-            </div>
-            <div class="offcanvas__top__hover">
-                <span>Usd <i class="arrow_carrot-down"></i></span>
-                <ul>
-                    <li>USD</li>
-                    <li>EUR</li>
-                    <li>USD</li>
-                </ul>
+                <% if (isAuthenticated) { %>
+                    <a href="/login">Sign in</a>
+                    <% } %>
             </div>
         </div>
         <div class="offcanvas__nav__option">
@@ -54,7 +48,7 @@
         </div>
         <div id="mobile-menu-wrap"></div>
         <div class="offcanvas__text">
-            <p>Free shipping, 30-day return or refund guarantee.</p>
+            <p></p>
         </div>
     </div>
     <!-- Offcanvas Menu End -->
@@ -72,16 +66,11 @@
                     <div class="col-lg-6 col-md-5">
                         <div class="header__top__right">
                             <div class="header__top__links">
-                                <a href="/login">Sign in</a>
-                                <a href="#">FAQs</a>
-                            </div>
-                            <div class="header__top__hover">
-                                <span>Usd <i class="arrow_carrot-down"></i></span>
-                                <ul>
-                                    <li>USD</li>
-                                    <li>EUR</li>
-                                    <li>USD</li>
-                                </ul>
+                                <% if (isAuthenticated) { %>
+                                    <a href="/logout">Logout</a>
+                                <% } else { %>
+                                    <a href="/login">Sign in</a>
+                                <% } %>
                             </div>
                         </div>
                     </div>
@@ -115,7 +104,7 @@
                     </nav>
                 </div>
                 <!-- <div class="col-lg-3 col-md-3"> -->
-                    <!-- <div class="header__nav__option">
+                <!-- <div class="header__nav__option">
                         <a href="#" class="search-switch"><img src="/user/img/icon/search.png" alt=""></a>
                         <a href="#"><img src="/user/img/icon/heart.png" alt=""></a>
                             <a class="profile-dropdown" href="#"><i class="fa fa-user" style="color: black;"></i></a>
@@ -124,22 +113,22 @@
                                 
                             </div>
                     </div> -->
-                    
+
                 <!-- </div> -->
-                <div >
+                <div>
                     <nav class="header__menu mobile-menu">
                         <ul>
                             <li><a href="#"><img src="/user/img/icon/heart.png" alt=""></a></li>
-                            <li><a href="#"><i class="fa fa-user" style="color: black;"></i></a>
+                            <% if (isAuthenticated) { %>
+                                <li><a href="#"><i class="fa fa-user" style="color: black;"></i></a>
+                            <% } %>
                                 <ul class="dropdown">
                                     <li><a href="/user-profile">Profile</a></li>
                                     <li><a href="/logout">Logout</a></li>
-                                    <!-- <li><a href="./cart">Shopping Cart</a></li>
-                                    <li><a href="./checkout">Check Out</a></li>
-                                    <li><a href="./blog-details">Blog Details</a></li> -->
+                                    <li><a href="./cart">Shopping Cart</a></li>
                                 </ul>
                             </li>
-                            
+
                         </ul>
                     </nav>
                 </div>

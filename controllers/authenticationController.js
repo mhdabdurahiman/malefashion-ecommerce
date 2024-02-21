@@ -120,6 +120,7 @@ const securePassword = async (password) => {
         {expiresIn: "7200s",}
       );
       req.session.token = token;
+      req.session.userId = userData._id;
       res.redirect("/");
     } catch (error) {
       console.log(error.message);
@@ -132,6 +133,7 @@ const securePassword = async (password) => {
   const doUserLogout = async (req, res) => {
     try {
       req.session.token = null;
+      req.session.userId = null;
       res.redirect ('/login')
     } catch (error) {
       console.log(error.message);

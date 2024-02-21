@@ -7,7 +7,8 @@ const session = require('express-session');
 const morgan = require('morgan');
 const flash = require('connect-flash');
 const bodyParser = require("body-parser");
-const cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser');
+const localsMiddleware = require('./middleware/localsMiddleware');
 
 // Requiring route files
 const userRoute = require('./routes/userRoute');
@@ -46,9 +47,12 @@ app.use( session ({
 // Configuring flash middleware
 app.use(flash());
 
+//locals middleware
+app.use(localsMiddleware)
+
 // Routes
 app.use(authRoute);
-app.use(shopRoute)
+app.use(shopRoute);
 app.use('/user',userRoute);
 app.use('/admin',adminRoute);
 app.use(shopRoute);
