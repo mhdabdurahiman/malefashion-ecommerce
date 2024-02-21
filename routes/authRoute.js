@@ -5,7 +5,7 @@ const express = require("express");
 const authRoute = express();
 
 // User-Authentication-routes
-authRoute.get("/login", authMiddleware.isAlreadyLoggedIn ,authMiddleware.userLoggedOut, authenticationController.loadUserLogin);
+authRoute.get("/login", authMiddleware.isAlreadyLoggedIn , authMiddleware.userLoggedOut, authenticationController.loadUserLogin);
 authRoute.get("/register", authMiddleware.userLoggedOut, authenticationController.loadUserRegister);
 authRoute.post("/register", authMiddleware.userLoggedOut, authenticationController.enterUserDetails);
 authRoute.post("/login", authMiddleware.userLoggedOut, authenticationController.doUserLogin);

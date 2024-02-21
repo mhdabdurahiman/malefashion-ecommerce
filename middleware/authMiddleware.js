@@ -102,7 +102,7 @@ module.exports = {
   },
 
   isAlreadyLoggedIn: (req, res, next) => {
-    if (req.session && req.session.token) {
+    if (req.session && req.session.userId) {
       res.redirect('/');
     } else {
       next();
@@ -110,7 +110,7 @@ module.exports = {
   },
 
   isAdminAlreadyLoggedIn: (req, res, next) => {
-    if (req.session && req.session.token) {
+    if (req.session && req.session.adminId) {
       res.redirect('/admin/dashboard');
     } else {
       next();

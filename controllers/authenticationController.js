@@ -173,6 +173,7 @@ const doAdminLogin = async (req, res) => {
                 );
 
                 req.session.token = token;
+                req.session.adminId = adminData._id;
                 res.redirect('/admin/dashboard');
             } else {
                 res.render('auth/adminLogin', {
@@ -193,6 +194,7 @@ const doAdminLogin = async (req, res) => {
 const doAdminLogout = async (req, res) => {
     try {
         req.session.token = null;
+        req.session.adminId = null;
         res.redirect("/admin/login");
       } catch (error) {
         console.log(error.message);
