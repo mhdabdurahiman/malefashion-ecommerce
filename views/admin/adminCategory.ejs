@@ -1,5 +1,5 @@
 <%- include('../partials/adminPartials/adminHead') -%> <%- include('../partials/adminPartials/adminSideNavbar') -%> <%-
-      include('../partials/adminPartials/adminNavbarHead') -%>
+    include('../partials/adminPartials/adminNavbarHead') -%>
 
       <section class="content-main">
         <div class="content-header">
@@ -19,7 +19,7 @@
           <div class="card-body">
             <div class="row">
               <div class="col-md-3">
-                <form action="/admin/add-category" method="POST" onsubmit="return false;">
+                <form action="/admin/add-category" id="categoryForm" method="POST" onsubmit="return false;">
                   <div class="mb-4">
                     <label for="categoryName" class="form-label">Name</label>
                     <input type="text" id="categoryName" name="categoryName" placeholder="Type here"
@@ -130,6 +130,8 @@
 
       <script>
 
+
+
         function bindEventHandlers() {
 
 
@@ -206,55 +208,94 @@
 
         $(document).on("submit", "form", function (event) {
           event.preventDefault();
+          const categoryName = document.getElementById('categoryName').value.trim();
+          const categoryDescription = document.getElementById('categoryDescription').value.trim();
 
-          console.log("Form submitted");
+          const alertContainer = document.getElementById('alertContainer');
+          const myAlert = document.getElementById('myAlert');
+          const categoryForm = document.getElementById('categoryForm');
 
-          var formData = {
-            categoryName: $("#categoryName").val(),
-            categoryDescription: $("#categoryDescription").val(),
-          };
+          const regexName = /^[a-zA-Z\s-]+$/;
+          const regexDescription = /^[a-zA-Z0-9\s,]+$/;
 
-          $.ajax({
-            type: "POST",
-            url: "/admin/add-category",
-            data: JSON.stringify(formData),
-            contentType: "application/json",
-          })
-            .done(function (response) {
-              var alertContainer = $("#alertContainer");
-              var myAlert = $("#myAlert");
+      
+          if (!categoryName || !categoryDescription) {
+            alertContainer.classList.replace('d-none', 'd-block');
+            myAlert.classList.add('alert');
+            myAlert.classList.add('alert-danger');
+            myAlert.innerHTML = '<p>Input fileds cannot be empty</p>';
+            setTimeout(() => {
+              alertContainer.classList.replace('d-block', 'd-none');
+              myAlert.classList.remove('alert');
+              myAlert.classList.remove('alert-danger');
+              myAlert.innerHTML = '';
+            }, 3000);
+          }
 
-              if (response.success) {
-                alertContainer.removeClass("d-none").addClass("d-block");
-                myAlert.attr("class", "alert alert-success");
-                $(`<p>${response.message}</p>`).appendTo(myAlert);
-                setTimeout(() => {
-                  alertContainer.removeClass("d-block").addClass("d-none");
-                }, 3000)
+          else if (!regexName.test(categoryName) || !regexDescription.test(categoryDescription)) {
+            alertContainer.classList.replace('d-none', 'd-block');
+            myAlert.classList.add('alert');
+            myAlert.classList.add('alert-danger');
+            myAlert.innerHTML = '<p>Only accepts alphabets</p>';
+            setTimeout(() => {
+              alertContainer.classList.replace('d-block', 'd-none');
+              myAlert.classList.remove('alert');
+              myAlert.classList.remove('alert-danger');
+              myAlert.innerHTML = '';
+            }, 3000);
+          }
+          else {
 
+            var formData = {
+              categoryName: categoryName,
+              categoryDescription: categoryDescription,
+            };
 
-                // Reload the dynamically loaded content
-                $.get("/admin/category", function (data) {
-                  $(".card-body").html($(data).find(".card-body").html());
-                  bindEventHandlers(); // Rebind event handlers after content is loaded
-
-
-
-                });
-
-              } else {
-                alertContainer.removeClass("d-none").addClass("d-block");
-                myAlert.attr("class", "alert alert-danger");
-                $(`<p>${response.message}</p>`).appendTo(myAlert);
-                setTimeout(() => {
-                  alertContainer.removeClass("d-block").addClass("d-none");
-                }, 3000)
-              }
-
+            $.ajax({
+              type: "POST",
+              url: "/admin/add-category",
+              data: JSON.stringify(formData),
+              contentType: "application/json",
             })
-            .fail(function (err) {
-              console.error(err);
-            });
+              .done(function (response) {
+                var alertContainer = $("#alertContainer");
+                var myAlert = $("#myAlert");
+
+                if (response.success) {
+                  alertContainer.removeClass("d-none").addClass("d-block");
+                  myAlert.attr("class", "alert alert-success");
+                  $(`<p>${response.message}</p>`).appendTo(myAlert);
+                  setTimeout(() => {
+                    alertContainer.removeClass("d-block").addClass("d-none");
+                  }, 3000)
+
+
+                  // Reload the dynamically loaded content
+                  $.get("/admin/category", function (data) {
+                    $(".card-body").html($(data).find(".card-body").html());
+                    bindEventHandlers(); // Rebind event handlers after content is loaded
+
+
+
+                  });
+
+                } else {
+                  alertContainer.removeClass("d-none").addClass("d-block");
+                  myAlert.attr("class", "alert alert-danger");
+                  $(`<p>${response.message}</p>`).appendTo(myAlert);
+                  setTimeout(() => {
+                    alertContainer.removeClass("d-block").addClass("d-none");
+                  }, 3000)
+                }
+
+              })
+              .fail(function (err) {
+                console.error(err);
+              });
+
+          }
+
+
         });
 
         // Initial binding
