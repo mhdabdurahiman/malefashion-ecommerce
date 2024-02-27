@@ -1,109 +1,139 @@
 const Product = require("../models/productModel");
 const User = require("../models/userModel");
 const Cart = require("../models/cartModel");
-const cartHelper = require("../helpers/cartHelper")
+const cartHelper = require("../helpers/cartHelper");
 
 const loadCart = async (req, res) => {
   try {
     const userId = req.session.userId;
-    console.log('userid',userId)
+    console.log("userid", userId);
     const cartData = await Cart.findOne({ userId: userId }).populate(
       "items.productId"
     );
     const totalCartPrice = await cartHelper.totalCartPrice(userId);
-    console.log('totalprice:',totalCartPrice)
-    console.log("cartData:",cartData);
+    console.log("totalprice:", totalCartPrice);
+    console.log("cartData:", cartData);
     res.render("shop/shopping-cart", {
       cartData: cartData,
-      totalCartPrice: totalCartPrice
+      totalCartPrice: totalCartPrice,
     });
   } catch (error) {
     console.log(error.message);
   }
 };
 
+
 const addToCart = async (req, res) => {
-  if (req.session.userId){
+  if (req.session.userId) {
     try {
       const productId = req.body.productId;
-      console.log(productId);
       const userId = req.session.userId;
-      console.log(userId)
-      const cartData = await Cart.findOne({ userId: userId })
-      console.log('cartdata:',cartData)
+      const cartData = await Cart.findOne({ userId: userId });
       const product = await Product.findOne({ _id: productId }, { stock: 1 });
+
+      if (!product) {
+        return res.status(404).json({
+          error: true,
+          message: "Product not found",
+        });
+      }
+
       const stockQuantity = product.stock;
-      console.log("stock quantity:", stockQuantity)
-      if (stockQuantity > 0) {
-        if (cartData) {
-          //if product exist in cart
-          const productExist = cartData.items.find(
-            item => item.productId == productId
-          );
-          console.log("productexist",productExist)
-  
+
+      if (stockQuantity <= 0) {
+        return res.status(404).json({
+          error: true,
+          outOfStock: true,
+          message: "Out of stock",
+        });
+      }
+
+      if (cartData) {
+        // If product exists in cart
+        const productExist = cartData.items.find(
+          (item) => item.productId == productId
+        );
+
+        // Calculate the available stock
+        const availableStock = productExist
+          ? stockQuantity - productExist.quantity
+          : stockQuantity;
+
+        if (availableStock > 0) {
+          let newQuantity = 1;
+
           if (productExist) {
-            const availableStock = stockQuantity - productExist.quantity;
-            if (availableStock > 0) {
-              // quantity increased
-              const cartItems = await Cart.updateOne(
-                { userId: userId, "items.productId": productId },
-                { $inc: { "items.$.quantity": 1 } }
-              );
-              res.status(200).json({ success: true, message: "Added to cart" });
-            } else {
-              const cartItem = await Cart.updateOne(
-                { userId: userId },
-                { $push: { items: { productId: productId } } }
-              );
-              console.log('Added to cart')
-              res.status(200).json({
-                success: true,
-                message: "Added to cart",
-                newItem: true,
+            // Quantity increased
+            newQuantity = productExist.quantity + 1;
+
+            if (newQuantity > stockQuantity) {
+              return res.status(400).json({
+                error: true,
+                message: "Exceeds available stock",
               });
             }
-          } else {
+
             const cartItems = await Cart.updateOne(
-              { userId: userId},
-              { $push : 
-                { items: {productId: productId} } 
-              }
+              { userId: userId, "items.productId": productId },
+              { $set: { "items.$.quantity": newQuantity } }
             );
-            res.status(200).json({ 
-              success: true,
-              message: 'Added to cart',
-              newItem: true,
-            })
+
+            return res
+              .status(200)
+              .json({ success: true, message: "Quantity increased in cart" });
+          } else {
+            // Product not in cart, check if available stock allows adding
+            if (availableStock > 0) {
+              const cartItems = await Cart.updateOne(
+                { userId: userId },
+                {
+                  $push: {
+                    items: { productId: productId, quantity: 1 },
+                  },
+                }
+              );
+              return res
+                .status(200)
+                .json({ success: true, message: "Added to cart" });
+            } else {
+              return res.status(400).json({
+                error: true,
+                message: "Exceeds available stock",
+              });
+            }
           }
-        }
-        //if cart doesn't exist
-        else {
-          const newCart = new Cart({
-            userId: userId,
-            items: [{ productId: productId }],
-          });
-          await newCart.save();
-          res.status(200).json({
-            success: true,
-            message: "Added to cart",
+        } else {
+          // Handle the case where product already exists in cart with maximum quantity
+          return res.status(400).json({
+            error: true,
+            message: "Exceeds available stock",
           });
         }
-        // If product stock is empty
       } else {
-        res.status(404).json({
-          error: true,
-          message: "Out of stock",
+        // If cart doesn't exist
+        const newCart = new Cart({
+          userId: userId,
+          items: [{ productId: productId, quantity: 1 }],
+        });
+        await newCart.save();
+        return res.status(200).json({
+          success: true,
+          message: "Added to cart",
         });
       }
     } catch (error) {
       console.log(error.message);
+      return res.status(500).json({
+        error: true,
+        message: "Internal Server Error",
+      });
     }
-  }else {
-    res.setHeader('Content-Type', 'application/json');
-    res.status(401).json({ authenticated: false })
+  } else {
+    res.setHeader("Content-Type", "application/json");
+    return res.status(401).json({ authenticated: false });
   }
 };
+
 
 const decProductQuantity = async (req, res) => {
   try {
@@ -111,37 +141,41 @@ const decProductQuantity = async (req, res) => {
     const productId = req.body.productId;
     const productQtyData = await Cart.findOne(
       { userId: userId, "items.productId": productId },
-      { 'items.quantity.$':1}
-    )
-    const productQty = productQtyData.items[0].quantity
-    console.log('itemQuantity:',productQty);
-    if (productQty>0){
+      { "items.quantity.$": 1 }
+    );
+    const productQty = productQtyData.items[0].quantity;
+    console.log("itemQuantity:", productQty);
+    if (productQty > 1) {
       const cartData = await Cart.updateOne(
         { userId: userId, "items.productId": productId },
-        { $inc: { "items.$.quantity": -1 }}
+        { $inc: { "items.$.quantity": -1 } }
       );
+      res.status(200).json({ success: true });
+    } else {
+      res.json({ isQuantityOne: true });
     }
-    res.status(200).json({success: true})
   } catch (error) {
-    console.log(error.message)
+    console.log(error.message);
   }
-}
+};
 
 const removeCartItem = async (req, res) => {
   try {
     const itemId = req.body.itemId;
     const userId = req.session.userId;
-    const cartData = await Cart.updateOne({ userId: userId, 'items._id': itemId},
-      {$pull : { items: {_id : itemId}}});
-      res.status(200).json({success: true})
+    const cartData = await Cart.updateOne(
+      { userId: userId, "items._id": itemId },
+      { $pull: { items: { _id: itemId } } }
+    );
+    res.status(200).json({ success: true });
   } catch (error) {
     console.log(error.message);
   }
-}
+};
 
 module.exports = {
   loadCart,
   addToCart,
   decProductQuantity,
-  removeCartItem
+  removeCartItem,
 };

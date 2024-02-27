@@ -1,6 +1,6 @@
 <%- include('../partials/userPartials/header') -%>
-    
-    
+
+
     <!-- Breadcrumb Section Begin -->
     <section class="breadcrumb-option">
         <div class="container">
@@ -23,7 +23,7 @@
     <!-- Shopping Cart Section Begin -->
     <section id="shopping-cart" class="shopping-cart spad">
         <div class="container">
-            <% if (cartData && cartData.items.length > 0) { %>
+            <% if (cartData && cartData.items.length> 0) { %>
                 <div class="row">
                     <div class="col-lg-8">
                         <div class="shopping__cart__table">
@@ -38,37 +38,55 @@
                                 </thead>
                                 <tbody>
                                     <% for( let item of cartData.items ) { %>
-                                        <% var totalPrice = item.productId.price * item.quantity %>
-                                        <% if( item.quantity > item.productId.stock){var quantity = item.productId.stock} else {var quantity = item.quantity}%>
-                                        <tr>
-                                            <td class="product__cart__item">
-                                                <div class="product__cart__item__pic">
-                                                    <img src="/images/product-images/<%= item.productId.image[0] %>" height="90px" width="90px" alt="">
-                                                </div>
-                                                <div class="product__cart__item__text">
-                                                    <h6><%= item.productId.name %></h6>
-                                                    <h5>₹<%= item.productId.price %></h5>
-                                                </div>
-                                            </td>
-                                            <% if( item.productId.stock > 0 ){ %>
-                                            <td class="quantity__item">
-                                                <div class="quantity">
-                                                    <div class="pro-qty-2">
-                                                        <span id="dec-<%= item.productId._id %>" onclick="decreaseQuantity('<%= item.productId._id %>')" class="fa fa-angle-left dec qtybtn"></span>
-                                                        <input type="text" value="<%= quantity %>">
-                                                        <span id="dec-<%= item.productId._id %>" onclick="increaseQuantity('<%= item.productId._id %>')" class="fa fa-angle-right inc qtybtn"></span>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="cart__price">₹ <%= totalPrice %></td>
-                                            <td class="cart__close"><i onclick="removeCartItem('<%= item._id %>')" style="cursor: pointer;" class="fa fa-close"></i></td>
-                                            <% } else { %>
-                                                <td id="stockOut"> <label onload="removeCartItem('<%= item._id %>')"  class="text-danger fw-bold" for="">Out of Stock</label> </td>
-                                                <td></td>
-                                                <td class="cart__close"><i onclick="removeCartItem('<%= item._id %>')" style="cursor: pointer;" class="fa fa-close"></i></td>
-                                            <% } %>
-                                        </tr>
-                                    <% } %>
+                                        <% var totalPrice=item.productId.price * item.quantity %>
+                                            <% if( item.quantity> item.productId.stock){var quantity =
+                                                item.productId.stock} else {var quantity = item.quantity}%>
+                                                <tr>
+                                                    <td class="product__cart__item">
+                                                        <div class="product__cart__item__pic">
+                                                            <img src="/images/product-images/<%= item.productId.image[0] %>"
+                                                                height="90px" width="90px" alt="">
+                                                        </div>
+                                                        <div class="product__cart__item__text">
+                                                            <h6>
+                                                                <%= item.productId.name %>
+                                                            </h6>
+                                                            <h5>₹<%= item.productId.price %>
+                                                            </h5>
+                                                        </div>
+                                                    </td>
+                                                    <% if( item.productId.stock> 0 ){ %>
+                                                        <td class="quantity__item">
+                                                            <div class="quantity">
+                                                                <div class="pro-qty-2">
+                                                                    <span id="dec-<%= item.productId._id %>"
+                                                                        onclick="decreaseQuantity('<%= item.productId._id %>')"
+                                                                        class="fa fa-angle-left dec qtybtn"></span>
+                                                                    <input type="text" minlength="1" value="<%= quantity %>">
+                                                                    <span id="dec-<%= item.productId._id %>"
+                                                                        onclick="increaseQuantity('<%= item.productId._id %>')"
+                                                                        class="fa fa-angle-right inc qtybtn"></span>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td class="cart__price">₹ <%= totalPrice %>
+                                                        </td>
+                                                        <td class="cart__close"><i
+                                                                onclick="removeCartItem('<%= item._id %>')"
+                                                                style="cursor: pointer;" class="fa fa-close"></i></td>
+                                                        <% } else { %>
+                                                            <td id="stockOut"> <label
+                                                                    onload="removeCartItem('<%= item._id %>')"
+                                                                    class="text-danger fw-bold" for="">Out of
+                                                                    Stock</label> </td>
+                                                            <td></td>
+                                                            <td class="cart__close"><i
+                                                                    onclick="removeCartItem('<%= item._id %>')"
+                                                                    style="cursor: pointer;" class="fa fa-close"></i>
+                                                            </td>
+                                                            <% } %>
+                                                </tr>
+                                                <% } %>
                                 </tbody>
                             </table>
                         </div>
@@ -76,11 +94,6 @@
                             <div class="col-lg-6 col-md-6 col-sm-6">
                                 <div class="continue__btn">
                                     <a href="/shop">Continue Shopping</a>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 col-md-6 col-sm-6">
-                                <div class="continue__btn update__btn">
-                                    <a href="#"> Update cart</a>
                                 </div>
                             </div>
                         </div>
@@ -103,78 +116,111 @@
                         </div>
                     </div>
                 </div>
-            <% } else { %>
-                <div class="col-12 mt-5">
-                    <h1 class="text-center"><b>Cart is empty...</b></h1>
-                    <br>
-                    <h3 class="text-center shop-now" ><a onmouseover="this.style.color='blue'" onmouseout="this.style.color='black'" href="/shop">Shop now</a></h3>
-                </div>
-            <% } %>
+                <% } else { %>
+                    <div class="col-12 mt-5">
+                        <h1 class="text-center"><b>Cart is empty...</b></h1>
+                        <br>
+                        <h3 class="text-center shop-now"><a onmouseover="this.style.color='blue'"
+                                onmouseout="this.style.color='black'" href="/shop">Shop now</a></h3>
+                    </div>
+                    <% } %>
         </div>
     </section>
     <!-- Shopping Cart Section End -->
 
     <%- include('../partials/userPartials/footer') -%>
 
-    <script>
-        async function decreaseQuantity(productId){
-            try{
-                const response = await fetch('/decrease-product-quantity', {
-                    method: 'POST',
-                    headers:{
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ productId: productId })
-                })
-                .then(response => response.json())
-                .then(json => {
-                    if(json.success == true){
-                        $("#shopping-cart").load(location.href + " #shopping-cart");
-                    }
-                })
+        <script>
+            async function decreaseQuantity(productId) {
+                try {
+                    const response = await fetch('/decrease-product-quantity', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ productId: productId })
+                    })
+                        .then(response => response.json())
+                        .then(json => {
+                            if (json.success == true) {
+                                $("#shopping-cart").load(location.href + " #shopping-cart");
+                            } else if(json.isQuantityOne == true) {
+                                Swal.fire({
+                                title: "Quantity should be atleast one",
+                                timer: 3000,
+                                confirmButtonColor: '#000000'
+                            });
+                            }
+                        })
+                }
+                catch (error) {
+                    console.log(error.message)
+                }
             }
-            catch(error){
-                console.log(error.message)
-            }
-        }
 
-        async function increaseQuantity(productId){
-            try {
-                const response = await fetch('/add-to-cart', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ productId: productId })
-                })
-                .then(response => response.json())
-                .then(json => {
-                    if(json.success == true){
-                        $("#shopping-cart").load(location.href + " #shopping-cart");
-                    }
-                })
-            } catch (error) {
-                console.log(error.message)
+            async function increaseQuantity(productId) {
+                try {
+                    const response = await fetch('/add-to-cart', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ productId: productId })
+                    })
+                        .then(response => response.json())
+                        .then(json => {
+                            if (json.error == true) {
+                                Swal.fire({
+                                title: json.message,
+                                timer: 3000,
+                                confirmButtonColor: '#000000'
+                            });
+                            } else if (json.success == true) {
+                                $("#shopping-cart").load(location.href + " #shopping-cart");
+                            }
+                            })
+                        
+                } catch (error) {
+                    console.log(error.message)
+                }
             }
-        }
 
-        async function removeCartItem(itemId){
-            try {
-                const response = await fetch('/remove-cart-item', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ itemId: itemId })
-                })
-                .then(response => response.json())
-                .then(json => {
-                    if(json.success == true){
-                        $("#shopping-cart").load(location.href + " #shopping-cart");
+            async function removeCartItem(itemId) {
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "You won't be able to revert this!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#000000",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, delete it!"
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        try {
+                            const response = await fetch('/remove-cart-item', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ itemId: itemId })
+                            })
+                                .then(response => response.json())
+                                .then(json => {
+                                    if (json.success == true) {
+                                        Swal.fire({
+                                            title: "Deleted!",
+                                            text: "Your file has been deleted.",
+                                            icon: "success"
+                                        });
+                                        $("#shopping-cart").load(location.href + " #shopping-cart");
+                                    }
+                                })
+                        } catch (error) {
+                            error.message;
+                        }
+
                     }
-                })
-            } catch (error) {
-                error.message;
+                });
+
             }
-        }
-    </script>
+        </script>
