@@ -1,0 +1,465 @@
+<%- include('../partials/userPartials/header') -%>
+    <style>
+        .address-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .address-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border: 1px solid #ddd;
+            padding: 10px;
+            width: 100%;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .address-details {
+            flex-grow: 1;
+        }
+
+        .address-actions {
+            margin-left: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+    </style>
+    <section id="user-profile" class="user-profile spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 p-4 ">
+                    <!-- Section Buttons -->
+                    <ul class="nav flex-column nav-pills">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="userDetailsTab" data-toggle="pill" href="#userDetails">User
+                                Details</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="ordersTab" data-toggle="pill" href="#orders">Orders</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="ordersTab" data-toggle="pill" href="#addressList">Address</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="col-md-9 p-4">
+                    <!-- Tab Content -->
+                    <div class="tab-content">
+                        <!-- User Details Tab -->
+                        <div class="tab-pane fade show active" id="userDetails">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">User Details</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Name:</strong>
+                                        <%= userDetails.fullname %>
+                                    </p>
+                                    <p><strong>Email:</strong>
+                                        <%= userDetails.email %>
+                                    </p>
+                                    <p><strong>Phone:</strong>
+                                        <%= userDetails.mobile %>
+                                    </p>
+
+                                    <button class="btn site-btn" data-toggle="modal" data-target="#editUserModal">Edit
+                                        Details</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Orders Tab -->
+                        <div class="tab-pane fade" id="orders">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Order History</h5>
+                                </div>
+                                <div class="card-body">
+                                    <!-- Display user orders here -->
+                                    <ul>
+                                        <li>Order #1</li>
+                                        <li>Order #2</li>
+                                        <!-- Add more order details as needed -->
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Address Tab -->
+                        <div class="tab-pane fade" id="addressList">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Delivery Address</h5>
+                                </div>
+                                <div class="p-2 ">
+                                    <button class="btn site-btn float-right" data-toggle="modal"
+                                        data-target="#addAddressModal">Add address</button>
+                                </div>
+                                <div class="card-body">
+                                    <div class="address-list">
+                                        <% if(userDetails.address.length> 0) { %>
+                                            <% userDetails.address.forEach(address=> { %>
+                                                <div class="address-item">
+                                                    <div class="address-details">
+                                                        <p><strong>Full Name:</strong>
+                                                            <%= address.fullname %>
+                                                        </p>
+                                                        <p><strong>Mobile:</strong>
+                                                            <%= address.mobile %>
+                                                        </p>
+                                                        <p><strong>Landmark:</strong>
+                                                            <%= address.landmark %>
+                                                        </p>
+                                                        <p><strong>City:</strong>
+                                                            <%= address.city %>
+                                                        </p>
+                                                        <p><strong>Pincode:</strong>
+                                                            <%= address.pincode %>
+                                                        </p>
+                                                        <p><strong>District:</strong>
+                                                            <%= address.district %>
+                                                        </p>
+                                                        <p><strong>State:</strong>
+                                                            <%= address.state %>
+                                                        </p>
+                                                    </div>
+
+                                                    <div class="address-actions">
+                                                        <button id="addressEdit" class="btn btn-outline-primary"
+                                                            data-target="#editAddressModal"
+                                                            data-address-id="<%= address._id %>"
+                                                            data-fullname="<%= address.fullname %>"
+                                                            data-mobile="<%= address.mobile %>"
+                                                            data-landmark="<%= address.landmark %>"
+                                                            data-city="<%= address.city %>"
+                                                            data-pincode="<%= address.pincode %>"
+                                                            data-district="<%= address.district %>"
+                                                            data-state="<%= address.state %>">Edit</button>
+                                                        <button id="addressDelete" class="btn btn-outline-danger"
+                                                            onclick="deleteAddress('<%= address._id %>')">Delete</button>
+                                                    </div>
+                                                </div>
+                                                <% }) %>
+                                                    <% } else { %>
+                                                        <h3>Address is empty</h3>
+                                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Edit User Details Modal -->
+    <div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editUserModalLabel">Edit User Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Add form elements for editing user details -->
+                    <form>
+                        <div class="form-group">
+                            <label for="editName">Name</label>
+                            <input type="text" class="form-control" id="editName" placeholder="Enter your name">
+                        </div>
+                        <div class="form-group">
+                            <label for="editEmail">Email</label>
+                            <input type="email" class="form-control" id="editEmail" placeholder="Enter your email">
+                        </div>
+                        <!-- Add more form fields for other details -->
+                        <button type="submit" class="btn site-btn">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Address Modal -->
+    <div class="modal fade" id="addAddressModal" tabindex="-1" role="dialog" aria-labelledby="addAddressModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addAddressModalLabel">Add new address</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form elements for adding new address -->
+                    <form id="addAddressForm">
+                        <div class="form-group">
+                            <label for="fullname">Full name</label>
+                            <input type="text" class="form-control" name="fullname" id="fullname"
+                                placeholder="Enter your name">
+                        </div>
+                        <div class="form-group">
+                            <label for="mobile">Mobile</label>
+                            <input type="number" class="form-control" name="mobile" id="mobile"
+                                placeholder="Enter your mobile">
+                        </div>
+                        <div class="form-group">
+                            <label for="landmark">Landmark</label>
+                            <input type="text" class="form-control" name="landmark" id="landmark"
+                                placeholder="Enter your landmark">
+                        </div>
+                        <div class="form-group">
+                            <label for="city">City</label>
+                            <input type="text" class="form-control" name="city" id="city" placeholder="Enter your city">
+                        </div>
+                        <div class="form-group">
+                            <label for="pincode">Pincode</label>
+                            <input type="number" class="form-control" name="pincode" id="pincode"
+                                placeholder="Enter your pincode">
+                        </div>
+                        <div class="form-group">
+                            <label for="district">District</label>
+                            <input type="text" class="form-control" name="district" id="district"
+                                placeholder="Enter your district">
+                        </div>
+                        <div class="form-group">
+                            <label for="state">State</label>
+                            <input type="text" class="form-control" name="state" id="state"
+                                placeholder="Enter your state">
+                        </div>
+                        <button type="submit" class="btn site-btn">Add new address</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Address Modal -->
+    <div class="modal fade" id="editAddressModal" tabindex="-1" role="dialog" aria-labelledby="editAddressModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editAddressModalLabel">Add new address</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form elements for adding new address -->
+                    <form id="editAddressForm">
+                        <input type="hidden" id="editAddressId" name="addressId">
+                        <div class="form-group">
+                            <label for="editFullname">Full name</label>
+                            <input type="text" class="form-control" name="fullname" id="editFullname"
+                                placeholder="Enter your name">
+                        </div>
+                        <div class="form-group">
+                            <label for="editMobile">Mobile</label>
+                            <input type="number" class="form-control" name="mobile" id="editMobile"
+                                placeholder="Enter your mobile">
+                        </div>
+                        <div class="form-group">
+                            <label for="editLandmark">Landmark</label>
+                            <input type="text" class="form-control" name="landmark" id="editLandmark"
+                                placeholder="Enter your landmark">
+                        </div>
+                        <div class="form-group">
+                            <label for="editCity">City</label>
+                            <input type="text" class="form-control" name="city" id="editCity"
+                                placeholder="Enter your city">
+                        </div>
+                        <div class="form-group">
+                            <label for="editPincode">Pincode</label>
+                            <input type="number" class="form-control" name="pincode" id="editPincode"
+                                placeholder="Enter your pincode">
+                        </div>
+                        <div class="form-group">
+                            <label for="editDistrict">District</label>
+                            <input type="text" class="form-control" name="district" id="editDistrict"
+                                placeholder="Enter your district">
+                        </div>
+                        <div class="form-group">
+                            <label for="editState">State</label>
+                            <input type="text" class="form-control" name="state" id="editState"
+                                placeholder="Enter your state">
+                        </div>
+                        <button type="submit" class="btn site-btn">Edit address</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        const form = document.getElementById('addAddressForm');
+
+        form.addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const formData = new FormData(form);
+            console.log(formData);
+            console.log(JSON.stringify(Object.fromEntries(formData)));
+
+            const response = await fetch('/user/add-address', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(Object.fromEntries(formData)),
+            })
+
+
+            try {
+                const json = await response.json();
+                $('#addAddressModal').modal('hide');
+
+                if (json.success === true) {
+                    $("#addressList").load(location.href + " #addressList");
+
+                    Swal.fire({
+                        title: "Address Added",
+                        text: "Address has been added successfully",
+                        icon: "success",
+                    });
+                    window.location.href = window.location.href.split('#')[0] + '#addressList';
+                    location.reload();
+
+
+                } else {
+                    console.error('Error during fetch:', json.error);
+                }
+            } catch (error) {
+                console.error('Error parsing JSON:', error);
+            }
+        })
+
+        async function deleteAddress(addressId) {
+            addressId = addressId.trim();
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#000000",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!"
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    const response = await fetch('/user/delete-address', {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ addressId: addressId })
+                    })
+
+                    try {
+                        const json = await response.json();
+                        if (json.success == true) {
+                            Swal.fire({
+                                title: "Deleted!",
+                                text: "Address has been deleted.",
+                                icon: "success",
+                            });
+                            $("#addressList").load(location.href + " #addressList");
+                            window.location.href = window.location.href.split('#')[0] + '#addressList';
+                            location.reload();
+
+
+
+                        }
+
+                    } catch (error) {
+                        console.log(error.message)
+                    }
+                }
+            });
+        }
+
+        // Edit modal value populating
+
+        $(document).ready(function () {
+            $('#addressEdit').on('click', function () {
+                let addressId = $(this).data('address-id');
+                let fullname = $(this).data('fullname');
+                let mobile = $(this).data('mobile');
+                let landmark = $(this).data('landmark');
+                let city = $(this).data('city');
+                let pincode = $(this).data('pincode');
+                let district = $(this).data('district');
+                let state = $(this).data('state');
+
+                console.log(addressId);
+
+                $('#editAddressId').val(addressId);
+                $('#editFullname').val(fullname);
+                $('#editMobile').val(mobile);
+                $('#editLandmark').val(landmark);
+                $('#editCity').val(city);
+                $('#editPincode').val(pincode);
+                $('#editDistrict').val(district);
+                $('#editState').val(state);
+
+                // Show the modal
+                $('#editAddressModal').modal('show');
+            });
+
+            const editAddressForm = document.getElementById('editAddressForm');
+
+        editAddressForm.addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const formData = new FormData(editAddressForm);
+            console.log(formData);
+            console.log(JSON.stringify(Object.fromEntries(formData)));
+
+            const response = await fetch('/user/edit-address', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(Object.fromEntries(formData)),
+                
+            })
+            
+
+
+            try {
+                const json = await response.json();
+                $('#addAddressModal').modal('hide');
+
+                if (json.success === true) {
+                    $("#addressList").load(location.href + " #addressList");
+
+                    Swal.fire({
+                        title: "Address Edited",
+                        text: "Address has been edited successfully",
+                        icon: "success",
+                    });
+                    window.location.href = window.location.href.split('#')[0] + '#addressList';
+                    location.reload();
+
+
+                } else {
+                    console.error('Error during fetch:', json.error);
+                }
+            } catch (error) {
+                console.error('Error parsing JSON:', error);
+            }
+        })
+        });
+
+    </script>
+
+    <%- include('../partials/userPartials/footer') -%>

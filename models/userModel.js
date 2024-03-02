@@ -19,9 +19,12 @@ const userSchema = mongoose.Schema({
     required: true,
     unique: true,
   },
-  // addressId: {
+  
+  address : [{
+    type : mongoose.Schema.Types.ObjectId,
+    ref : 'Address'
+  }],
 
-  // },
   isVerified: {
     type: Number,
     default: 0,
@@ -30,7 +33,7 @@ const userSchema = mongoose.Schema({
     type: Number,
     default: 0,
   },
-  is_blocked: {
+  isBlocked: {
     type: Boolean,
     required: true,
     default: false,
