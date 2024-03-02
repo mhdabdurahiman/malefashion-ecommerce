@@ -26,11 +26,23 @@ const loadUserList = async (req, res) => {
 const doBlockUser = async (req, res) => {
     console.log("params id:",req.params['id'])
     try {
-        console.log("entered into block funcion");
         const userId = req.params.id;
-        console.log(userId);
         const userData = await User.findById( userId );
-        await userData.updateOne({ $set : { is_blocked : true }})
+        await userData.updateOne({ $set : { isBlocked : true }});
+        
+        if (req.session.userId === userId){
+            delete req.session.userId;
+            delete req.session.token
+            
+        }
+        const sessions = req.sessionStore.sessions;
+            for ( const sessionId in sessions ) {
+            const session = JSON.parse( sessions[sessionId] );
+            if ( session.user === userId ) {
+                delete sessions[sessionId];
+                break; 
+            }
+            }
         res.json( { success: true} )
     } catch (error) {
         console.log(error.message)
@@ -44,7 +56,7 @@ const doUnblockUser = async (req, res) => {
         const userId = req.params.id;
         console.log(userId);
         const userData = await User.findById( userId );
-        await userData.updateOne({ $set : { is_blocked : false }})
+        await userData.updateOne({ $set : { isBlocked : false }})
         res.json( { success: true} )
     } catch (error) {
         console.log(error.message)

@@ -57,7 +57,7 @@ module.exports = {
   },
 
   adminAuth: (req, res, next) => {
-    const token = req.session.token;
+    const token = req.session.adminToken;
 
     if (!token) {
       return res.redirect('/admin/login');
@@ -94,7 +94,7 @@ module.exports = {
   },
 
   adminLoggedOut: (req, res, next) => {
-    if (req.session.token) {
+    if (req.session.adminToken) {
       return res.redirect('/admin/dashboard');
     }
 
@@ -102,7 +102,7 @@ module.exports = {
   },
 
   isAlreadyLoggedIn: (req, res, next) => {
-    if (req.session && req.session.userId) {
+    if (req.session && req.session.token) {
       res.redirect('/');
     } else {
       next();
@@ -110,12 +110,10 @@ module.exports = {
   },
 
   isAdminAlreadyLoggedIn: (req, res, next) => {
-    if (req.session && req.session.adminId) {
+    if (req.session && req.session.adminToken) {
       res.redirect('/admin/dashboard');
     } else {
       next();
     }
   }
 };
-
-  

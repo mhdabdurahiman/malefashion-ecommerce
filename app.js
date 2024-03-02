@@ -47,6 +47,13 @@ app.use( session ({
 // Configuring flash middleware
 app.use(flash());
 
+// Local variable
+// app.use((req, res, next)) => { 
+//     if( req.session.productCount > 0 ){
+
+//     }
+// }
+
 //locals middleware
 app.use(localsMiddleware)
 

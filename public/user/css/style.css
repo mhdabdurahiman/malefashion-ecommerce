@@ -3362,6 +3362,19 @@ ol {
 	padding: 14px 35px;
 }
 
+/*--------------
+Profile section
+
+--------------*/
+.nav-item .nav-link {
+	color:#000
+}
+
+.nav-item .nav-link.active{
+	color: #fff;
+	background-color: #111111;
+}
+
 /*--------------------------------- Responsive Media Quaries -----------------------------*/
 
 @media only screen and (min-width: 1200px) {
@@ -3848,4 +3861,9 @@ ol {
 	.categories__text:before {
 		height: 250px;
 	}
+}
+
+/* pathups */
+.opacity-important {
+    opacity: 1 !important;
 }

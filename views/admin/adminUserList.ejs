@@ -32,7 +32,7 @@
                         <td><%= user.email %></td>
                         <td><%= user.mobile %></td>
                         <td>
-                        <% if (user.is_blocked === false) { %>
+                        <% if (user.isBlocked === false) { %>
                             <span style="width: 50px;" class="badge rounded-pill alert-success active-status">Active</span>
                         <% } else { %>
                             <span style="width: 50px;" class="badge rounded-pill alert-danger active-status">Inactive</span>
@@ -41,10 +41,10 @@
                         <td><%= user.createdDate.toDateString() %></td>8
                         <td>
                             <div id="button-container-<%= user._id %>">
-                                <% if (user.is_blocked === false) { %>
-                                        <button style="width:80px;" class="btn btn-sm btn-danger rounded font-sm mt-15 block-unblock-btn" data-user-id="<%= user._id %>" data-is-blocked="<%= user.is_blocked %>">Block</button>
+                                <% if (user.isBlocked === false) { %>
+                                        <button style="width:80px;" class="btn btn-sm btn-danger rounded font-sm mt-15 block-unblock-btn" data-user-id="<%= user._id %>" data-is-blocked="<%= user.isBlocked %>">Block</button>
                                 <% } else { %>
-                                        <button style="width:80px;" class="btn btn-sm btn-success rounded font-sm mt-15 block-unblock-btn" data-user-id="<%= user._id %>" data-is-blocked="<%= user.is_blocked %>">Unblock</button>
+                                        <button style="width:80px;" class="btn btn-sm btn-success rounded font-sm mt-15 block-unblock-btn" data-user-id="<%= user._id %>" data-is-blocked="<%= user.isBlocked %>">Unblock</button>
                                 <% } %>
                             </div>
                         </td>
