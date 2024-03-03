@@ -66,8 +66,12 @@
                                         <%= userDetails.mobile %>
                                     </p>
 
-                                    <button class="btn site-btn" data-toggle="modal" data-target="#editUserModal">Edit
-                                        Details</button>
+                                    <button id="editUserDetails" class="btn site-btn" 
+                                        data-target="#editUserModal" 
+                                        data-user-id="<%= userDetails._id %>"
+                                        data-fullname="<%= userDetails.fullname %>"
+                                        data-email="<%= userDetails.email %>"
+                                        data-mobile="<%= userDetails.mobile %>">Edit Details</button>
                                 </div>
                             </div>
                         </div>
@@ -160,7 +164,7 @@
 
 
     <!-- Edit User Details Modal -->
-    <div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel"
+    <div class="modal fade" id="editUserDetailsModal" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -171,17 +175,19 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <!-- Add form elements for editing user details -->
-                    <form>
+                    <form id="editUserDetailsForm">
                         <div class="form-group">
-                            <label for="editName">Name</label>
-                            <input type="text" class="form-control" id="editName" placeholder="Enter your name">
+                            <label for="editUserName">Name</label>
+                            <input name="fullname" type="text" class="form-control" id="editUserName" placeholder="Enter your name">
                         </div>
                         <div class="form-group">
-                            <label for="editEmail">Email</label>
-                            <input type="email" class="form-control" id="editEmail" placeholder="Enter your email">
+                            <label  for="editUserEmail">Email</label>
+                            <input name="email" type="email" class="form-control" id="editUserEmail" placeholder="Enter your email">
                         </div>
-                        <!-- Add more form fields for other details -->
+                        <div class="form-group">
+                            <label for="editUserMoblie">Mobile</label>
+                            <input name="mobile" type="number" class="form-control" id="editUserMobile" placeholder="Enter your number">
+                        </div>
                         <button type="submit" class="btn site-btn">Save Changes</button>
                     </form>
                 </div>
@@ -387,7 +393,7 @@
             });
         }
 
-        // Edit modal value populating
+        // Edit address modal value populating
 
         $(document).ready(function () {
             $('#addressEdit').on('click', function () {
@@ -422,7 +428,6 @@
 
             const formData = new FormData(editAddressForm);
             console.log(formData);
-            console.log(JSON.stringify(Object.fromEntries(formData)));
 
             const response = await fetch('/user/edit-address', {
                 method: 'PUT',
@@ -437,7 +442,7 @@
 
             try {
                 const json = await response.json();
-                $('#addAddressModal').modal('hide');
+                $('#editAddressModal').modal('hide');
 
                 if (json.success === true) {
                     $("#addressList").load(location.href + " #addressList");
@@ -459,6 +464,58 @@
             }
         })
         });
+
+        // Edit user details modal value populating
+
+        $(document).ready(function () {
+            $('#editUserDetails').on('click', function() {
+                let userId = $(this).data('user-id');
+                let fullname = $(this).data('fullname');
+                let email = $(this).data('email');
+                let mobile = $(this).data('mobile')
+
+                $('#editUserName').val(fullname);
+                $('#editUserEmail').val(email);
+                $('#editUserMobile').val(mobile)
+
+                $('#editUserDetailsModal').modal('show');
+            });
+
+            const editUserDetailsForm = document.getElementById('editUserDetailsForm');
+
+            editUserDetailsForm.addEventListener('submit', async function (event) {
+                event.preventDefault();
+
+                const formData = new FormData(editUserDetailsForm);
+                console.log('userdetailsform',formData)
+
+                const response = await fetch('/user/edit-details', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(Object.fromEntries(formData)),
+                })
+
+                try {
+                    const json = await response.json();
+                    $('#editUserDetailsModal').modal('hide');
+
+                    if (json.success === true) {
+                        Swal.fire({
+                        title: "Address Edited",
+                        text: "Address has been edited successfully",
+                        icon: "success",
+                    });
+                    }
+                    location.reload();
+
+                } catch (error) {
+                    console.log('Error parsing JSON:', error)
+                }
+            })
+
+        })
 
     </script>
 

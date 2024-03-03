@@ -30,14 +30,6 @@ const loadShop = async (req, res) => {
     }
   };
 
-  const loadCheckout = async (req, res) => {
-    try {
-      res.render("shop/checkout");
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
   const loadBlog = async (req, res) => {
     try {
       res.render("shop/blog");
@@ -65,7 +57,6 @@ const loadShop = async (req, res) => {
   module.exports = {
     loadHome,
     loadShop,
-    loadCheckout,
     loadProductDetails,
     loadBlog,
     loadAbout,

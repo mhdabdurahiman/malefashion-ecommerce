@@ -38,6 +38,7 @@
                                 </thead>
                                 <tbody>
                                     <% for( let item of cartData.items ) { %>
+                                        
                                         <% var totalPrice=item.productId.price * item.quantity %>
                                             <% if( item.quantity> item.productId.stock){var quantity =
                                                 item.productId.stock} else {var quantity = item.quantity}%>
@@ -112,7 +113,7 @@
                                 <li>Subtotal <span>₹ <%= totalCartPrice[0].total %></span></li>
                                 <li>Total <span>₹ <%= totalCartPrice[0].total %></span></li>
                             </ul>
-                            <a href="#" class="primary-btn">Proceed to checkout</a>
+                            <a href="/checkout" class="primary-btn">Proceed to checkout</a>
                         </div>
                     </div>
                 </div>

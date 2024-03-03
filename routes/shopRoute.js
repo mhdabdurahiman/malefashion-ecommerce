@@ -1,5 +1,6 @@
 const shopController = require( '../controllers/shopController' );
 const cartController = require( '../controllers/cartController' );
+const orderController = require( '../controllers/orderController' )
 const authMiddleware = require( '../middleware/authMiddleware' );
 const isBlockedMiddleware = require( '../middleware/isBlockedMiddleware' );
 
@@ -12,12 +13,13 @@ shopRoute.get("/", shopController.loadHome);
 
 shopRoute.get("/shop", shopController.loadShop);
 shopRoute.get("/product/:id", shopController.loadProductDetails);
-shopRoute.get("/checkout", authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, shopController.loadCheckout);
 
 shopRoute.get("/cart" , authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, cartController.loadCart);
 shopRoute.post("/add-to-cart", cartController.addToCart);
 shopRoute.post("/decrease-product-quantity", cartController.decProductQuantity);
 shopRoute.post("/remove-cart-item", cartController.removeCartItem);
+
+shopRoute.get("/checkout", authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, orderController.loadCheckout);
 
 shopRoute.get("/blog", shopController.loadBlog);
 shopRoute.get("/contact", shopController.loadContact);
