@@ -50,69 +50,89 @@ const doAddProducts = async (req, res) => {
 const doListProduct = async (req, res) => {
   try {
     const productId = req.params.id;
-    const productData = await Product.findById( productId );
-    await productData.updateOne( {$set: { isList : true } } );
-    res.json( {success:true} )
+    const productData = await Product.findById(productId);
+    await productData.updateOne({ $set: { isList: true } });
+    res.json({ success: true });
   } catch (error) {
     console.log(error.message);
   }
-}
+};
 
 const doUnlistProduct = async (req, res) => {
   try {
     const productId = req.params.id;
-    const productData = await Product.findById( productId );
-    await productData.updateOne( {$set: { isList : false } } )
-    res.json( {success:true} )
+    const productData = await Product.findById(productId);
+    await productData.updateOne({ $set: { isList: false } });
+    res.json({ success: true });
   } catch (error) {
-      console.log(error.message)
+    console.log(error.message);
   }
-}
+};
 
 const loadEditProduct = async (req, res) => {
   try {
     const productId = req.params.id;
-    const productData = await Product.findById( productId ).populate('category').exec();
-    const categoryList = await Category.find({ isList:true })
-    res.render('admin/adminEditProduct', {product:productData, categories:categoryList})
+    const productData = await Product.findById(productId)
+      .populate("category")
+      .exec();
+    const categoryList = await Category.find({ isList: true });
+    res.render("admin/adminEditProduct", {
+      product: productData,
+      categories: categoryList,
+    });
   } catch (error) {
-    console.log(error.message)
+    console.log(error.message);
   }
-}
-
+};
 
 const doEditProduct = async (req, res) => {
   try {
-    const productData = await Product.findById( req.body.productId );
-    if (req.files){
+    const productData = await Product.findById(req.body.productId);
+    console.log(req.files);
+    if (req.files) {
       const img = [];
-      for (let items of req.files);
-      img.push(items.filename);
+      for (let items of req.files) {
+        img.push(items.filename);
+      }
+      if (img.length > 0) {
+        await productData.updateOne({
+          $set: {
+            name: req.body.name,
+            description: req.body.description,
+            brand: req.body.brand,
+            size: req.body.size,
+            image: img,
+            category: req.body.categoryId,
+            stock: req.body.stock,
+            price: req.body.price,
+          },
+        });
+        res.redirect("/admin/products");
+      } else {
+        await productData.updateOne({
+          $set: {
+            name: req.body.name,
+            description: req.body.description,
+            brand: req.body.brand,
+            size: req.body.size,
+            category: req.body.categoryId,
+            stock: req.body.stock,
+            price: req.body.price,
+          },
+        });
+        res.redirect("/admin/products");
+      }
     }
-    await productData.updateOne( 
-      {
-        $set : {
-          name: req.body.name,
-          description: req.body.description,
-          brand: req.body.brand,
-          size: req.body.size,
-          image: img,
-          category: req.body.categoryId,
-          stock: req.body.stock,
-          price: req.body.price,
-        }
-      });
-      res.redirect('/admin/products')
   } catch (error) {
-    console.log(error.message)
+    console.log(error.message);
   }
-}
+};
 
 const doDeleteProducts = async (req, res) => {
   try {
     const productId = req.params.id;
-    await Product.deleteOne({ _id:productId });
-    res.json({success:true})
+    await Product.deleteOne({ _id: productId });
+    res.json({ success: true });
   } catch (error) {
     console.log(error.message);
   }
@@ -128,4 +148,3 @@ module.exports = {
   doEditProduct,
   doDeleteProducts,
 };
-

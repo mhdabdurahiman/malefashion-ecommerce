@@ -20,6 +20,8 @@ shopRoute.post("/decrease-product-quantity", cartController.decProductQuantity);
 shopRoute.post("/remove-cart-item", cartController.removeCartItem);
 
 shopRoute.get("/checkout", authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, orderController.loadCheckout);
+shopRoute.get("/order-confirmation", orderController.loadOrderConfirmation);
+shopRoute.post("/place-order", authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, orderController.doPlaceOrder)
 
 shopRoute.get("/blog", shopController.loadBlog);
 shopRoute.get("/contact", shopController.loadContact);

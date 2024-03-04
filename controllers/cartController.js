@@ -11,7 +11,7 @@ const loadCart = async (req, res) => {
       "items.productId"
     );
     const totalCartPrice = await cartHelper.totalCartPrice(userId);
-    console.log("totalprice:", totalCartPrice);
+    console.log('totalCartPrice:',totalCartPrice)
     console.log("cartData:", cartData);
     res.render("shop/shopping-cart", {
       cartData: cartData,

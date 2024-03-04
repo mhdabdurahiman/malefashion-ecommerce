@@ -92,9 +92,32 @@ const doDeleteAddress = async (req, res) => {
     }
 }
 
+const doEditDetails = async (req, res) => {
+    try {
+        const {
+            fullname,
+            email,
+            mobile} = req.body;
+        const userId = req.session.userId;
+        const userData = await User.findByIdAndUpdate({ _id: userId }, {
+            $set: {
+                fullname: fullname,
+                email: email,
+                mobile: mobile
+            }
+        })
+        res.status(200).json({success: true})
+
+    }
+    catch(error){
+        console.log(error.message)
+    }
+}
+
 module.exports = {
     loadUserProfile,
     doAddAddress,
     doDeleteAddress,
     doEditAddress,
+    doEditDetails,
 }

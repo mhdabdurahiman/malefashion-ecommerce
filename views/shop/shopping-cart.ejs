@@ -38,8 +38,8 @@
                                 </thead>
                                 <tbody>
                                     <% for( let item of cartData.items ) { %>
-                                        
-                                        <% var totalPrice=item.productId.price * item.quantity %>
+                                        <% if (item.productId.isList == true ) { %>
+                                            <% var totalPrice=item.productId.price * item.quantity %>
                                             <% if( item.quantity> item.productId.stock){var quantity =
                                                 item.productId.stock} else {var quantity = item.quantity}%>
                                                 <tr>
@@ -87,7 +87,8 @@
                                                             </td>
                                                             <% } %>
                                                 </tr>
-                                                <% } %>
+                                        <% } %>    
+                                    <% } %>
                                 </tbody>
                             </table>
                         </div>

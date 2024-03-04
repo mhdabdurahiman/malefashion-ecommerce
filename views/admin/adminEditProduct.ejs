@@ -45,12 +45,13 @@
                     <div class="col-lg-6">
                         <div class="card mb-4">
                             <div class="card-body">
-                                <form method="POST" action="/admin/add-product" enctype="multipart/form-data"
-                                    id="add-product-form">
+                                <form method="POST" action="/admin/edit-product" enctype="multipart/form-data"
+                                    id="edit-product-form">
                                     <div class="row">
                                         <div class="col-md-3">
                                             <h6>1. General info</h6>
                                         </div>
+                                        <input type="hidden" id="productId" name="productId" value="<%= product._id %>">
                                         <div class="col-md-9">
                                             <div class="mb-4">
                                                 <label class="form-label">Product Name</label>
@@ -140,7 +141,7 @@
                                     <hr class="mb-4 mt-0">
                                     <div class="row">
                                         <div class="col-md-3 offset-md-8">
-                                            <button type="submit" class="btn btn-md rounded font-sm">Add
+                                            <button type="submit" class="btn btn-md rounded font-sm">Edit
                                                 product</button>
                                         </div> <!-- col.// -->
                                     </div> <!-- .row end// -->

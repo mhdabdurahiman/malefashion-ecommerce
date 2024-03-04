@@ -22,6 +22,9 @@ module.exports = {
               $unwind: "$product"
             },
             {
+              $match: { "product.isList": true },
+            },
+            {
               $project: {
                 _id: 1,
                 userId: 1,
