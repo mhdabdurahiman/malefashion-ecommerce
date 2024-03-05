@@ -48,15 +48,14 @@
 
 
 
-                <p class="resend text-muted mb-0">
-                  Didn't receive code? <a href="">Request again</a>
+                <p  class="resend text-muted mb-0">
+                  Didn't receive code? <a id="resend-otp" onclick="resendOtp('<%= email %>')" href="javascript:void(0)">Request again</a>
                 </p>
               </div>
             </div>
           </div>
         </div>
       </body>
-      <!-- END EDMO HTML (Happy Coding!)-->
     </main>
 
     <!-- Script JS -->
@@ -81,17 +80,21 @@
         hiddenInput1.type = 'hidden';
         hiddenInput1.name = 'otp';
         hiddenInput1.value = otp;
-
-        
-        
         const form = document.getElementById('otpForm')
-    
         form.appendChild(hiddenInput1);
-
         form.submit();
+      }
 
-        
-
+      async function resendOtp(email){
+        data = {email: email}
+        console.log('json-data: ',JSON.stringify(data))
+        const response = await fetch('/resend-otp', {
+          method: 'POST',
+          headers: {
+            'Content-type' : 'application/json'
+          },
+          body: JSON.stringify(data)
+        })
       }
     </script>
     <!--$%analytics%$-->

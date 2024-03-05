@@ -10,6 +10,7 @@ authRoute.get("/register", authMiddleware.userLoggedOut, authenticationControlle
 authRoute.post("/register", authMiddleware.userLoggedOut, authenticationController.enterUserDetails);
 authRoute.post("/login", authMiddleware.userLoggedOut, authenticationController.doUserLogin);
 authRoute.post("/send-otp", authMiddleware.userLoggedOut, authenticationController.doVerfiyOtp);
+authRoute.post("/resend-otp", authMiddleware.userLoggedOut, authenticationController.doResendOtp);
 // userRoute.get("/enter-otp", authMiddleware.userLoggedOut, authenticationController.loadVerifyOTP);
 authRoute.get("/logout", authMiddleware.userAuth, authenticationController.doUserLogout);
 

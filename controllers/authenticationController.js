@@ -58,6 +58,14 @@ const enterUserDetails = async (req, res) => {
   }
 };
 
+const doResendOtp = async (req, res) => {
+  try {
+    const otpbody = await otpCreation(req, res);
+  } catch (error) {
+    console.log(error.message)
+  }
+}
+
 //OTP verification and User data save to the database.
 // The user data will only be saved whenever the otp is verified
 
@@ -213,13 +221,14 @@ const doAdminLogout = async (req, res) => {
 };
 
 module.exports = {
-  loadUserLogin, //
-  loadUserRegister, //
-  enterUserDetails, //
-  doVerfiyOtp, //
-  doUserLogin, //
-  doUserLogout, //
-  loadVerifyOTP, //
+  loadUserLogin,
+  loadUserRegister,
+  enterUserDetails,
+  doVerfiyOtp,
+  doResendOtp,
+  doUserLogin,
+  doUserLogout,
+  loadVerifyOTP, 
   loadAdminLogin,
   doAdminLogin,
   doAdminLogout,
