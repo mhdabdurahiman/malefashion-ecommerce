@@ -1,57 +1,65 @@
 
+
 <!-- Add Address Modal -->
 <div class="modal fade" id="addAddressModal" tabindex="-1" role="dialog" aria-labelledby="addAddressModalLabel"
-aria-hidden="true">
-<div class="modal-dialog" role="document">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title" id="addAddressModalLabel">Add new address</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        <div class="modal-body">
-            <!-- Form elements for adding new address -->
-            <form id="addAddressForm">
-                <div class="form-group">
-                    <label for="fullname">Full name</label>
-                    <input type="text" class="form-control" name="fullname" id="fullname"
-                        placeholder="Enter your name">
-                </div>
-                <div class="form-group">
-                    <label for="mobile">Mobile</label>
-                    <input type="number" class="form-control" name="mobile" id="mobile"
-                        placeholder="Enter your mobile">
-                </div>
-                <div class="form-group">
-                    <label for="landmark">Landmark</label>
-                    <input type="text" class="form-control" name="landmark" id="landmark"
-                        placeholder="Enter your landmark">
-                </div>
-                <div class="form-group">
-                    <label for="city">City</label>
-                    <input type="text" class="form-control" name="city" id="city" placeholder="Enter your city">
-                </div>
-                <div class="form-group">
-                    <label for="pincode">Pincode</label>
-                    <input type="number" class="form-control" name="pincode" id="pincode"
-                        placeholder="Enter your pincode">
-                </div>
-                <div class="form-group">
-                    <label for="district">District</label>
-                    <input type="text" class="form-control" name="district" id="district"
-                        placeholder="Enter your district">
-                </div>
-                <div class="form-group">
-                    <label for="state">State</label>
-                    <input type="text" class="form-control" name="state" id="state"
-                        placeholder="Enter your state">
-                </div>
-                <button type="submit" class="btn site-btn">Add new address</button>
-            </form>
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAddressModalLabel">Add new address</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Form elements for adding a new address -->
+                <form id="addAddressForm" class="needs-validation" novalidate>
+                    <div class="form-group">
+                        <label for="fullname">Full name</label>
+                        <input type="text" class="form-control" name="fullname" id="fullname"
+                            placeholder="Enter your name" required>
+                        <div class="invalid-feedback">Please enter your full name.</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="mobile">Mobile</label>
+                        <input type="tel" class="form-control" name="mobile" id="mobile" placeholder="Enter your mobile"
+                            required pattern="[0-9]{10}">
+                        <small class="form-text text-muted">Please enter a valid 10-digit mobile number.</small>
+                        <div class="invalid-feedback">Please enter a valid 10-digit mobile number.</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="landmark">Landmark</label>
+                        <input type="text" class="form-control" name="landmark" id="landmark"
+                            placeholder="Enter your landmark" required>
+                        <div class="invalid-feedback">Please enter a landmark.</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <input type="text" class="form-control" name="city" id="city" placeholder="Enter your city" required>
+                        <div class="invalid-feedback">Please enter a City.</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="pincode">Pincode</label>
+                        <input type="number" class="form-control" name="pincode" id="pincode"
+                            placeholder="Enter your pincode" required>
+                        <div class="invalid-feedback">Please enter a pincode.</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="district">District</label>
+                        <input type="text" class="form-control" name="district" id="district"
+                            placeholder="Enter your district" required>
+                            <div class="invalid-feedback">Please enter a district.</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="state">State</label>
+                        <input type="text" class="form-control" name="state" id="state" placeholder="Enter your state" required>
+                        <div class="invalid-feedback">Please enter a state.</div>
+                    </div>
+                    <button type="submit" class="btn site-btn">Add new address</button>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 </div>
 
 <script>
@@ -60,40 +68,72 @@ aria-hidden="true">
     form.addEventListener('submit', async function (event) {
         event.preventDefault();
 
-        const formData = new FormData(form);
-        console.log(formData);
-        console.log(JSON.stringify(Object.fromEntries(formData)));
+        if (form.checkValidity() === false) {
+            event.stopPropagation();
+        } else {
+            // Validation before submitting
+            const formData = new FormData(form);
+            const fullname = formData.get('fullname');
+            const mobile = formData.get('mobile');
+            const landmark = formData.get('landmark');
+            const city = formData.get('city');
+            const pincode = formData.get('pincode');
+            const district = formData.get('district');
+            const state = formData.get('state');
 
-        const response = await fetch('/user/add-address', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(Object.fromEntries(formData)),
-        })
-
-
-        try {
-            const json = await response.json();
-            $('#addAddressModal').modal('hide');
-
-            if (json.success === true) {
-                $("#addressList").load(location.href + " #addressList");
-
-                Swal.fire({
-                    title: "Address Added",
-                    text: "Address has been added successfully",
-                    icon: "success",
-                });
-                window.location.href = window.location.href.split('#')[0] + '#addressList';
-                location.reload();
-
-
-            } else {
-                console.error('Error during fetch:', json.error);
+            if (!fullname || !mobile || !landmark || !city || !pincode || !district || !state || !isValidMobileNumber(mobile)) {
+                alert('Please fill in all required fields and provide a valid mobile number.');
+                return;
             }
-        } catch (error) {
-            console.error('Error parsing JSON:', error);
+
+            const form = document.getElementById('addAddressForm');
+
+            form.addEventListener('submit', async function (event) {
+                event.preventDefault();
+
+                const formData = new FormData(form);
+                console.log(formData);
+                console.log(JSON.stringify(Object.fromEntries(formData)));
+
+                const response = await fetch('/user/add-address', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(Object.fromEntries(formData)),
+                })
+
+
+                try {
+                    const json = await response.json();
+                    $('#addAddressModal').modal('hide');
+
+                    if (json.success === true) {
+                        $("#addressList").load(location.href + " #addressList");
+
+                        Swal.fire({
+                            title: "Address Added",
+                            text: "Address has been added successfully",
+                            icon: "success",
+                        });
+                        window.location.href = window.location.href.split('#')[0] + '#addressList';
+                        location.reload();
+
+
+                    } else {
+                        console.error('Error during fetch:', json.error);
+                    }
+                } catch (error) {
+                    console.error('Error parsing JSON:', error);
+                }
+            })
         }
-    })
+
+        form.classList.add('was-validated');
+    });
+
+    // Validation function for the mobile number
+    function isValidMobileNumber(mobile) {
+        return /^[0-9]{10}$/.test(mobile);
+    }
 </script>

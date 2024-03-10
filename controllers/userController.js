@@ -1,14 +1,16 @@
 const User = require("../models/userModel");
 const Address = require("../models/addressModel")
+const Order = require("../models/orderModel")
 
 const loadUserProfile = async (req, res) => {
     try {
         const userId = req.session.userId
         const userDetails = await User.findOne({ _id : userId }).populate('address').exec();
-        console.log('user details',userDetails);
+        const orderData = await Order.find({ userId: userId });
         res.render(
             "user/profile",{
-                userDetails : userDetails
+                userDetails : userDetails,
+                orderData : orderData,
             }
         )
     } catch (error) {
@@ -114,10 +116,24 @@ const doEditDetails = async (req, res) => {
     }
 }
 
+const loadOrderDetails = async (req, res) => {
+    try {
+        const orderId = req.params.id;
+        const orderData = await Order.findById({ _id: orderId }).populate('products.productId');
+        console.log('orderData:',orderData.products);
+        res.render('user/orderDetails',{
+            orderData: orderData,
+        })
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
 module.exports = {
     loadUserProfile,
     doAddAddress,
     doDeleteAddress,
     doEditAddress,
     doEditDetails,
+    loadOrderDetails,
 }

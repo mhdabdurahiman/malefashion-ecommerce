@@ -6,7 +6,6 @@ const isBlockedMiddleware = require( '../middleware/isBlockedMiddleware' );
 
 
 const express = require('express');
-const path = require('path')
 const shopRoute = express();
 
 shopRoute.get("/", shopController.loadHome);
@@ -20,7 +19,7 @@ shopRoute.post("/decrease-product-quantity", cartController.decProductQuantity);
 shopRoute.post("/remove-cart-item", cartController.removeCartItem);
 
 shopRoute.get("/checkout", authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, orderController.loadCheckout);
-shopRoute.get("/order-confirmation", orderController.loadOrderConfirmation);
+shopRoute.get("/order-confirmation", authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, orderController.loadOrderConfirmation);
 shopRoute.post("/place-order", authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, orderController.doPlaceOrder)
 
 shopRoute.get("/blog", shopController.loadBlog);

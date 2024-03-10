@@ -27,108 +27,113 @@
                 <form id="checkoutForm" action="/place-order">
                     <div class="row">
                         <!-- Address selection section -->
-
-                        <div class="col-lg-7 col-md-5">
-                            <div class="checkout_address">
-                                <h6 class="checkout__title">Billing Address</h6>
-                                <% if (userData.address && userData.address.length > 0) {%>
-                                    <% userData.address.forEach(address=> { %>
-                                        <div class="card m-2">
-                                            <label>
-                                                <div class="card-body">
-                                                    <input class="mb-3" type="radio" name="addressId"
-                                                        value="<%= address._id %>" />
-                                                    <p class="card-text">
-                                                        Name: <strong>
-                                                            <%= address.fullname %>
-                                                        </strong>,
-                                                        Mobile: <strong>
-                                                            <%= address.mobile %>
-                                                        </strong>,
-                                                        Landmark: <strong>
-                                                            <%= address.landmark %>
-                                                        </strong>,
-                                                        City: <strong>
-                                                            <%= address.city %>
-                                                        </strong>,
-                                                        Pincode: <strong>
-                                                            <%= address.pincode %>
-                                                        </strong>,
-                                                        District: <strong>
-                                                            <%= address.district %>
-                                                        </strong>,
-                                                        State: <strong>
-                                                            <%= address.state %>
-                                                        </strong>,
-                                                    </p>
-                                                </div>
-                                            </label>
-                                        </div>
-                                        <% }) %>
-                                <% } %>
+                        <% if (cartData.items.length<=0) { %>
+                            <h2>Please add something to cart before proceeding to checkout</h2>
+                        <% } else {%>
+                            <div class="col-lg-7 col-md-5">
+                                <div class="checkout_address">
+                                    <h6 class="checkout__title">Billing Address</h6>
+                                    <% if (userData.address && userData.address.length > 0) {%>
+                                        <% userData.address.forEach(address=> { %>
+                                            <div class="card m-2">
+                                                <label>
+                                                    <div class="card-body">
+                                                        <input class="mb-3" type="radio" name="addressId"
+                                                            value="<%= address._id %>" />
+                                                        <p class="card-text">
+                                                            Name: <strong>
+                                                                <%= address.fullname %>
+                                                            </strong>,
+                                                            Mobile: <strong>
+                                                                <%= address.mobile %>
+                                                            </strong>,
+                                                            Landmark: <strong>
+                                                                <%= address.landmark %>
+                                                            </strong>,
+                                                            City: <strong>
+                                                                <%= address.city %>
+                                                            </strong>,
+                                                            Pincode: <strong>
+                                                                <%= address.pincode %>
+                                                            </strong>,
+                                                            District: <strong>
+                                                                <%= address.district %>
+                                                            </strong>,
+                                                            State: <strong>
+                                                                <%= address.state %>
+                                                            </strong>,
+                                                        </p>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                            <% }) %>
+                                    <% } %>
+                                </div>
+                                <div class="p-2 ">
+                                    <button class="btn site-btn float-right" data-toggle="modal"
+                                        data-target="#addAddressModal">Add address</button>
+                                </div>
                             </div>
-                            <div class="p-2 ">
-                                <button class="btn site-btn float-right" data-toggle="modal"
-                                    data-target="#addAddressModal">Add address</button>
-                            </div>
-                        </div>
-                        <!-- Checkout section -->
-                        <div class="col-lg-5 col-md-7">
-                            <div class="checkout__order">
-                                <h4 class="order__title">Your order</h4>
-                                <table class="checkout__total__products">
-                                    <thead>
-                                        <tr>
-                                            <th class="px-3">Product</th>
-                                            <th class="px-3">Quantity</th>
-                                            <th class="px-3">Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <% for( let item of cartData.items ) { %>
-                                            <% if (item.productId.isList==true && item.productId.stock>= item.quantity) { %>
-                                                <% let totalPrice=item.productId.price * item.quantity %>
-                                                    <tr>
-                                                        <td class="px-3">
-                                                            <%= item.productId.name %>
-                                                        </td>
-                                                        <td class="px-3">
-                                                            <%= item.quantity %>
-                                                        </td>
-                                                        <td class="px-3">₹<%= totalPrice %>
-                                                        </td>
-                                                    </tr>
+                            <!-- Checkout section -->
+                            <div class="col-lg-5 col-md-7">
+                                <div class="checkout__order">
+                                    <h4 class="order__title">Your order</h4>
+                                    <table class="checkout__total__products">
+                                        <thead>
+                                            <tr>
+                                                <th class="px-3">Product</th>
+                                                <th class="px-3">Quantity</th>
+                                                <th class="px-3">Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% for( let item of cartData.items ) { %>
+                                                <% if (item.productId.isList==true && item.productId.stock>= item.quantity) { %>
+                                                    <% let totalPrice=item.productId.price * item.quantity %>
+                                                        <tr>
+                                                            <td class="px-3">
+                                                                <%= item.productId.name %>
+                                                            </td>
+                                                            <td class="px-3">
+                                                                <%= item.quantity %>
+                                                            </td>
+                                                            <td class="px-3">₹<%= totalPrice %>
+                                                            </td>
+                                                        </tr>
+                                                    <% } %>
                                                 <% } %>
-                                            <% } %>
-                                    </tbody>
-                                </table>
-
-                                <ul class="checkout__total__all">
-                                    <li>Subtotal <span>₹ <%= totalCartPrice[0].total %></span></li>
-                                    <li>Total <span>₹ <%= totalCartPrice[0].total %></span></li>
-                                </ul>
-
-
-                                <p>Please select the payment option that you are comfortable with.</p>
-
-
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="paymentOption"
-                                        id="flexRadioDefault1" value="online">
-                                    <label class="form-check-label" for="flexRadioDefault1">
-                                        Online payment
-                                    </label>
+                                        </tbody>
+                                    </table>
+    
+                                    <ul class="checkout__total__all">
+                                        <li>Subtotal <span>₹ <%= totalCartPrice[0].total %></span></li>
+                                        <li>Total <span>₹ <%= totalCartPrice[0].total %></span></li>
+                                    </ul>
+    
+    
+                                    <p>Please select the payment option that you are comfortable with.</p>
+    
+    
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="paymentOption"
+                                            id="flexRadioDefault1" value="online">
+                                        <label class="form-check-label" for="flexRadioDefault1">
+                                            Online payment
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="paymentOption"
+                                            id="flexRadioDefault2" value="cod" checked>
+                                        <label class="form-check-label" for="flexRadioDefault2">
+                                            Cash On Delivery
+                                        </label>
+                                    </div>
+                                    <button type="submit" class="site-btn">PLACE ORDER</button>
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="paymentOption"
-                                        id="flexRadioDefault2" value="cod" checked>
-                                    <label class="form-check-label" for="flexRadioDefault2">
-                                        Cash On Delivery
-                                    </label>
-                                </div>
-                                <button type="submit" class="site-btn">PLACE ORDER</button>
                             </div>
-                        </div>
+                        <% } %>
+
+                        
                     </div>
                 </form>
             </div>

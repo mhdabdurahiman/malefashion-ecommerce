@@ -13,5 +13,7 @@ userRoute.delete('/delete-address', authMiddleware.userAuth, isBlockedMiddleware
 
 userRoute.put('/edit-details', authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, userController.doEditDetails);
 
+userRoute.get('/order-details/:id', authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, userController.loadOrderDetails);
+
 
 module.exports = userRoute;

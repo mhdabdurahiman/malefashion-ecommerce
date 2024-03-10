@@ -81,9 +81,22 @@ const loadOrderConfirmation = async (req, res) => {
   }
 }
 
+const loadAdminOrderList = async (req, res) => {
+  try {
+    const orderData = await Order.find().populate('products');
+    console.log(orderData);
+    res.render("admin/adminOrderList",{
+      orders: orderData
+    })
+  }
+  catch(error){
+    error.message
+  }
+}
 
 module.exports = {
     loadCheckout,
     doPlaceOrder,
     loadOrderConfirmation,
+    loadAdminOrderList,
 }

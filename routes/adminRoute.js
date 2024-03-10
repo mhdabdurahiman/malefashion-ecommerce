@@ -3,7 +3,7 @@ const adminController = require("../controllers/adminController");
 const categoryController = require("../controllers/categoryController");
 const authMiddleware = require("../middleware/authMiddleware");
 const productController = require("../controllers/productController");
-const multer = require('multer');
+const orderController = require("../controllers/orderController");
 const upload = require( "../middleware/multer" );
 
 
@@ -44,5 +44,7 @@ adminRoute.patch( '/list-product/:id', authMiddleware.adminAuth, productControll
 adminRoute.patch( '/unlist-product/:id', authMiddleware.adminAuth, productController.doUnlistProduct );
 adminRoute.delete( '/delete-product/:id', authMiddleware.adminAuth, productController.doDeleteProducts);
 
+// Order-management-routes
+adminRoute.get( '/orders', authMiddleware.adminAuth, orderController.loadAdminOrderList);
 
 module.exports = adminRoute;
