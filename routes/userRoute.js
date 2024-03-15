@@ -1,4 +1,5 @@
 const userController = require("../controllers/userController");
+const orderController = require("../controllers/orderController")
 const authMiddleware = require("../middleware/authMiddleware");
 const isBlockedMiddleware = require( '../middleware/isBlockedMiddleware' );
 
@@ -13,7 +14,7 @@ userRoute.delete('/delete-address', authMiddleware.userAuth, isBlockedMiddleware
 
 userRoute.put('/edit-details', authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, userController.doEditDetails);
 
-userRoute.get('/order-details/:id', authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, userController.loadOrderDetails);
+userRoute.get('/order-details/:id', authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, orderController.loadUserOrderDetails);
 
 
 module.exports = userRoute;

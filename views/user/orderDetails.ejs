@@ -1,90 +1,119 @@
 <%- include('../partials/userPartials/header') -%>
 
-<section class="gradient-custom">
-    <div class="container py-5 h-100">
-        <div class="row d-flex justify-content-center align-items-center h-100">
-            <div class="col-lg-10 col-xl-8">
-                <div class="card" style="border-radius: 10px;">
-                    <div class="card-header px-4 py-5">
-                        <h5 class="text-muted mb-0">Thanks for your Order <span
-                                style="color: #111111;"></span>!</h5>
-                    </div>
-                    <% for (product of orderData.products) { %>
-                        <% let singleProductTotalPrice = product.quantity * product.price %>
-                        <div class="card-body p-4">
-                            <div class="card shadow-0 border mb-4">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-2">
-                                            <img src="/images/product-images/<%= product.productId.image[0] %>"
-                                                class="img-fluid" alt="Phone">
+    <section class="gradient-custom">
+        <div class="container py-5 h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-lg-10 col-xl-8">
+                    <div class="card" style="border-radius: 10px;">
+                        <div class="card-header px-4 py-5">
+                            <h5 class="text-muted mb-0">Thanks for your Order <span style="color: #111111;"></span>!
+                            </h5>
+                        </div>
+                        <% for (product of orderData.products) { %>
+                            <% let singleProductTotalPrice=product.quantity * product.price %>
+                                <div class="card-body p-4">
+                                    <div class="card shadow-0 border mb-4">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    <img src="/images/product-images/<%= product.productId.image[0] %>"
+                                                        class="img-fluid" alt="Phone">
+                                                </div>
+                                                <div
+                                                    class="col-md-2 text-center d-flex justify-content-center align-items-center">
+                                                    <p class="text-muted mb-0">
+                                                        <%= product.productId.name %>
+                                                    </p>
+                                                </div>
+                                                <div
+                                                    class="col-md-2 text-center d-flex justify-content-center align-items-center">
+                                                    <p class="text-muted mb-0 small">Price:₹ <%= product.price %>
+                                                    </p>
+                                                </div>
+
+                                                <div
+                                                    class="col-md-1 text-center d-flex justify-content-center align-items-center">
+                                                    <p class="text-muted mb-0 small">Size: <%= product.productId.size %>
+                                                    </p>
+                                                </div>
+                                                <div
+                                                    class="col-md-1 text-center d-flex justify-content-center align-items-center">
+                                                    <p class="text-muted mb-0 small">Qty: <%= product.quantity %>
+                                                    </p>
+                                                </div>
+                                                <div
+                                                    class="col-md-2 text-center d-flex justify-content-center align-items-center">
+                                                    <p class="text-muted mb-0 small">Total:₹<%= singleProductTotalPrice
+                                                            %>
+                                                    </p>
+                                                </div>
+                                                <div
+                                                    class="col-md-2 text-center d-flex justify-content-center align-items-center">
+                                                <% if (order.orderStatus==='Pending' ||'Placed' ) { %>
+                                                    <button style="font-size: 12px;" id="cancel-product"
+                                                        onclick="cancelProduct()" class="btn btn-danger rounded-0">
+                                                        Cancel</button>
+                                                    <% } else if (order.orderStatus==='Delivered' ) { %>
+                                                        <button style="font-size: 12px;" id="return-product"
+                                                            onclick="returnProduct()" class="btn btn-warning rounded-0">
+                                                            Return</button>
+                                                        <% } %>
+
+                                            </div>
                                         </div>
-                                        <div
-                                            class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                                            <p class="text-muted mb-0"><%= product.productId.name %></p>
-                                        </div>
-                                        <div
-                                            class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                                            <p class="text-muted mb-0 small">Price: <%= product.productId.price %></p>
-                                        </div>
-                                        
-                                        <div
-                                            class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                                            <p class="text-muted mb-0 small">Size: <%= product.productId.size %></p>
-                                        </div>
-                                        <div
-                                            class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                                            <p class="text-muted mb-0 small">Qty: <%= product.quantity %></p>
-                                        </div>
-                                        <div
-                                            class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                                            <p class="text-muted mb-0 small">Total:₹<%= singleProductTotalPrice %></p>
-                                        </div>
+                                        <hr class="mb-4" style="background-color: #e0e0e0; opacity: 1;">
                                     </div>
-                                    <hr class="mb-4" style="background-color: #e0e0e0; opacity: 1;">
                                 </div>
-                            </div>
-                    <% } %>
-                    
+                                <% } %>
 
-                        <div class="d-flex justify-content-between pt-2">
-                            <p class="fw-bold mb-0">Order Details</p>
-                            <p class="text-muted mb-0"><span class="fw-bold me-4">Total</span>
-                                ₹ <%= orderData.totalPrice %></p>
-                        </div>
 
-                        <div class="d-flex justify-content-between pt-2">
-                            <p class="text-muted mb-0">Order Id : <%= orderData.orderId %></p>
-                            <p class="text-muted mb-0"><span
-                                    class="fw-bold me-4">Discount</span> ₹100.00</p>
-                        </div>
+                                    <div class="d-flex justify-content-between pt-2">
+                                        <p class="fw-bold mb-0">Order Details</p>
+                                        <p class="text-muted mb-0"><span class="fw-bold me-4">Total</span>
+                                            ₹ <%= orderData.totalPrice %>
+                                        </p>
+                                    </div>
 
-                        <div class="d-flex justify-content-between">
-                            <p class="text-muted mb-0">Order Date : <%= orderData.updatedAt.toDateString() %></p>
-                        </div>
+                                    <div class="d-flex justify-content-between pt-2">
+                                        <p class="text-muted mb-0">Order Id : <%= orderData.orderId %>
+                                        </p>
+                                        <p class="text-muted mb-0"><span class="fw-bold me-4">Discount</span> ₹100.00
+                                        </p>
+                                    </div>
 
-                        <div class="d-flex justify-content-between mb-5">
-                            <p class="text-muted mb-0">Delivery Address : <%= orderData.address.fullname %>, <%= orderData.address.fullname %>, <%= orderData.address.mobile %>, <%= orderData.address.landmark %>, <%= orderData.address.city %>, <%= orderData.address.pincode %>, <%= orderData.address.district %>, <%= orderData.address.state %></p>
-                            
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <p class="text-muted mb-0"></p>
-                            <p class="text-muted mb-0"><span class="fw-bold me-4">Delivery
-                                Charge:</span> ₹100</p>
-                        </div>
+                                    <div class="d-flex justify-content-between">
+                                        <p class="text-muted mb-0">Order Date : <%= orderData.updatedAt.toDateString()
+                                                %>
+                                        </p>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between mb-5">
+                                        <p class="text-muted mb-0">Delivery Address : <%= orderData.address.fullname %>,
+                                                <%= orderData.address.fullname %>, <%= orderData.address.mobile %>, <%=
+                                                            orderData.address.landmark %>, <%= orderData.address.city %>
+                                                                , <%= orderData.address.pincode %>, <%=
+                                                                        orderData.address.district %>, <%=
+                                                                            orderData.address.state %>
+                                        </p>
+
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <p class="text-muted mb-0"></p>
+                                        <p class="text-muted mb-0"><span class="fw-bold me-4">Delivery
+                                                Charge:</span> ₹100</p>
+                                    </div>
                     </div>
 
                     <div class="card-footer border-0 px-4 py-5"
                         style="background-color: #111111; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
-                        <h5
-                            class="d-flex align-items-center justify-content-end text-white text-uppercase mb-0">
+                        <h5 class="d-flex align-items-center justify-content-end text-white text-uppercase mb-0">
                             Total
-                            Amount: <span class="h2 mb-0 ms-2">  &nbsp;&nbsp;₹  <%= orderData.totalPrice %></span></h5>
+                            Amount: <span class="h2 mb-0 ms-2"> &nbsp;&nbsp;₹ <%= orderData.totalPrice %></span></h5>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+        </div>
+    </section>
 
-<%- include('../partials/userPartials/footer') -%>
+    <%- include('../partials/userPartials/footer') -%>

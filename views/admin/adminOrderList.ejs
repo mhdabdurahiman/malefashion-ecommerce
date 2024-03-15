@@ -75,10 +75,10 @@
                                                 <td>
                                                     <% if (order.orderStatus==='Pending' ) { %>
                                                         <span class="badge badge-pill badge-soft-warning">Pending</span>
-                                                        <% } else if (order.orderStatus==='Confirmed' ) {%>
+                                                        <% } else if (order.orderStatus==='Placed' ) {%>
                                                             <span
-                                                                class="badge badge-pill badge-soft-success">Confirmed</span>
-                                                            <% } else if (order.orderStatus==='Cancelled' ) {%>
+                                                                class="badge badge-pill badge-soft-success">Placed</span>
+                                                            <% } else if (order.orderStatus==='Canceled' ) {%>
                                                                 <span
                                                                     class="badge badge-pill badge-soft-danger">Cancelled</span>
                                                                 <% } %>
@@ -87,7 +87,8 @@
                                                     <%= order.paymentOption %>
                                                 </td>
                                                 <td>
-                                                    <a href="#" class="btn btn-xs"> View details</a>
+                                                    <a href="/admin/order-details/<%= order._id %>" class="btn btn-xs">
+                                                        View details</a>
                                                 </td>
                                             </tr>
                                             <% } %>

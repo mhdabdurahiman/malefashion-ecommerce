@@ -7,7 +7,7 @@ const cartHelper = require("../helpers/cartHelper");
 
 const loadCheckout = async (req, res) => {
   try {
-    userId = req.session.userId;
+    const userId = req.session.userId;
     const cartData = await Cart.findOne({userId: userId}).populate(
         "items.productId"
       );
@@ -48,7 +48,8 @@ const doPlaceOrder = async (req, res) => {
     
     const totalPrice = totalAmount[0].total
 
-    paymentOption === 'cod' ? orderStatus = 'Confirmed' : orderStatus = 'Pending';
+    let orderStatus = '';
+    paymentOption === 'cod' ? orderStatus = 'Placed' : orderStatus = 'Pending';
     const order = new Order({
       userId: userId,
       orderId: orderId,
@@ -94,9 +95,88 @@ const loadAdminOrderList = async (req, res) => {
   }
 }
 
+const loadAdminOrderDetails = async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    const orderData = await Order.findById({_id: orderId}).populate('userId').populate('products.productId');
+    console.log(orderData);
+    res.render("admin/adminOrderDetails",{
+      orderData: orderData
+    })
+  }
+  catch(error){
+    error.message
+  }
+}
+
+const loadUserOrderDetails = async (req, res) => {
+  try {
+      const orderId = req.params.id;
+      const orderData = await Order.findById({ _id: orderId }).populate('products.productId');
+      console.log('orderData:',orderData.products);
+      res.render('user/orderDetails',{
+          orderData: orderData,
+      })
+  } catch (error) {
+      console.log(error.message)
+  }
+}
+
+const changeOrderStatus = async (req, res) => {
+  try {
+    console.log(req.body)
+    const {orderId, status} = req.body;
+    if ( status === 'Canceled'){
+      const order = await Order.findOne({ _id: orderId })
+      for (let product of order.products){
+        await Product.updateOne({ _id: product.productId },{
+          $inc: {stock: product.quantity}
+        })
+      }
+      await Order.findOneAndUpdate({ _id: orderId },
+        { $set: {orderStatus: status} })
+    } else {
+      await Order.findOneAndUpdate({ _id: orderId },
+        { $set: {orderStatus: status} })
+    }
+    const orderData = await Order.findOne({ _id: orderId });
+    res.status(200).json({success: true, status: orderData.orderStatus})
+  } catch (error) {
+    console.log(error.message)
+  }
+}
+
+const doUserCancelProduct = async (req, res) => {
+  try {
+    console.log(req.body)
+    const {orderId, status} = req.body;
+    if ( status === 'Canceled'){
+      const order = await Order.findOne({ _id: orderId })
+      for (let product of order.products){
+        await Product.updateOne({ _id: product.productId },{
+          $inc: {stock: product.quantity}
+        })
+      }
+      await Order.findOneAndUpdate({ _id: orderId },
+        { $set: {orderStatus: status} })
+    } else {
+      await Order.findOneAndUpdate({ _id: orderId },
+        { $set: {orderStatus: status} })
+    }
+    const orderData = await Order.findOne({ _id: orderId });
+    res.status(200).json({success: true, status: orderData.orderStatus})
+  } catch (error) {
+    console.log(error.message)
+  }
+}
+
 module.exports = {
     loadCheckout,
     doPlaceOrder,
     loadOrderConfirmation,
     loadAdminOrderList,
+    loadAdminOrderDetails,
+    loadUserOrderDetails,
+    changeOrderStatus,
+    doUserCancelProduct,
 }

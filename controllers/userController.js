@@ -6,7 +6,7 @@ const loadUserProfile = async (req, res) => {
     try {
         const userId = req.session.userId
         const userDetails = await User.findOne({ _id : userId }).populate('address').exec();
-        const orderData = await Order.find({ userId: userId });
+        const orderData = await Order.find({ userId: userId }).sort({"createdAt":-1});
         res.render(
             "user/profile",{
                 userDetails : userDetails,
@@ -19,6 +19,7 @@ const loadUserProfile = async (req, res) => {
 }
 
 const doAddAddress = async (req, res) => {
+    console.log('doAddaddress invoked')
     try {
         const {fullname,
                 mobile,
@@ -116,18 +117,7 @@ const doEditDetails = async (req, res) => {
     }
 }
 
-const loadOrderDetails = async (req, res) => {
-    try {
-        const orderId = req.params.id;
-        const orderData = await Order.findById({ _id: orderId }).populate('products.productId');
-        console.log('orderData:',orderData.products);
-        res.render('user/orderDetails',{
-            orderData: orderData,
-        })
-    } catch (error) {
-        console.log(error.message)
-    }
-}
+
 
 module.exports = {
     loadUserProfile,
@@ -135,5 +125,4 @@ module.exports = {
     doDeleteAddress,
     doEditAddress,
     doEditDetails,
-    loadOrderDetails,
 }

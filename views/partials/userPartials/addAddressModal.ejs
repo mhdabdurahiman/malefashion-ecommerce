@@ -55,7 +55,7 @@
                         <input type="text" class="form-control" name="state" id="state" placeholder="Enter your state" required>
                         <div class="invalid-feedback">Please enter a state.</div>
                     </div>
-                    <button type="submit" class="btn site-btn">Add new address</button>
+                    <button id="addNewAddress" type="button" class="btn site-btn">Add new address</button>
                 </form>
             </div>
         </div>
@@ -64,8 +64,9 @@
 
 <script>
     const form = document.getElementById('addAddressForm');
+    const addAddressBtn = document.getElementById('addNewAddress')
 
-    form.addEventListener('submit', async function (event) {
+    addAddressBtn.addEventListener('click', async function (event) {
         event.preventDefault();
 
         if (form.checkValidity() === false) {
@@ -92,8 +93,6 @@
                 event.preventDefault();
 
                 const formData = new FormData(form);
-                console.log(formData);
-                console.log(JSON.stringify(Object.fromEntries(formData)));
 
                 const response = await fetch('/user/add-address', {
                     method: 'POST',
