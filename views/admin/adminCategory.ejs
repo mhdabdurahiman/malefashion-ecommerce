@@ -1,5 +1,5 @@
 <%- include('../partials/adminPartials/adminHead') -%> <%- include('../partials/adminPartials/adminSideNavbar') -%> <%-
-    include('../partials/adminPartials/adminNavbarHead') -%>
+      include('../partials/adminPartials/adminNavbarHead') -%>
 
       <section class="content-main">
         <div class="content-header">
@@ -200,7 +200,8 @@
               Swal.fire({
                 title: "Deleted!",
                 text: "Your file has been deleted.",
-                icon: "success"
+                icon: "success",
+                confirmButtonColor: "green"
               });
             }
           });
@@ -218,7 +219,7 @@
           const regexName = /^[a-zA-Z\s-]+$/;
           const regexDescription = /^[a-zA-Z0-9\s,]+$/;
 
-      
+
           if (!categoryName || !categoryDescription) {
             alertContainer.classList.replace('d-none', 'd-block');
             myAlert.classList.add('alert');
@@ -264,10 +265,11 @@
                 if (response.success) {
                   alertContainer.removeClass("d-none").addClass("d-block");
                   myAlert.attr("class", "alert alert-success");
-                  $(`<p>${response.message}</p>`).appendTo(myAlert);
+                  let messageElement = $(`<p>${response.message}</p>`).appendTo(myAlert);
                   setTimeout(() => {
                     alertContainer.removeClass("d-block").addClass("d-none");
-                  }, 3000)
+                    messageElement.remove(); 
+                  }, 3000);
 
 
                   // Reload the dynamically loaded content
@@ -282,10 +284,11 @@
                 } else {
                   alertContainer.removeClass("d-none").addClass("d-block");
                   myAlert.attr("class", "alert alert-danger");
-                  $(`<p>${response.message}</p>`).appendTo(myAlert);
+                  let messageElement = $(`<p>${response.message}</p>`).appendTo(myAlert);
                   setTimeout(() => {
                     alertContainer.removeClass("d-block").addClass("d-none");
-                  }, 3000)
+                    messageElement.remove(); 
+                  }, 3000);
                 }
 
               })

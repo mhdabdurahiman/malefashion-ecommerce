@@ -16,6 +16,12 @@ include('../partials/adminPartials/adminNavbarHead') -%>
       />
     </div>
   </div>
+  <!-- alert container -->
+  <div class="container mb-4 d-none" id="alertContainer">
+    <div id="myAlert" class="alert alert-danger" role="alert">
+
+    </div>
+  </div>
   <div class="card">
     <div class="card-body">
       <div class="row">
@@ -65,6 +71,45 @@ include('../partials/adminPartials/adminNavbarHead') -%>
 </section>
 
 <script>
-  
+  document.getElementById('category').addEventListener('submit', function(event) {
+    event.preventDefault(); 
+
+    const formData = new FormData(this);
+    console.log(formData)
+    const actionUrl = this.getAttribute('action');
+
+    const options = {
+      method: 'POST',
+      body: JSON.stringify(Object.fromEntries(formData)),
+      headers: {
+        'Content-Type': 'application/json', 
+      },
+    };
+
+    fetch(actionUrl, options)
+      .then(response => response.json()) 
+      .then(data => {
+        showAlert(data.message);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        showAlert('An error occurred while processing your request.');
+      });
+  });
+
+  function showAlert(message) {
+    const alertContainer = document.getElementById('alertContainer');
+    const myAlert = document.getElementById('myAlert');
+    myAlert.textContent = message;
+
+    alertContainer.classList.remove('d-none');
+    alertContainer.classList.add('d-block');
+
+    setTimeout(() => {
+      alertContainer.classList.remove('d-block');
+      alertContainer.classList.add('d-none');
+    }, 3000);
+  }
 </script>
+
 <%- include('../partials/adminPartials/adminFooter') -%>

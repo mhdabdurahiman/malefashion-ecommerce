@@ -76,15 +76,14 @@ const loadEditCategory = async (req, res) => {
 
 const doEditCategory = async (req, res) => {
   try {
-    const { categoryName, categoryId, categoryDescription } = req.body;
-    console.log(
-      `id:${categoryId}, name:${categoryName},description:${categoryDescription}`
-    );
+    console.log("edit category request body: ",req.body)
+    const { categoryId, categoryDescription } = req.body;
+    const categoryName = req.body.categoryName.toLowerCase();
     const categoryData = await Category.findById(categoryId);
     if (categoryData.name === categoryName) {
         res.json({
             success: false,
-            message: 'Category with same already exist'
+            message: 'Category with same name already exist'
         })
     } else {
       await categoryData.updateOne({
