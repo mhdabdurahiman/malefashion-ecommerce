@@ -249,21 +249,18 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="editUserDetailsForm">
+                    <form id="editUserDetailsForm" class="needs-validation" novalidate>
                         <div class="form-group">
                             <label for="editUserName">Name</label>
                             <input name="fullname" type="text" class="form-control" id="editUserName"
-                                placeholder="Enter your name">
-                        </div>
-                        <div class="form-group">
-                            <label for="editUserEmail">Email</label>
-                            <input name="email" type="email" class="form-control" id="editUserEmail"
-                                placeholder="Enter your email">
+                                placeholder="Enter your name" required>
+                            <div class="invalid-feedback">Please enter your name.</div>
                         </div>
                         <div class="form-group">
                             <label for="editUserMoblie">Mobile</label>
                             <input name="mobile" type="number" class="form-control" id="editUserMobile"
                                 placeholder="Enter your number">
+                            <div class="invalid-feedback">Please enter your number.</div>
                         </div>
                         <button type="submit" class="btn site-btn">Save Changes</button>
                     </form>
@@ -289,42 +286,49 @@
                     </div>
                     <div class="modal-body">
                         <!-- Form elements for editing new address -->
-                        <form id="editAddressForm">
+                        <form id="editAddressForm" class="needs-validation" novalidate>
                             <input type="hidden" id="editAddressId" name="addressId">
                             <div class="form-group">
                                 <label for="editFullname">Full name</label>
                                 <input type="text" class="form-control" name="fullname" id="editFullname"
-                                    placeholder="Enter your name">
+                                    placeholder="Enter your name" required>
+                                <div class="invalid-feedback">Please enter your full name.</div>
                             </div>
                             <div class="form-group">
                                 <label for="editMobile">Mobile</label>
                                 <input type="number" class="form-control" name="mobile" id="editMobile"
-                                    placeholder="Enter your mobile">
+                                    placeholder="Enter your mobile" required>
+                                <div class="invalid-feedback">Please enter your mobile number.</div>
                             </div>
                             <div class="form-group">
                                 <label for="editLandmark">Landmark</label>
                                 <input type="text" class="form-control" name="landmark" id="editLandmark"
-                                    placeholder="Enter your landmark">
+                                    placeholder="Enter your landmark" required>
+                                <div class="invalid-feedback">Please enter your landmark.</div>
                             </div>
                             <div class="form-group">
                                 <label for="editCity">City</label>
                                 <input type="text" class="form-control" name="city" id="editCity"
-                                    placeholder="Enter your city">
+                                    placeholder="Enter your city" required>
+                                <div class="invalid-feedback">Please enter your city.</div>
                             </div>
                             <div class="form-group">
                                 <label for="editPincode">Pincode</label>
                                 <input type="number" class="form-control" name="pincode" id="editPincode"
-                                    placeholder="Enter your pincode">
+                                    placeholder="Enter your pincode" required>
+                                <div class="invalid-feedback">Please enter your pincode.</div>
                             </div>
                             <div class="form-group">
                                 <label for="editDistrict">District</label>
                                 <input type="text" class="form-control" name="district" id="editDistrict"
-                                    placeholder="Enter your district">
+                                    placeholder="Enter your district" required>
+                                <div class="invalid-feedback">Please enter your district.</div>
                             </div>
                             <div class="form-group">
                                 <label for="editState">State</label>
                                 <input type="text" class="form-control" name="state" id="editState"
-                                    placeholder="Enter your state">
+                                    placeholder="Enter your state" required>
+                                <div class="invalid-feedback">Please enter your state.</div>
                             </div>
                             <button type="submit" class="btn site-btn">Edit address</button>
                         </form>
@@ -411,45 +415,64 @@
 
                 editAddressForm.addEventListener('submit', async function (event) {
                     event.preventDefault();
+                    if (editAddressForm.checkValidity() === false) {
+                        event.stopPropagation();
+                    } else {
+                        const formData = new FormData(editAddressForm);
+                        const fullname = formData.get('fullname');
+                        const mobile = formData.get('mobile');
+                        const landmark = formData.get('landmark');
+                        const city = formData.get('city');
+                        const pincode = formData.get('pincode');
+                        const district = formData.get('district');
+                        const state = formData.get('state');
 
-                    const formData = new FormData(editAddressForm);
-                    console.log(formData);
-
-                    const response = await fetch('/user/edit-address', {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(Object.fromEntries(formData)),
-
-                    })
-
-
-
-                    try {
-                        const json = await response.json();
-                        $('#editAddressModal').modal('hide');
-
-                        if (json.success === true) {
-                            $("#addressList").load(location.href + " #addressList");
-
-                            Swal.fire({
-                                title: "Address Edited",
-                                text: "Address has been edited successfully",
-                                icon: "success",
-                            });
-                            window.location.href = window.location.href.split('#')[0] + '#addressList';
-                            location.reload();
-
-
-                        } else {
-                            console.error('Error during fetch:', json.error);
+                        if (!fullname || !mobile || !landmark || !city || !pincode || !district || !state || !isValidMobileNumber(mobile)) {
+                            alert('Please fill in all required fields and provide a valid mobile number.');
+                            return;
                         }
-                    } catch (error) {
-                        console.error('Error parsing JSON:', error);
+
+                        const response = await fetch('/user/edit-address', {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(Object.fromEntries(formData)),
+
+                        })
+
+
+
+                        try {
+                            const json = await response.json();
+                            $('#editAddressModal').modal('hide');
+
+                            if (json.success === true) {
+                                $("#addressList").load(location.href + " #addressList");
+
+                                Swal.fire({
+                                    title: "Address Edited",
+                                    text: "Address has been edited successfully",
+                                    icon: "success",
+                                });
+                                window.location.href = window.location.href.split('#')[0] + '#addressList';
+                                location.reload();
+
+
+                            } else {
+                                console.error('Error during fetch:', json.error);
+                            }
+                        } catch (error) {
+                            console.error('Error parsing JSON:', error);
+                        }
                     }
-                })
+                    editAddressForm.classList.add('was-validated');
+                });
+
             });
+            function isValidMobileNumber(mobile) {
+                return /^[0-9]{10}$/.test(mobile);
+            }
 
             // Edit user details modal value populating
 
@@ -457,11 +480,9 @@
                 $('#editUserDetails').on('click', function () {
                     let userId = $(this).data('user-id');
                     let fullname = $(this).data('fullname');
-                    let email = $(this).data('email');
                     let mobile = $(this).data('mobile')
 
                     $('#editUserName').val(fullname);
-                    $('#editUserEmail').val(email);
                     $('#editUserMobile').val(mobile)
 
                     $('#editUserDetailsModal').modal('show');
@@ -472,33 +493,44 @@
                 editUserDetailsForm.addEventListener('submit', async function (event) {
                     event.preventDefault();
 
-                    const formData = new FormData(editUserDetailsForm);
-                    console.log('userdetailsform', formData)
+                    if (editUserDetailsForm.checkValidity() === false) {
+                        event.stopPropagation();
+                    } else {
+                        const formData = new FormData(editUserDetailsForm);
+                        const fullname = formData.get('fullname');
+                        const mobile = formData.get('mobile');
 
-                    const response = await fetch('/user/edit-details', {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(Object.fromEntries(formData)),
-                    })
-
-                    try {
-                        const json = await response.json();
-                        $('#editUserDetailsModal').modal('hide');
-
-                        if (json.success === true) {
-                            Swal.fire({
-                                title: "Address Edited",
-                                text: "Address has been edited successfully",
-                                icon: "success",
-                            });
+                        if (!fullname || !mobile || !isValidMobileNumber(mobile)) {
+                            alert('Please fill in all required fields and provide a valid mobile number.');
+                            return;
                         }
-                        location.reload();
 
-                    } catch (error) {
-                        console.log('Error parsing JSON:', error)
+                        const response = await fetch('/user/edit-details', {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(Object.fromEntries(formData)),
+                        })
+
+                        try {
+                            const json = await response.json();
+                            $('#editUserDetailsModal').modal('hide');
+
+                            if (json.success === true) {
+                                Swal.fire({
+                                    title: "User Details Edited",
+                                    text: "User details has been edited successfully",
+                                    icon: "success",
+                                });
+                            }
+                            location.reload();
+
+                        } catch (error) {
+                            console.log('Error parsing JSON:', error)
+                        }
                     }
+                    editUserDetailsForm.classList.add('was-validated');
                 })
 
             })

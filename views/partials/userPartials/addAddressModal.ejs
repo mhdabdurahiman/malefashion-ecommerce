@@ -1,5 +1,3 @@
-
-
 <!-- Add Address Modal -->
 <div class="modal fade" id="addAddressModal" tabindex="-1" role="dialog" aria-labelledby="addAddressModalLabel"
     aria-hidden="true">
@@ -35,7 +33,8 @@
                     </div>
                     <div class="form-group">
                         <label for="city">City</label>
-                        <input type="text" class="form-control" name="city" id="city" placeholder="Enter your city" required>
+                        <input type="text" class="form-control" name="city" id="city" placeholder="Enter your city"
+                            required>
                         <div class="invalid-feedback">Please enter a City.</div>
                     </div>
                     <div class="form-group">
@@ -48,14 +47,15 @@
                         <label for="district">District</label>
                         <input type="text" class="form-control" name="district" id="district"
                             placeholder="Enter your district" required>
-                            <div class="invalid-feedback">Please enter a district.</div>
+                        <div class="invalid-feedback">Please enter a district.</div>
                     </div>
                     <div class="form-group">
                         <label for="state">State</label>
-                        <input type="text" class="form-control" name="state" id="state" placeholder="Enter your state" required>
+                        <input type="text" class="form-control" name="state" id="state" placeholder="Enter your state"
+                            required>
                         <div class="invalid-feedback">Please enter a state.</div>
                     </div>
-                    <button id="addNewAddress" type="button" class="btn site-btn">Add new address</button>
+                    <button type="submit" id="addNewAddress" class="btn site-btn">Add new address</button>
                 </form>
             </div>
         </div>
@@ -64,7 +64,7 @@
 
 <script>
     const form = document.getElementById('addAddressForm');
-    const addAddressBtn = document.getElementById('addNewAddress')
+    const addAddressBtn = document.getElementById('addNewAddress');
 
     addAddressBtn.addEventListener('click', async function (event) {
         event.preventDefault();
@@ -87,45 +87,35 @@
                 return;
             }
 
-            const form = document.getElementById('addAddressForm');
+            // Form submission
+            const response = await fetch('/user/add-address', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(Object.fromEntries(formData)),
+            });
 
-            form.addEventListener('submit', async function (event) {
-                event.preventDefault();
+            try {
+                const json = await response.json();
+                $('#addAddressModal').modal('hide');
 
-                const formData = new FormData(form);
+                if (json.success === true) {
+                    $("#addressList").load(location.href + " #addressList");
 
-                const response = await fetch('/user/add-address', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(Object.fromEntries(formData)),
-                })
-
-
-                try {
-                    const json = await response.json();
-                    $('#addAddressModal').modal('hide');
-
-                    if (json.success === true) {
-                        $("#addressList").load(location.href + " #addressList");
-
-                        Swal.fire({
-                            title: "Address Added",
-                            text: "Address has been added successfully",
-                            icon: "success",
-                        });
-                        window.location.href = window.location.href.split('#')[0] + '#addressList';
-                        location.reload();
-
-
-                    } else {
-                        console.error('Error during fetch:', json.error);
-                    }
-                } catch (error) {
-                    console.error('Error parsing JSON:', error);
+                    Swal.fire({
+                        title: "Address Added",
+                        text: "Address has been added successfully",
+                        icon: "success",
+                    });
+                    window.location.href = window.location.href.split('#')[0] + '#addressList';
+                    location.reload();
+                } else {
+                    console.error('Error during fetch:', json.error);
                 }
-            })
+            } catch (error) {
+                console.error('Error parsing JSON:', error);
+            }
         }
 
         form.classList.add('was-validated');
