@@ -47,6 +47,7 @@ module.exports = {
       next();
     } catch (error) {
       if(error.name === 'TokenExpiredError') {
+        req.session.token = null;
         return res.status(401).redirect('/login');
       }
       else {
