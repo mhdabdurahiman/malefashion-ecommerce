@@ -96,7 +96,11 @@
                                         <div class="col-md-9">
                                             <div class="mb-4">
                                                 <select id="category" name="categoryId"
+                                                <% if (product.category) { %>
                                                     value="<%= product.category.name %>" class="form-select">
+                                                <% } else { %>
+                                                    value="Please select a category" class="form-select">
+                                                <% } %>
                                                     <% for( let category of categories ) { %>
                                                         <option value="<%= category._id %>">
                                                             <%= category.name %>
