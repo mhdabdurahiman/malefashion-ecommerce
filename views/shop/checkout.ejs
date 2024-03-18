@@ -177,7 +177,7 @@
                             title: 'Order Placed!',
                             text: 'Thank you for your order!',
                         });
-                        window.location.replace("/order-confirmation")
+                        window.location.replace("/order-confirmation?orderId=" + json.orderId);
                     } else if (json.success == false) {
                         razorpayPayment(json.razorpayOnlinePayment)
                     } else {
@@ -251,7 +251,7 @@
 
                     const json = await responseJson.json();
                     if (json.paymentVerified == true) {
-                        window.location.replace("/order-confirmation")
+                        window.location.replace("/order-confirmation?orderId=" + json.orderId);
                     } else {
                         window.location.replace("/payment-failure")
                     }
