@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const path = require('path');
+require( 'dotenv' ).config()
 const nocache = require('nocache')
 const dbConnect = require('./config/dbConnect')
 const session = require('express-session');

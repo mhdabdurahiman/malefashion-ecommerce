@@ -9,6 +9,7 @@ const orderSchema = new mongoose.Schema(
     },
     orderId: {
       type: String,
+      required: true,
     },
     products: [
       {
@@ -50,6 +51,10 @@ const orderSchema = new mongoose.Schema(
       type: Object,
       required: true,
     },
+    amountPayable: {
+      type: Number,
+      required: false,
+    }
   },
 
   { timestamps: true }

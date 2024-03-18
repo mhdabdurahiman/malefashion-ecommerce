@@ -20,7 +20,9 @@ shopRoute.post("/remove-cart-item", cartController.removeCartItem);
 
 shopRoute.get("/checkout", authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, orderController.loadCheckout);
 shopRoute.get("/order-confirmation", authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, orderController.loadOrderConfirmation);
-shopRoute.post("/place-order", authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, orderController.doPlaceOrder)
+shopRoute.post("/place-order", authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, orderController.doPlaceOrder);
+shopRoute.post("/verify-razorpay-payment", authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, orderController.verifyPayment);
+shopRoute.get("/payment-failure", authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, orderController.loadPaymentFailure);
 
 shopRoute.get("/blog", shopController.loadBlog);
 shopRoute.get("/contact", shopController.loadContact);
