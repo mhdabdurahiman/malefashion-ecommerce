@@ -99,13 +99,11 @@ const doEditDetails = async (req, res) => {
     try {
         const {
             fullname,
-            email,
             mobile} = req.body;
         const userId = req.session.userId;
         const userData = await User.findByIdAndUpdate({ _id: userId }, {
             $set: {
                 fullname: fullname,
-                email: email,
                 mobile: mobile
             }
         })
