@@ -95,16 +95,18 @@
                                         </div>
                                         <div class="col-md-9">
                                             <div class="mb-4">
-                                                <select id="category" name="categoryId"
-                                                <% if (product.category) { %>
-                                                    value="<%= product.category.name %>" class="form-select">
-                                                <% } else { %>
-                                                    value="Please select a category" class="form-select">
-                                                <% } %>
+                                                <select id="category" name="categoryId">
                                                     <% for( let category of categories ) { %>
-                                                        <option value="<%= category._id %>">
-                                                            <%= category.name %>
+                                                        <% if (product.category) {%>
+                                                            <option value="<%= category._id %>" <% if (product.category.name==category.name) {%>selected<%} %>>
+                                                                <%= category.name %>
                                                         </option>
+                                                            <% } else { %>
+                                                        <option value="none" selected disabled hidden>Select a category</option>
+                                                        <option value="<%= category._id %>" >
+                                                                <%= category.name %>
+                                                        </option>
+                                                        <% } %>
                                                         <% } %>
                                                 </select>
                                             </div>
@@ -168,7 +170,7 @@
 
                 displayDbImages();
                 displayImages()
-                
+
                 function displayDbImages() {
                     let images = "";
                     images = '<p>Images in DB</p>'
@@ -178,7 +180,7 @@
                             <span onclick="deleteImage(${index})">&times;</span>
                         </div>`
                     })
-                    
+
                     output1.innerHTML = images;
                 }
 

@@ -11,7 +11,7 @@ const loadCart = async (req, res) => {
       "items.productId"
     );
     const totalCartPrice = await cartHelper.totalCartPrice(userId);
-    console.log('totalCartPrice:',totalCartPrice)
+    console.log("totalCartPrice:", totalCartPrice);
     console.log("cartData:", cartData);
     res.render("shop/shopping-cart", {
       cartData: cartData,
@@ -21,7 +21,6 @@ const loadCart = async (req, res) => {
     console.log(error.message);
   }
 };
-
 
 const addToCart = async (req, res) => {
   if (req.session.userId) {
@@ -123,6 +122,7 @@ const addToCart = async (req, res) => {
       }
     } catch (error) {
       console.log(error.message);
+      res.redirect("/error500");
       return res.status(500).json({
         error: true,
         message: "Internal Server Error",
@@ -133,7 +133,6 @@ const addToCart = async (req, res) => {
     return res.status(401).json({ authenticated: false });
   }
 };
-
 
 const decProductQuantity = async (req, res) => {
   try {
@@ -169,6 +168,7 @@ const removeCartItem = async (req, res) => {
     );
     res.status(200).json({ success: true });
   } catch (error) {
+    res.render("error/error500");
     console.log(error.message);
   }
 };

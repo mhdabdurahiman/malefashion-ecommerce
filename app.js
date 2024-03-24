@@ -14,7 +14,8 @@ const localsMiddleware = require('./middleware/localsMiddleware');
 const userRoute = require('./routes/userRoute');
 const adminRoute = require('./routes/adminRoute');
 const shopRoute = require('./routes/shopRoute');
-const authRoute = require('./routes/authRoute')
+const authRoute = require('./routes/authRoute');
+const errorRoute = require('./routes/errorRoute');
 
 const port = process.env.PORT || 3000;
 
@@ -63,6 +64,7 @@ app.use(shopRoute);
 app.use('/user',userRoute);
 app.use('/admin',adminRoute);
 app.use(shopRoute);
+app.use(errorRoute)
 
 app.listen(port, () => {
     console.log(`Server started...! Access your website at http://localhost:${port}`);

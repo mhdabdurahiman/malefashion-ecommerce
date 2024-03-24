@@ -57,7 +57,7 @@
                                         <th class="align-middle" scope="col">View Details</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="orderListTable">
                                     <% if (orders && orders.length>0) { %>
                                         <% for( let order of orders ) { %>
                                             <tr>
@@ -101,21 +101,78 @@
                     <!-- table-responsive end// -->
                 </div>
                 </div>
-                <!-- <div class="pagination-area mt-30 mb-50">
-        <nav aria-label="Page navigation example">
-            <ul class="pagination justify-content-start">
-                <li class="page-item active"><a class="page-link" href="#">01</a></li>
-                <li class="page-item"><a class="page-link" href="#">02</a></li>
-                <li class="page-item"><a class="page-link" href="#">03</a></li>
-                <li class="page-item"><a class="page-link dot" href="#">...</a></li>
-                <li class="page-item"><a class="page-link" href="#">16</a></li>
-                <li class="page-item">
-                    <a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a>
-                </li>
-            </ul>
-        </nav>
-    </div> -->
+                <% if (totalPages) { %>
+                    <div class="pagination-area mt-30 mb-50">
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination justify-content-start">
+                                <% for (let i=1; i <=totalPages; i++) { %>
+                                    <li class="page-item">
+                                        <a class="page-link" href="javascript:void(0)" onclick="fetchOrder(<%= i %>)">
+                                            <%= i %>
+                                        </a>
+                                    </li>
+                                    <% } %>
+                            </ul>
+                        </nav>
+                    </div>
+                    <% } %>
             </section>
+
+            <script>
+                function fetchOrder(page) {
+                    fetch(`/admin/orders?page=${page}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log(data.orders);
+                            updateOrderList(data.orders);
+                        })
+                        .catch(error => {
+                            console.error('Error fetching orders:', error);
+                        })
+                }
+
+                function updateOrderList(orders) {
+                    let orderListTable = document.getElementById('orderListTable');
+                    orderListTable.innerHTML = '';
+                    orders.forEach(order => {
+                        const orderDate = new Date(order.createdAt);
+                        let orderItem = `
+                        <tr>
+                            <td><a href="#" class="fw-bold">
+                                ${order.orderId}
+                            </a></td>
+                            <td>
+                                ${order.address.fullname}
+                            </td>
+                            <td>
+                                ${orderDate.toDateString()}
+                            </td>
+                            <td>₹ ${order.totalPrice}
+                            </td>
+                            <td>
+                                ${order.orderStatus === 'Pending' 
+                                    ? '<span class="badge badge-pill badge-soft-warning">Pending</span>' 
+                                    : order.orderStatus === 'Placed' 
+                                        ? '<span class="badge badge-pill badge-soft-success">Placed</span>' 
+                                        : '<span class="badge badge-pill badge-soft-danger">Cancelled</span>'}
+                            </td>
+                            <td><i class="material-icons md-payment font-xxl text-muted mr-5"></i>
+                                ${order.paymentOption}
+                            </td>
+                            <td>
+                                <a href="/admin/order-details/${order._id}" class="btn btn-xs">
+                                    View details</a>
+                            </td>
+                        </tr>`;
+                        orderListTable.innerHTML += orderItem;
+                    });
+                }
+            </script>
 
 
             <%- include('../partials/adminPartials/adminFooter') -%>

@@ -15,7 +15,7 @@ const loadCategory = async (req, res) => {
 const doAddCategory = async (req, res) => {
   try {
     console.log("Called do Add category");
-    const { categoryDescription } = req.body;
+    const categoryDescription = req.body.categoryDescription.trim();
 
     const categoryName = req.body.categoryName.toLowerCase();
 
@@ -76,25 +76,41 @@ const loadEditCategory = async (req, res) => {
 
 const doEditCategory = async (req, res) => {
   try {
-    console.log("edit category request body: ",req.body)
-    const { categoryId, categoryDescription } = req.body;
+    console.log("edit category request body: ", req.body);
+    const { categoryId } = req.body;
     const categoryName = req.body.categoryName.toLowerCase();
+    const categoryDescription = req.body.categoryDescription.trim();
+
+
     const categoryData = await Category.findById(categoryId);
-    if (categoryData.name === categoryName) {
-        res.json({
-            success: false,
-            message: 'Category with same name already exist'
-        })
+    const existingCategory = await Category.findOne({ name: categoryName });
+
+    if (existingCategory && existingCategory._id.toString() !== categoryId) {
+      console.log("Category with same name already exists");
+      return res.json({
+        success: false,
+        message: "Category with same name already exists",
+      });
     } else {
+      console.log("Success");
       await categoryData.updateOne({
         $set: { name: categoryName, description: categoryDescription },
       });
-      res.redirect("/admin/category");
+      console.log("Category updated successfully");
+      return res.json({
+        success: true,
+        message: "Category updated successfully",
+      });
     }
   } catch (error) {
     console.log(error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
   }
 };
+
 
 const doDeleteCategory = async (req, res) => {
   try {

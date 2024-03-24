@@ -4,8 +4,8 @@ const Order = require("../models/orderModel")
 
 const loadUserProfile = async (req, res) => {
     try {
-        const userId = req.session.userId
-        const userDetails = await User.findOne({ _id : userId }).populate('address').exec();
+        const userId = req.session.userId;
+        const userDetails = await User.findOne({ _id : userId }).populate('address');
         const orderData = await Order.find({ userId: userId }).sort({"createdAt":-1});
         res.render(
             "user/profile",{

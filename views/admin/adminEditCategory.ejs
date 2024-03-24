@@ -88,8 +88,10 @@ include('../partials/adminPartials/adminNavbarHead') -%>
 
     fetch(actionUrl, options)
       .then(response => response.json()) 
+      
       .then(data => {
-        showAlert(data.message);
+        console.log(data)
+        showAlert(data.message, data.success);
       })
       .catch(error => {
         console.error('Error:', error);
@@ -97,9 +99,16 @@ include('../partials/adminPartials/adminNavbarHead') -%>
       });
   });
 
-  function showAlert(message) {
+  function showAlert(message, success) {
     const alertContainer = document.getElementById('alertContainer');
     const myAlert = document.getElementById('myAlert');
+    if (success == false) {
+      myAlert.classList.remove('alert-success');
+      myAlert.classList.add('alert-danger');
+    } else {
+      myAlert.classList.remove('alert-danger');
+      myAlert.classList.add('alert-success');
+    }
     myAlert.textContent = message;
 
     alertContainer.classList.remove('d-none');

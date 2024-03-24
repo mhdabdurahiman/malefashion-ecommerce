@@ -27,7 +27,7 @@
                 <form id="checkoutForm">
                     <div class="row">
                         <!-- Address selection section -->
-                        <% if (cartData.items.length===0) { %>
+                        <% if (cartData.items && cartData.items.length===0) { %>
                             <h2>Please add something to cart before proceeding to checkout</h2>
                             <% } else {%>
                                 <div class="col-lg-7 col-md-5">
@@ -250,6 +250,9 @@
                     })
 
                     const json = await responseJson.json();
+                    console.log("json response of the fetch verifypayment: ", json);
+                    console.log("OrderConfirmation url = /order-confirmation?orderId=" + json.orderId);
+
                     if (json.paymentVerified == true) {
                         window.location.replace("/order-confirmation?orderId=" + json.orderId);
                     } else {

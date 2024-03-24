@@ -1264,6 +1264,13 @@ ol {
 	color: #111111;
 }
 
+.shop__sidebar__categories ul li a:active,
+.shop__sidebar__price ul li a:active,
+.shop__sidebar__brand ul li a:active {
+    background-color: #ff0000; 
+    color: #ffffff; 
+}
+
 .shop__sidebar__brand ul {
 	height: auto;
 }
