@@ -106,19 +106,20 @@
                                 <button class="primary-btn" data-product-id="<%= product._id %>">add to cart</button>
                             </div>
                             <div class="product__details__btns__option">
-                                <a href="#"><i class="fa fa-heart"></i> add to wishlist</a>
+                                <button onclick="addToWishlist('<%= product._id %>')"><i class="fa fa-heart"></i> add to
+                                    wishlist</button>
                             </div>
                             <div class="product__details__last__option">
                                 <h5><span>Guaranteed Safe Checkout</span></h5>
-                                <img src="user/1img/shop-details/details-payment.png" alt="">
+                                <img src="user/img/shop-details/details-payment.png" alt="">
                                 <ul>
                                     <li><span>SKU:</span> 3812912</li>
                                     <li><span>Categories:</span>
                                         <% if (product.category) { %>
                                             <%= product.category.name %>
-                                        <% } else { %>
-                                            No category found
-                                        <% } %>
+                                                <% } else { %>
+                                                    No category found
+                                                    <% } %>
                                     </li>
                                 </ul>
                             </div>
@@ -156,10 +157,10 @@
                         <div class="product__item__pic set-bg" data-setbg="user/1img/product/product-1.jpg">
                             <span class="label">New</span>
                             <ul class="product__hover">
-                                <li><a href="#"><img src="user/1img/icon/heart.png" alt=""></a></li>
-                                <li><a href="#"><img src="user/1img/icon/compare.png" alt=""> <span>Compare</span></a>
+                                <li><a href="#"><img src="user/img/icon/heart.png" alt=""></a></li>
+                                <li><a href="#"><img src="user/img/icon/compare.png" alt=""> <span>Compare</span></a>
                                 </li>
-                                <li><a href="#"><img src="user/1img/icon/search.png" alt=""></a></li>
+                                <li><a href="#"><img src="user/img/icon/search.png" alt=""></a></li>
                             </ul>
                         </div>
                         <div class="product__item__text">
@@ -191,10 +192,10 @@
                     <div class="product__item">
                         <div class="product__item__pic set-bg" data-setbg="user/1img/product/product-2.jpg">
                             <ul class="product__hover">
-                                <li><a href="#"><img src="user/1img/icon/heart.png" alt=""></a></li>
-                                <li><a href="#"><img src="user/1img/icon/compare.png" alt=""> <span>Compare</span></a>
+                                <li><a href="#"><img src="user/img/icon/heart.png" alt=""></a></li>
+                                <li><a href="#"><img src="user/img/icon/compare.png" alt=""> <span>Compare</span></a>
                                 </li>
-                                <li><a href="#"><img src="user/1img/icon/search.png" alt=""></a></li>
+                                <li><a href="#"><img src="user/img/icon/search.png" alt=""></a></li>
                             </ul>
                         </div>
                         <div class="product__item__text">
@@ -227,10 +228,10 @@
                         <div class="product__item__pic set-bg" data-setbg="user/1img/product/product-3.jpg">
                             <span class="label">Sale</span>
                             <ul class="product__hover">
-                                <li><a href="#"><img src="user/1img/icon/heart.png" alt=""></a></li>
-                                <li><a href="#"><img src="user/1img/icon/compare.png" alt=""> <span>Compare</span></a>
+                                <li><a href="#"><img src="user/img/icon/heart.png" alt=""></a></li>
+                                <li><a href="#"><img src="user/img/icon/compare.png" alt=""> <span>Compare</span></a>
                                 </li>
-                                <li><a href="#"><img src="user/1img/icon/search.png" alt=""></a></li>
+                                <li><a href="#"><img src="user/img/icon/search.png" alt=""></a></li>
                             </ul>
                         </div>
                         <div class="product__item__text">
@@ -262,10 +263,10 @@
                     <div class="product__item">
                         <div class="product__item__pic set-bg" data-setbg="user/1img/product/product-4.jpg">
                             <ul class="product__hover">
-                                <li><a href="#"><img src="user/1img/icon/heart.png" alt=""></a></li>
-                                <li><a href="#"><img src="user/1img/icon/compare.png" alt=""> <span>Compare</span></a>
+                                <li><a href="#"><img src="user/img/icon/heart.png" alt=""></a></li>
+                                <li><a href="#"><img src="user/img/icon/compare.png" alt=""> <span>Compare</span></a>
                                 </li>
-                                <li><a href="#"><img src="user/1img/icon/search.png" alt=""></a></li>
+                                <li><a href="#"><img src="user/img/icon/search.png" alt=""></a></li>
                             </ul>
                         </div>
                         <div class="product__item__text">
@@ -315,17 +316,17 @@
                         },
                         body: JSON.stringify({ productId: productId }),
                     })
-                    .then(response => response.json())
+                        .then(response => response.json())
                         .then(json => {
-                            if (json.success == true){
+                            if (json.success == true) {
                                 Swal.fire({
-                                icon: "success",
-                                title: "Product added to cart successfully",
-                                showConfirmButton: false,
-                                timer: 1500
-                            });
+                                    icon: "success",
+                                    title: "Product added to cart successfully",
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
                             }
-                            
+
                             console.log("Product added to cart successfully");
                         })
                         .then(response => {
@@ -333,13 +334,35 @@
                                 window.location.href = '/login';
                             }
                         })
-                        
+
                         .catch(error => {
                             console.error('Error adding product to cart', error);
                         });
                 });
             });
         });
+
+        function addToWishlist(productId) {
+            fetch('/add-to-wishlist', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ productId: productId }),
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Product added to wishlist!');
+                    } else {
+                        alert('Failed to add product to wishlist');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error adding product to wishlist:', error);
+                    alert('An error occurred, please try again later');
+                });
+        }
+
     </script>
 
 
