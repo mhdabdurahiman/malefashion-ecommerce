@@ -5,6 +5,7 @@ const Order = require("../models/orderModel");
 const Product = require("../models/productModel");
 const cartHelper = require("../helpers/cartHelper");
 const onlinePayment = require("../utils/onlinePayment");
+const paginationHelper = require("../helpers/paginationHelper");
 const crypto = require("crypto");
 
 const loadCheckout = async (req, res) => {
@@ -24,7 +25,7 @@ const loadCheckout = async (req, res) => {
       totalCartPrice: totalCartPrice,
     });
   } catch (error) {
-    console.log(error.message);
+    res.redirect("/error500");
   }
 };
 
@@ -65,7 +66,6 @@ const doPlaceOrder = async (req, res) => {
       address: address,
       amountPayable: amountPayable,
     });
-    console.log('order',order);
     const savedOrder = await order.save();
     // Decreasing the product quantity
     for (const items of cartProducts) {
@@ -78,7 +78,7 @@ const doPlaceOrder = async (req, res) => {
     // Deleting the Cart
     await Cart.deleteOne({ userId: userId });
     if (paymentOption === "cod") {
-      res.status(200).render("shop/order-confirmation",{orderDetails:savedOrder}).json({ success: true });
+      res.status(200).json({ orderId: savedOrder._id, success: true });
     } else if (paymentOption === "online") {
       const razorpayOnlinePayment = await onlinePayment.razorpayPayment(
         orderId,
@@ -90,6 +90,7 @@ const doPlaceOrder = async (req, res) => {
       });
     }
   } catch (error) {
+    res.redirect("/error500");
     console.log(error.message);
   }
 };
@@ -97,7 +98,7 @@ const doPlaceOrder = async (req, res) => {
 const verifyPayment = async (req, res) => {
   try {
     const { response, order } = req.body;
-    console.log(req.body, process.env.RAZORPAY_KEY_SECRET)
+    console.log(req.body, process.env.RAZORPAY_KEY_SECRET);
     const generated_signature = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
       .update(
@@ -110,34 +111,46 @@ const verifyPayment = async (req, res) => {
     console.log("razorpaySignature: ", response.razorpay_signature);
 
     if (generated_signature === response.razorpay_signature) {
-      const orderId = order.receipt; // Assuming order.reciept holds the orderId
+      const orderId = order.receipt;
 
       const orderData = await Order.updateOne(
         { orderId: orderId },
-        { 
-          $set: { 
+        {
+          $set: {
             paymentId: response.razorpay_payment_id,
             orderStatus: "Placed",
-            "products.$[elem].orderStatus": "Placed" // Update the orderStatus of each product
-          }
+            "products.$[elem].orderStatus": "Placed",
+          },
         },
-        { 
-          arrayFilters: [{ "elem.orderStatus": "Pending" }] // Filter products with orderStatus "Pending"
+        {
+          arrayFilters: [{ "elem.orderStatus": "Pending" }],
         }
       );
-      console.log("success payment order data:", orderData)
-      res.status(200).json({ paymentVerified: true });
+
+      if (orderData.modifiedCount === 1) {
+        const updatedOrder = await Order.findOne({ orderId: orderId });
+        console.log("orderData after verify payment: ", updatedOrder);
+        res
+          .status(200)
+          .json({ orderId: updatedOrder._id, paymentVerified: true });
+      }
     } else {
       res.status(400).json({ paymentVerified: false });
     }
   } catch (error) {
+    res.redirect("/error500");
     console.log(error.message);
   }
 };
 
 const loadOrderConfirmation = async (req, res) => {
   try {
-    res.render("shop/order-confirmation");
+    const orderId = req.query.orderId;
+    console.log("orderid:", orderId);
+    const orderData = await Order.findById({ _id: orderId }).populate(
+      "products.productId"
+    );
+    res.render("shop/order-confirmation", { orderData: orderData });
   } catch (error) {
     console.log(error.message);
   }
@@ -153,13 +166,34 @@ const loadPaymentFailure = async (req, res) => {
 
 const loadAdminOrderList = async (req, res) => {
   try {
-    const orderData = await Order.find()
+    const page = parseInt(req.query.page) || 1;
+    const totalOrders = await Order.countDocuments();
+    const limitValue = paginationHelper.ADMIN_ORDER_PER_PAGE;
+    const skipValue = (page - 1) * limitValue;
+    const totalPages = Math.ceil(totalOrders / limitValue);
+    console.log('page: ', page);
+    console.log('totalOrders: ', totalOrders);
+    console.log('totalPages: ', totalPages);
+    console.log('skipValue: ', skipValue);
+    console.log('limitValue: ', limitValue);
+    const orderList = await Order.find()
       .sort({ createdAt: -1 })
-      .populate("products");
-    console.log(orderData);
-    res.render("admin/adminOrderList", {
-      orders: orderData,
-    });
+      .skip(skipValue)
+      .limit(limitValue);
+    if (req.query.page){
+      res.json({
+        orders: orderList,
+        page: page,
+        totalPages: totalPages,
+      })
+    } else {
+      res.render("admin/adminOrderList", {
+        orders: orderList,
+        page: page,
+        totalPages: totalPages,
+      });
+    }
+      
   } catch (error) {
     error.message;
   }
@@ -175,7 +209,8 @@ const loadAdminOrderDetails = async (req, res) => {
       orderData: orderData,
     });
   } catch (error) {
-    error.message;
+    res.render("error/error500");
+    console.log(error.message);
   }
 };
 
@@ -190,6 +225,7 @@ const loadUserOrderDetails = async (req, res) => {
       orderData: orderData,
     });
   } catch (error) {
+    res.render("error/error500");
     console.log(error.message);
   }
 };
@@ -221,6 +257,7 @@ const changeOrderStatus = async (req, res) => {
     const orderData = await Order.findOne({ _id: orderId });
     res.status(200).json({ success: true, status: orderData.orderStatus });
   } catch (error) {
+    res.render("error/error500");
     console.log(error.message);
   }
 };
@@ -252,6 +289,7 @@ const doUserCancelProduct = async (req, res) => {
     const orderData = await Order.findOne({ _id: orderId });
     res.status(200).json({ success: true, status: orderData.orderStatus });
   } catch (error) {
+    res.render("error/error500");
     console.log(error.message);
   }
 };

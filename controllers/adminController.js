@@ -1,4 +1,5 @@
 const User = require("../models/userModel");
+const paginationHelper = require("../helpers/paginationHelper");
 
 
 const loadAdminDashboard = async (req, res) => {
@@ -13,11 +14,28 @@ const loadAdminDashboard = async (req, res) => {
 
 const loadUserList = async (req, res) => {
     try {
+        const page = parseInt(req.query.page) || 1;
+        const totalUsers = await User.countDocuments();
+        const limitValue = paginationHelper.USERS_PER_PAGE;
+        const skipValue = (page - 1) * limitValue;
+        const totalPages = Math.ceil(totalUsers / limitValue);
         const userList = await User.find( {isAdmin: 0} )
-        res.render("admin/adminUserList",{
-            page_name : 'usermanagement',
-            userList : userList,
-        })
+            .sort({ createdDate: -1 })
+            .skip(skipValue)
+            .limit(limitValue);
+        if (req.query.page){
+            res.json({
+                users: userList,
+                page: page,
+                totalPages: totalPages,
+            })
+        } else {
+            res.render("admin/adminUserList",{
+                userList : userList,
+                page: page,
+                totalPages: totalPages,
+            })
+        }
     } catch (error) {
         console.log(error.message)
     }

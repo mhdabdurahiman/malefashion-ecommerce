@@ -18,7 +18,7 @@
                     <div id="product-list-div">
                         <header class="card-header">
                             <div class="row align-items-center">
-    
+
                                 <div class="col-lg-4 col-sm-4 col-8 flex-grow-1">Product</div>
                                 <div class="col-lg-2 col-sm-2 col-4">Price</div>
                                 <div class="col-lg-2 col-sm-2 col-4">Status</div>
@@ -59,54 +59,148 @@
                                         <div class="action-buttons">
                                             <% if (product.isList==true) { %>
                                                 <button type="button" class="btn list-unlist-btn btn-secondary btn-sm"
-                                                    style="padding: 5px; width: 50px" data-product-id="<%= product._id %>"
-                                                    data-is-list="<%= product.isList %>">
-                                                    Unlist
-                                                </button>
-                                            <% } else { %>
-                                                <button type="button" class="btn list-unlist-btn btn-secondary btn-sm"
                                                     style="padding: 5px; width: 50px"
                                                     data-product-id="<%= product._id %>"
                                                     data-is-list="<%= product.isList %>">
-                                                    List
+                                                    Unlist
                                                 </button>
-                                            <% } %>
-                                            <a href="/admin/edit-product/<%= product._id %>">
-                                                <button type="button" class="btn edit-btn btn-primary btn-sm"
-                                                    style="padding: 5px" data-product-id="<%= product._id %>">
-                                                    Edit
-                                                </button></a>
-                                            <button type="button" class="btn delete-btn btn-danger btn-sm"
-                                                style="padding: 5px" data-product-id="<%= product._id %>">
-                                                Delete
-                                            </button>
+                                                <% } else { %>
+                                                    <button type="button"
+                                                        class="btn list-unlist-btn btn-secondary btn-sm"
+                                                        style="padding: 5px; width: 50px"
+                                                        data-product-id="<%= product._id %>"
+                                                        data-is-list="<%= product.isList %>">
+                                                        List
+                                                    </button>
+                                                    <% } %>
+                                                        <a href="/admin/edit-product/<%= product._id %>">
+                                                            <button type="button"
+                                                                class="btn edit-btn btn-primary btn-sm"
+                                                                style="padding: 5px"
+                                                                data-product-id="<%= product._id %>">
+                                                                Edit
+                                                            </button></a>
+                                                        <button type="button" class="btn delete-btn btn-danger btn-sm"
+                                                            style="padding: 5px" data-product-id="<%= product._id %>">
+                                                            Delete
+                                                        </button>
                                         </div>
                                     </div>
                                 </div>
                                 <!-- row .// -->
                             </article>
-                                <!-- itemlist  .// -->
-                        <% } %>
+                            <!-- itemlist  .// -->
+                            <% } %>
                     </div>
                 </div>
                 <!-- card-body end// -->
-
-                <div class="pagination-area mt-30 mb-50">
-                    <nav aria-label="Page navigation example">
-                        <ul class="pagination justify-content-start">
-                            <li class="page-item active"><a class="page-link" href="#">01</a></li>
-                            <li class="page-item"><a class="page-link" href="#">02</a></li>
-                            <li class="page-item"><a class="page-link" href="#">03</a></li>
-                            <li class="page-item"><a class="page-link dot" href="#">...</a></li>
-                            <li class="page-item"><a class="page-link" href="#">16</a></li>
-                            <li class="page-item">
-                                <a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
+                <!-- Pagination links -->
+                <% if (totalPages) { %>
+                    <div class="pagination-area mt-30 mb-50">
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination justify-content-start">
+                                <% for (let i=1; i <=totalPages; i++) { %>
+                                    <li class="page-item">
+                                        <a class="page-link" href="javascript:void(0)" onclick="fetchProduct(<%= i %>)">
+                                            <%= i %>
+                                        </a>
+                                    </li>
+                                    <% } %>
+                            </ul>
+                        </nav>
+                    </div>
+                    <% } %>
             </section>
 
             <script src="/admin/js/productList.js" type="text/javascript"></script>
+
+            <script>
+
+                function fetchProduct(page) {
+                    fetch(`/admin/products?page=${page}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log(data.products)
+                            updateProductList(data.products)
+                        })
+                        .catch(error => {
+                            console.error('Error fetching products:', error);
+                        });
+                }
+
+                function updateProductList(products) {
+                        let productListDiv = document.getElementById('product-list-div');
+                        productListDiv.innerHTML = '';
+                        products.forEach(product => {
+                            var productItem = `
+                        <article class="itemlist">
+                            <div class="row align-items-center">
+                                <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
+                                    <a class="itemside" href="#">
+                                        <div class="left">
+                                            <img src="/images/product-images/${product.image[0]}"
+                                                class="img-sm img-thumbnail" alt="Item" />
+                                        </div>
+                                        <div class="info">
+                                            <h6 class="mb-0">
+                                                ${product.name}
+                                            </h6>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-lg-2 col-sm-2 col-4 col-price"><span>
+                                        ${product.price}
+                                    </span></div>
+                                <div class="col-lg-2 col-sm-2 col-4 col-status">
+                                    <span class="badge rounded-pill alert-warning">Archived</span>
+                                </div>
+                                <div class="col-lg-1 col-sm-2 col-4 col-stock">
+                                    <span>
+                                        ${product.stock}
+                                    </span>
+                                </div>
+                                <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
+                                    <div class="action-buttons">
+                                        ${product.isList ? `
+                                            <button type="button" class="btn list-unlist-btn btn-secondary btn-sm"
+                                                style="padding: 5px; width: 50px" data-product-id="${product._id}"
+                                                data-is-list="${product.isList}">
+                                                Unlist
+                                            </button>` :
+                                    `<button type="button" class="btn list-unlist-btn btn-secondary btn-sm"
+                                                style="padding: 5px; width: 50px"
+                                                data-product-id="${product._id}"
+                                                data-is-list="${product.isList}">
+                                                List
+                                            </button>`
+                                }
+                                        <a href="/admin/edit-product/${product._id}">
+                                            <button type="button" class="btn edit-btn btn-primary btn-sm"
+                                                style="padding: 5px" data-product-id="${product._id}">
+                                                Edit
+                                            </button>
+                                        </a>
+                                        <button type="button" class="btn delete-btn btn-danger btn-sm"
+                                            style="padding: 5px" data-product-id="${product._id}">
+                                            Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- row .// -->
+                        </article>
+                        `;
+                            productListDiv.innerHTML += productItem;
+
+                        })
+                    }
+
+
+            </script>
 
             <%- include('../partials/adminPartials/adminFooter') -%>

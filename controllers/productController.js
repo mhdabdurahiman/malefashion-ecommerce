@@ -2,14 +2,37 @@ const fs = require("fs");
 const path = require("path");
 const Category = require("../models/categoryModel");
 const Product = require("../models/productModel");
+const paginationHelper = require("../helpers/paginationHelper");
 const { render } = require("ejs");
+
+// admin product control functions
 
 const loadProductList = async (req, res) => {
   try {
-    const productList = await Product.find({});
-    console.log(productList);
-    res.render("admin/adminProductList", { products: productList });
+    const page = parseInt(req.query.page) || 1;
+    const totalProducts = await Product.countDocuments();
+    const limitValue = paginationHelper.ADMIN_PRODUCTS_PER_PAGE
+    const totalPages = Math.ceil(
+      totalProducts / limitValue
+    );
+    const productList = await Product.find()
+      .skip((page - 1)*limitValue)
+      .limit(limitValue);
+    if(req.query.page){
+      res.json({
+        products: productList,
+        page: page,
+        totalPages: totalPages,
+      })
+    }else {
+      res.render("admin/adminProductList", {
+        products: productList,
+        totalPages: totalPages,
+      });
+    }
+    
   } catch (error) {
+    res.redirect("/error500");
     console.log(error.message);
   }
 };
@@ -19,6 +42,7 @@ const loadAddProducts = async (req, res) => {
     const categoryList = await Category.find({ isList: true });
     res.render("admin/adminAddProduct", { categories: categoryList });
   } catch (error) {
+    res.render("error/error500");
     console.log(error.message);
   }
 };
@@ -43,6 +67,7 @@ const doAddProducts = async (req, res) => {
     await product.save();
     res.redirect("/admin/products");
   } catch (error) {
+    res.render("error/error500");
     console.log(error.message);
   }
 };
@@ -54,6 +79,7 @@ const doListProduct = async (req, res) => {
     await productData.updateOne({ $set: { isList: true } });
     res.json({ success: true });
   } catch (error) {
+    res.render("error/error500");
     console.log(error.message);
   }
 };
@@ -65,6 +91,7 @@ const doUnlistProduct = async (req, res) => {
     await productData.updateOne({ $set: { isList: false } });
     res.json({ success: true });
   } catch (error) {
+    res.render("error/error500");
     console.log(error.message);
   }
 };
@@ -81,6 +108,7 @@ const loadEditProduct = async (req, res) => {
       categories: categoryList,
     });
   } catch (error) {
+    res.render("error/error500");
     console.log(error.message);
   }
 };
@@ -124,6 +152,7 @@ const doEditProduct = async (req, res) => {
       }
     }
   } catch (error) {
+    res.render("error/error500");
     console.log(error.message);
   }
 };
@@ -134,6 +163,7 @@ const doDeleteProducts = async (req, res) => {
     await Product.deleteOne({ _id: productId });
     res.json({ success: true });
   } catch (error) {
+    res.render("error/error500");
     console.log(error.message);
   }
 };
