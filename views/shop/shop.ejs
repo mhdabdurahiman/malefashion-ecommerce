@@ -27,27 +27,32 @@
                     <div class="shop__sidebar">
                         <div class="shop__sidebar__search">
                             <input id="searchInput" type="text" placeholder="Search...">
-                            <button id="searchButton"><span class="icon_search"></span></button>
+                            <button id="searchButton" onclick="searchProducts()"><span
+                                    class="icon_search"></span></button>
                         </div>
                         <div class="shop__sidebar__accordion">
                             <div class="accordion" id="accordionExample">
                                 <div class="card">
                                     <div class="card-heading">
-                                        <a data-toggle="collapse" data-target="#collapseSix">Categories</a>
+                                        <a data-toggle="collapse" data-target="#collapseOne">Categories</a>
                                     </div>
-                                    <div id="collapseSix" class="collapse show" data-parent="#accordionExample">
+                                    <div id="collapseOne" class="collapse show" data-parent="#accordionExample">
                                         <div class="card-body">
-                                            <div class="shop__sidebar__tags">
-                                                <% for( let category of Categories ) { %>
-                                                    <a href="#">
-                                                        <%= category.name %>
-                                                    </a>
-                                                    <% } %>
+                                            <div class="shop__sidebar__categories">
+                                                <ul class="nice-scroll">
+                                                    <li><a href="#">All Categories</a></li>
+                                                    <% for( let category of categories ) { %>
+                                                        <li><a href="#" id="<%= category._id %>"
+                                                                data-category-id="<%= category._id %>">
+                                                                <%= category.name %>
+                                                            </a></li>
+                                                        <% } %>
+                                                </ul>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card">
+                                <!-- <div class="card">
                                     <div class="card-heading">
                                         <a data-toggle="collapse" data-target="#collapseThree">Filter Price</a>
                                     </div>
@@ -55,18 +60,18 @@
                                         <div class="card-body">
                                             <div class="shop__sidebar__price">
                                                 <ul>
-                                                    <li><a href="#">₹0.00 - ₹50.00</a></li>
-                                                    <li><a href="#">₹50.00 - ₹100.00</a></li>
-                                                    <li><a href="#">₹100.00 - ₹150.00</a></li>
-                                                    <li><a href="#">₹150.00 - ₹200.00</a></li>
-                                                    <li><a href="#">₹200.00 - ₹250.00</a></li>
-                                                    <li><a href="#">250.00+</a></li>
+                                                    <li><a href="#">₹0.00 - ₹400.00</a></li>
+                                                    <li><a href="#">₹400.00 - ₹800.00</a></li>
+                                                    <li><a href="#">₹800.00 - ₹1200.00</a></li>
+                                                    <li><a href="#">₹1200.00 - ₹1600.00</a></li>
+                                                    <li><a href="#">₹1600.00 - ₹2000.00</a></li>
+                                                    <li><a href="#">2000.00+</a></li>
                                                 </ul>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="card">
+                                </div> -->
+                                <!-- <div class="card">
                                     <div class="card-heading">
                                         <a data-toggle="collapse" data-target="#collapseFour">Size</a>
                                     </div>
@@ -100,7 +105,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div> -->
 
                             </div>
                         </div>
@@ -111,13 +116,13 @@
                         <div class="row">
                             <div class="col-lg-6 col-md-6 col-sm-6">
                                 <div class="shop__product__option__left">
-                                    <p>Showing 1–12 of 126 results</p>
+                                    <p>Showing <span id="currentPageInfo"><%= page %></span> of <%= totalPages %> pages</p>
                                 </div>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-6">
                                 <div class="shop__product__option__right">
                                     <p>Sort by Price:</p>
-                                    <select>
+                                    <select id="sortByPrice">
                                         <option value="price_asc">Low To High</option>
                                         <option value="price_desc">High To Low</option>
                                     </select>
@@ -125,8 +130,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <% for( let product of Products ) { %>
+                    <div id="productList" class="row">
+                        <% for( let product of products ) { %>
                             <div class="col-lg-4 col-md-6 col-sm-6">
                                 <div class="product__item">
                                     <div style="cursor: pointer;"
@@ -145,44 +150,36 @@
                                             <%= product.name %>
                                         </h6>
                                         <a href="#" class="add-cart">+ Add To Cart</a>
-                                        <div class="rating">
+                                        <!-- <div class="rating">
                                             <i class="fa fa-star-o"></i>
                                             <i class="fa fa-star-o"></i>
                                             <i class="fa fa-star-o"></i>
                                             <i class="fa fa-star-o"></i>
                                             <i class="fa fa-star-o"></i>
-                                        </div>
+                                        </div> -->
                                         <h5>₹<%= product.price %>
                                         </h5>
-                                        <div class="product__color__select">
-                                            <label for="pc-4">
-                                                <input type="radio" id="pc-4">
-                                            </label>
-                                            <label class="active black" for="pc-5">
-                                                <input type="radio" id="pc-5">
-                                            </label>
-                                            <label class="grey" for="pc-6">
-                                                <input type="radio" id="pc-6">
-                                            </label>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        <% } %>
+                            <% } %>
                     </div>
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="product__pagination">
-                                <a class="active" href="#">1</a>
-                                <a href="#">2</a>
-                                <a href="#">3</a>
-                                <span>...</span>
-                                <a href="#">21</a>
+
+                    <% if ( totalPages > 1 ) { %>
+                        <% let Page = page || 1 %>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="product__pagination">
+                                    <a id="prevPage" href="javascript:void(0)" style="background-color: bisque;" <% if ( Page <= 1 ) { %> disabled <% } %>>PREV</a><span></span>
+                                    <a id="currentPage"  href=""><%= page %></a><span></span>
+                                    <a id="nextPage" href="javascript:void(0)" style="background-color: bisque;" <% if ( Page >= totalPages ) { %> disabled <% } %>>NEXT</a>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    <% } %>
                 </div>
             </div>
+        </div>
         </div>
     </section>
     <!-- Shop Section End -->
@@ -191,9 +188,99 @@
         const fetchProducts = async (queryParams) => {
             const response = await fetch(`/shop?${new URLSearchParams(queryParams)}`);
             const data = await response.json();
+
+            updateUI(data);
+            updatePaginationUI(data);
         };
 
+        let dynamicQueryParams = {
+            page: 1,
+            filters: [],
+            sort: 'price_asc'
+        }
 
+        function searchProducts() {
+            const searchTerm = document.getElementById('searchInput').value;
+            dynamicQueryParams.page = 1;
+            dynamicQueryParams.search = searchTerm;
+            fetchProducts(dynamicQueryParams);
+        }
+
+        document.querySelectorAll('.shop__sidebar__categories a').forEach((categoryLink) => {
+            categoryLink.addEventListener('click', (event) => {
+                event.preventDefault();
+                const selectedCategory = categoryLink.dataset.categoryId;
+                const categoryIndex = dynamicQueryParams.filters.indexOf(selectedCategory);
+                if (categoryIndex !== -1) {
+                    dynamicQueryParams.filters.splice(categoryIndex, 1);
+                } else {
+                    dynamicQueryParams.filters.push(selectedCategory);
+                }
+                dynamicQueryParams.page = 1;
+                dynamicQueryParams.filters = [selectedCategory];
+                fetchProducts(dynamicQueryParams)
+            });
+        });
+
+        const sortByPrice = document.getElementById('sortByPrice');
+        sortByPrice.addEventListener('change', (event) => {
+            const selectedSortOption = sortByPrice.value;
+            console.log('selected sort option: ', selectedSortOption)
+            dynamicQueryParams.page = 1;
+            dynamicQueryParams.sort = selectedSortOption;
+            fetchProducts(dynamicQueryParams);
+        });
+
+        document.getElementById('prevPage').addEventListener('click', () => {
+            console.log('prevpage clicked')
+            if (dynamicQueryParams.page > 1) {
+                dynamicQueryParams.page--;
+                fetchProducts(dynamicQueryParams);
+            }
+        });
+
+        document.getElementById('nextPage').addEventListener('click', () => {
+            console.log('nextpage clicked')
+            let totalPages = <%= totalPages %>
+            if (dynamicQueryParams.page < totalPages) {
+                dynamicQueryParams.page++;
+                fetchProducts(dynamicQueryParams);
+            }
+        });
+
+        function updateUI(data) {
+            const productList = document.getElementById('productList');
+            productList.innerHTML = '';
+
+            data.products.forEach(product => {
+                const productItem = document.createElement('div');
+                productItem.classList.add('col-lg-4', 'col-md-6', 'col-sm-6');
+                productItem.innerHTML = `
+            <div class="product__item">
+                <div style="cursor: pointer; background-image: url('/images/product-images/${product.image[0]}');"
+                    onclick="window.location = '/product/${product._id}'"
+                    class="product__item__pic set-bg">
+                    <ul class="product__hover">
+                        <li><a href="#"><img src="user/img/icon/heart.png" alt=""></a></li>
+                        <li><a href="/product/${product._id}"><img src="user/img/icon/search.png" alt=""></a></li>
+                    </ul>
+                </div>
+                <div class="product__item__text">
+                    <h6>${product.name}</h6>
+                    <a href="#" class="add-cart">+ Add To Cart</a>
+                    <h5>₹${product.price}</h5>
+                </div>
+            </div>
+        `;
+                productList.appendChild(productItem);
+            });
+        }
+
+        function updatePaginationUI(data){
+            document.getElementById('currentPage').textContent = data.page;
+            document.getElementById('currentPageInfo').textContent = data.page;
+
+        }
     </script>
 
 
