@@ -49,7 +49,7 @@
 
 
                 <p  class="resend text-muted mb-0">
-                  Didn't receive code? <a id="resend-otp" onclick="resendOtp('<%= email %>')" href="javascript:void(0)">Request again</a>
+                  Didn't receive code? <span id="resendTimer">2:00</span><a id="resend-otp" onclick="resendOtp('<%= email %>')" href="javascript:void(0)">Request again</a>
                 </p>
               </div>
             </div>
@@ -95,7 +95,30 @@
           },
           body: JSON.stringify(data)
         })
+        startResendTimer()
       }
+
+      function startResendTimer() {
+      const resendLink = document.querySelector('.resend a');
+      resendLink.style.pointerEvents = 'none'; // Disable link during timer
+      let seconds = 120;
+
+      const timerInterval = setInterval(function () {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        const timerDisplay = `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+        document.getElementById('resendTimer').textContent = timerDisplay;
+
+        if (seconds <= 0) {
+          clearInterval(timerInterval);
+          resendLink.style.pointerEvents = 'auto'; // Enable link after timer ends
+          document.getElementById('resendTimer').textContent = '0:00';
+        } else {
+          seconds--;
+        }
+      }, 1000);
+    }
+    window.onload = startResendTimer;
     </script>
     <!--$%analytics%$-->
   </body>
