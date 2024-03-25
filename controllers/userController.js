@@ -43,7 +43,6 @@ const doAddAddress = async (req, res) => {
         const userData = await User.updateOne({_id: userId},{
             $push: {address: addressData._id}
         })
-        console.log(userData)
         res.status(200).json({ success: true });
         console.log('address saved')
     } catch (error) {
@@ -115,6 +114,20 @@ const doEditDetails = async (req, res) => {
     }
 }
 
+const getWalletHistory = async ( req, res ) => {
+    try {
+        const { userId } = req.session
+        const userData = await User.findOne({ _id : userId })
+        res.render('user/walletInfo',{
+            user : userData
+        })
+        
+    } catch (error) {
+       res.redirect('/500')
+        
+    }
+}
+
 
 
 module.exports = {
@@ -123,4 +136,5 @@ module.exports = {
     doDeleteAddress,
     doEditAddress,
     doEditDetails,
+    getWalletHistory,
 }

@@ -29,6 +29,9 @@ shopRoute.post("/place-order", authMiddleware.userAuth, isBlockedMiddleware.chec
 shopRoute.post("/verify-razorpay-payment", authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, orderController.verifyPayment);
 shopRoute.get("/payment-failure", authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, orderController.loadPaymentFailure);
 
+shopRoute.post("/cancel-order", authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, orderController.doUserCancelOrder);
+shopRoute.post("/return-order", authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, orderController.doUserReturnOrder);
+
 shopRoute.get("/blog", shopController.loadBlog);
 shopRoute.get("/contact", shopController.loadContact);
 shopRoute.get("/about", shopController.loadAbout);

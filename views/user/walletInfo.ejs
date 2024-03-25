@@ -1,0 +1,46 @@
+<%- include('../partials/userPartials/header') -%>
+
+
+<section class="wallet spad">
+    <div class="container">
+        <div class="col">
+               
+        <h2>Wallet</h2>
+            
+        <div class="table-responsive py-5"> 
+            <table class="table table-bordered table-hover">
+            <thead class="thead-dark">
+                <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Amount</th>
+                <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+               <% if( user.walletHistory ) { %>
+                   <% for( let items of user.walletHistory ) { %>
+                        <tr>
+                            <td><%= items.date.toLocaleDateString() %></td>
+                            <% if ( items.amount > 0 ) { %>
+                                <td class="text-success"><%= items.amount  %></td>
+                            <% } else { %>
+                                <td class="text-danger"><%= items.amount  %></td>
+                            <% } %>
+                            <td><%= items.message %></td>
+                        </tr>
+                   <% } %>
+               <% } %>
+            </tbody>
+            </table>
+        </div>
+        
+            
+        </div>
+        </div>
+        <!--/.row-->
+        </div>
+    </div>
+</section>
+
+
+<%- include('../partials/userPartials/footer') -%>

@@ -220,7 +220,6 @@ const loadUserOrderDetails = async (req, res) => {
     const orderData = await Order.findById({ _id: orderId }).populate(
       "products.productId"
     );
-    console.log("orderData:", orderData.products);
     res.render("user/orderDetails", {
       orderData: orderData,
     });
@@ -230,7 +229,7 @@ const loadUserOrderDetails = async (req, res) => {
   }
 };
 
-const changeOrderStatus = async (req, res) => {
+const adminChangeOrderStatus = async (req, res) => {
   try {
     console.log(req.body);
     const { orderId, status } = req.body;
@@ -262,11 +261,61 @@ const changeOrderStatus = async (req, res) => {
   }
 };
 
-const doUserCancelProduct = async (req, res) => {
+const doUserCancelOrder = async (req, res) => {
+  try {
+    const { orderId, status } = req.body;
+    const { userId } = req.session; // Assuming you store user ID in session
+
+    // Find the order
+    const order = await Order.findOne({ _id: orderId });
+
+    // Check if the order exists
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    for (let product of order.products) {
+      await Product.updateOne(
+        { _id: product.productId },
+        { $inc: { quantity: product.quantity } }
+      );
+    }
+
+    if (order.orderStatus !== "Pending" && order.paymentOption === "online") {
+      await User.updateOne(
+        { _id: userId },
+        {
+          $inc: { wallet: order.amountPayable },
+          $push: {
+            walletHistory: {
+              date: Date.now(),
+              amount: order.amountPayable,
+              message: "Deposited while cancelling order",
+            },
+          },
+        }
+      );
+    }
+
+
+    await Order.updateOne({ _id: orderId }, { $set: { orderStatus: status } });
+
+    const updatedOrder = await Order.findOne({ _id: orderId });
+
+    res.status(200).json({ success: true, status: updatedOrder.orderStatus });
+  } catch (error) {
+    console.error(error);
+    res.redirect("/500"); 
+  }
+};
+
+
+
+const doUserReturnOrder = async (req, res) => {
   try {
     console.log(req.body);
     const { orderId, status } = req.body;
-    if (status === "Canceled") {
+    if (status === "Returned") {
       const order = await Order.findOne({ _id: orderId });
       for (let product of order.products) {
         await Product.updateOne(
@@ -292,7 +341,7 @@ const doUserCancelProduct = async (req, res) => {
     res.render("error/error500");
     console.log(error.message);
   }
-};
+}
 
 module.exports = {
   loadCheckout,
@@ -303,6 +352,7 @@ module.exports = {
   loadAdminOrderList,
   loadAdminOrderDetails,
   loadUserOrderDetails,
-  changeOrderStatus,
-  doUserCancelProduct,
+  adminChangeOrderStatus,
+  doUserCancelOrder,
+  doUserReturnOrder,
 };
