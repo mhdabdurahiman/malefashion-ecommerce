@@ -19,11 +19,13 @@ const userSchema = mongoose.Schema({
     required: true,
     unique: true,
   },
-  
-  address : [{
-    type : mongoose.Schema.Types.ObjectId,
-    ref : 'Address'
-  }],
+
+  address: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Address",
+    },
+  ],
 
   isVerified: {
     type: Number,
@@ -38,6 +40,24 @@ const userSchema = mongoose.Schema({
     required: true,
     default: false,
   },
+  wallet: {
+    type: Number,
+    default: 0,
+  },
+
+  walletHistory: [
+    {
+      date: {
+        type: Date,
+      },
+      amount: {
+        type: Number,
+      },
+      message: {
+        type: String,
+      },
+    },
+  ],
   createdDate: {
     type: Date,
     default: Date.now,
