@@ -47,6 +47,6 @@ adminRoute.delete( '/delete-product/:id', authMiddleware.adminAuth, productContr
 // Order-management-routes
 adminRoute.get( '/orders', authMiddleware.adminAuth, orderController.loadAdminOrderList);
 adminRoute.get( '/order-details/:id', authMiddleware.adminAuth, orderController.loadAdminOrderDetails);
-adminRoute.patch( '/change-order-status', authMiddleware.adminAuth, orderController.changeOrderStatus );
+adminRoute.patch( '/change-order-status', authMiddleware.adminAuth, orderController.adminChangeOrderStatus );
 
 module.exports = adminRoute;
