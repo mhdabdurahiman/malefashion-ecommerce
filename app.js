@@ -8,6 +8,7 @@ const morgan = require('morgan');
 const flash = require('connect-flash');
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
+const fetchCartCount = require("./middleware/cartItemCountMiddleware");
 const localsMiddleware = require('./middleware/localsMiddleware');
 
 // Requiring route files
@@ -48,12 +49,7 @@ app.use( session ({
 // Configuring flash middleware
 app.use(flash());
 
-// Local variable
-// app.use((req, res, next)) => { 
-//     if( req.session.productCount > 0 ){
-
-//     }
-// }
+app.use(fetchCartCount);
 
 //locals middleware
 app.use(localsMiddleware)
