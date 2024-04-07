@@ -116,7 +116,9 @@
                         <div class="row">
                             <div class="col-lg-6 col-md-6 col-sm-6">
                                 <div class="shop__product__option__left">
-                                    <p>Showing <span id="currentPageInfo"><%= page %></span> of <%= totalPages %> pages</p>
+                                    <p>Showing <span id="currentPageInfo">
+                                            <%= page %>
+                                        </span> of <%= totalPages %> pages</p>
                                 </div>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-6">
@@ -157,26 +159,45 @@
                                             <i class="fa fa-star-o"></i>
                                             <i class="fa fa-star-o"></i>
                                         </div> -->
-                                        <h5>₹<%= product.price %>
-                                        </h5>
+                                        <% if ( product.offer){ var discount=(product.price * product.offer.percentage /
+                                            100).toFixed(0) } else if ( product.category.offer ) {var discount=(
+                                            product.price * product.category.offer.percentage / 100 ).toFixed(0) } %>
+                                            <% if ( product.offer) {%>
+                                                <p class="mb-0"><del>₹ <%= product.price %></del></p>
+                                                <h5 class="mb-0">₹ <%= product.price - discount %> <span
+                                                            class="badge badge-success"> Save ₹ <%= discount %> </span>
+                                                </h5>
+                                                <% } else if ( product.category.offer) { %>
+                                                    <p class="mb-0"><del>₹ <%= product.price %></del></p>
+                                                    <h5 class="mb-0 fw-700">₹ <%= product.price - discount %> <span
+                                                                class="badge badge-success"> Save ₹ <%= discount %>
+                                                            </span></h5>
+                                                    <% } else { %>
+                                                        <h5>₹<%= product.price %>
+                                                                <% } %>
+                                                        </h5>
                                     </div>
                                 </div>
                             </div>
                             <% } %>
                     </div>
 
-                    <% if ( totalPages > 1 ) { %>
-                        <% let Page = page || 1 %>
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <div class="product__pagination">
-                                    <a id="prevPage" href="javascript:void(0)" style="background-color: bisque;" <% if ( Page <= 1 ) { %> disabled <% } %>>PREV</a><span></span>
-                                    <a id="currentPage"  href=""><%= page %></a><span></span>
-                                    <a id="nextPage" href="javascript:void(0)" style="background-color: bisque;" <% if ( Page >= totalPages ) { %> disabled <% } %>>NEXT</a>
+                    <% if ( totalPages> 1 ) { %>
+                        <% let Page=page || 1 %>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="product__pagination">
+                                        <a id="prevPage" href="javascript:void(0)" style="background-color: bisque;" <%
+                                            if ( Page <=1 ) { %> disabled <% } %>>PREV</a><span></span>
+                                        <a id="currentPage" href="">
+                                            <%= page %>
+                                        </a><span></span>
+                                        <a id="nextPage" href="javascript:void(0)" style="background-color: bisque;" <%
+                                            if ( Page>= totalPages ) { %> disabled <% } %>>NEXT</a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    <% } %>
+                            <% } %>
                 </div>
             </div>
         </div>
@@ -248,11 +269,56 @@
             }
         });
 
+        // function updateUI(data) {
+        //     const productList = document.getElementById('productList');
+        //     productList.innerHTML = '';
+
+        //     data.products.forEach(product => {
+        //         const productItem = document.createElement('div');
+        //         productItem.classList.add('col-lg-4', 'col-md-6', 'col-sm-6');
+        //         productItem.innerHTML = `
+        //     <div class="product__item">
+        //         <div style="cursor: pointer; background-image: url('/images/product-images/${product.image[0]}');"
+        //             onclick="window.location = '/product/${product._id}'"
+        //             class="product__item__pic set-bg">
+        //             <ul class="product__hover">
+        //                 <li><a href="#"><img src="user/img/icon/heart.png" alt=""></a></li>
+        //                 <li><a href="/product/${product._id}"><img src="user/img/icon/search.png" alt=""></a></li>
+        //             </ul>
+        //         </div>
+        //         <div class="product__item__text">
+        //             <h6>${product.name}</h6>
+        //             <a href="#" class="add-cart">+ Add To Cart</a>
+        //             <h5>₹${product.price}</h5>
+        //         </div>
+        //     </div>
+        // `;
+        //         productList.appendChild(productItem);
+        //     });
+        // }
+
         function updateUI(data) {
             const productList = document.getElementById('productList');
             productList.innerHTML = '';
 
             data.products.forEach(product => {
+                let discount = 0;
+                if (product.offer) {
+                    discount = (product.price * product.offer.percentage / 100).toFixed(0);
+                } else if (product.category.offer) {
+                    discount = (product.price * product.category.offer.percentage / 100).toFixed(0);
+                }
+
+                let priceHTML = "";
+                if (discount > 0) {
+                    priceHTML = `
+                <p class="mb-0"><del>₹ ${product.price}</del></p>
+                <h5 class="mb-0">₹ ${product.price - discount} <span class="badge badge-success"> Save ₹ ${discount} </span></h5>
+            `;
+                } else {
+                    priceHTML = `<h5>₹ ${product.price}</h5>`;
+                }
+
                 const productItem = document.createElement('div');
                 productItem.classList.add('col-lg-4', 'col-md-6', 'col-sm-6');
                 productItem.innerHTML = `
@@ -268,7 +334,7 @@
                 <div class="product__item__text">
                     <h6>${product.name}</h6>
                     <a href="#" class="add-cart">+ Add To Cart</a>
-                    <h5>₹${product.price}</h5>
+                    ${priceHTML}
                 </div>
             </div>
         `;
@@ -276,7 +342,7 @@
             });
         }
 
-        function updatePaginationUI(data){
+        function updatePaginationUI(data) {
             document.getElementById('currentPage').textContent = data.page;
             document.getElementById('currentPageInfo').textContent = data.page;
 

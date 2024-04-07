@@ -1,11 +1,15 @@
 const Category = require("../models/categoryModel");
+const Offer = require("../models/offerModel");
 
 const loadCategory = async (req, res) => {
   try {
-    const categoryList = await Category.find();
+    const categoryList = await Category.find().populate('offer');
+    console.log("categories after populating offer: ",categoryList)
+    const offers = await Offer.find();
     res.render("admin/adminCategory", {
       page_name: "category",
       categoryList: categoryList,
+      offers: offers
     });
   } catch (error) {
     console.log(error.message);

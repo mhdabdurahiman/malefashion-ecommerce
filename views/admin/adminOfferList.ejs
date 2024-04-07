@@ -1,0 +1,84 @@
+<%- include('../partials/adminPartials/adminHead') -%> <%- include('../partials/adminPartials/adminSideNavbar') -%> <%-
+            include('../partials/adminPartials/adminNavbarHead') -%>
+
+            <section class="content-main">
+                <div class="content-header">
+                    <div>
+                        <h2 class="content-title card-title">Offers</h2>
+                    </div>
+
+                    <div>
+                        <a href="/admin/add-offer" class="btn btn-primary btn-sm rounded">Add Offer</a>
+                    </div>
+                </div>
+                <div class="card mb-4">
+
+                    <!-- card-header end// -->
+                    <div class="card-body" id="reloadDiv">
+                        <div class="table-responsive">
+                            <% if(offerData && offerData.length>0){ %>
+                                <table class="table table-hover">
+
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>Name</th>
+                                            <th>Starting Date</th>
+                                            <th>Expire Date</th>
+                                            <th>Percentage</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% offerData.forEach((offer,index)=>{ %>
+                                            <tr>
+                                                <td>
+                                                    <%= index+1 %>
+                                                </td>
+                                                <td>
+                                                    <%= offer.name %>
+                                                </td>
+                                                <td>
+                                                    <%= offer.startingDate.toLocaleDateString() %>
+                                                </td>
+                                                <td>
+                                                    <%= offer.expiryDate.toLocaleDateString() %>
+                                                </td>
+                                                <td>
+                                                    <%= offer.percentage %>%
+                                                </td>
+                                                <td>
+                                                    <% if(offer.status===true){ %>
+                                                        <span class="badge rounded-pill alert-success">Active</span>
+                                                        <% }else{ %>
+                                                            <span
+                                                                class="badge rounded-pill alert-warning">Inactive</span>
+                                                            <% } %>
+                                                </td>
+                                                <td> <a onclick="deleteOffer('<%= offer._id %>')"><i
+                                                            class="bi bi-trash-fill"
+                                                            style="font-size: 15px; color: rgb(216, 15, 15);">Delete offer</i></a>
+                                                </td>
+
+                                            </tr>
+                                            <!-- dropdown //end -->
+                                            <% }) %>
+                                    </tbody>
+                                </table>
+                                <% }else{ %>
+                                    <h5>Data not found!</h5>
+                                    <% } %>
+                        </div>
+                        <!-- table-responsive //end -->
+                    </div>
+                    <!-- card-body end// -->
+                </div>
+
+            </section>
+
+            <script>
+
+            </script>
+
+            <%- include('../partials/adminPartials/adminFooter') -%>

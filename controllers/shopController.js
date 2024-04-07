@@ -35,10 +35,21 @@ const loadShop = async (req, res) => {
     const totalProducts = await Product.countDocuments(query);
 
     const productList = await Product.find(query)
+      .populate({
+        path : 'offer',
+        match: {startingDate: {$lte: new Date()}, expiryDate: {$gte: new Date()}}
+      })
+      .populate({
+        path : 'category',
+        populate: {
+          path : 'offer',
+          match: {startingDate: {$lte: new Date()}, expiryDate: {$gte: new Date()}}
+        }
+      })
       .sort({ price: sort })
       .skip(skipValue)
       .limit(limitValue);
-
+    console.log('productlist:',productList);
     const totalPages = Math.ceil(totalProducts / limitValue);
     const categoryList = await Category.find({ isList: true });
     if (
@@ -73,7 +84,16 @@ const loadShop = async (req, res) => {
 const loadProductDetails = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id)
-      .populate("category")
+      .populate({
+        path : 'offer',
+        match: {startingDate: {$lte: new Date()}, expiryDate: {$gte: new Date()}}
+      })
+      .populate({
+        path: 'category',
+        populate: {
+          path : 'offer',
+          match: {startingDate: {$lte: new Date()}, expiryDate: {$gte: new Date()}}
+        }})
       .exec();
     console.log(product);
     res.render("shop/product-details", { product: product });

@@ -90,39 +90,57 @@
                                 <i class="fa fa-star-o"></i>
                                 <span> - 5 Reviews</span>
                             </div>
-                            <h3>₹<%= product.price %><span>70.00</span></h3>
-                            <p>
-                                <%= product.description %>
-                            </p>
-                            <div class="product__details__option">
-                                <div class="product__details__option__size">
-                                    <span>Size:</span>
-                                    <label class="active" for="size">
-                                        <%= product.size %>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="product__details__cart__option">
-                                <button class="primary-btn" data-product-id="<%= product._id %>">add to cart</button>
-                            </div>
-                            <div class="product__details__btns__option">
-                                <button onclick="addToWishlist('<%= product._id %>')"><i class="fa fa-heart"></i> add to
-                                    wishlist</button>
-                            </div>
-                            <div class="product__details__last__option">
-                                <h5><span>Guaranteed Safe Checkout</span></h5>
-                                <img src="user/img/shop-details/details-payment.png" alt="">
-                                <ul>
-                                    <li><span>SKU:</span> 3812912</li>
-                                    <li><span>Categories:</span>
-                                        <% if (product.category) { %>
-                                            <%= product.category.name %>
-                                                <% } else { %>
-                                                    No category found
-                                                    <% } %>
-                                    </li>
-                                </ul>
-                            </div>
+                            <% if ( product.offer){ var discount=(product.price * product.offer.percentage /
+                                100).toFixed(0) } else if ( product.category.offer ) {var discount=( product.price
+                                * product.category.offer.percentage / 100 ).toFixed(0) } %>
+                                <% if ( product.offer ) { %>
+
+                                    <h3 class="mb-0">₹ <%= product.price - discount %> <span class=""> ₹ <%=
+                                                    product.price %> </span> </h3>
+                                    <h5> <span style="text-decoration: none; color: #fff;" class="badge badge-success">
+                                            Save ₹ <%= discount %> </span></h5>
+                                    <%} else if ( product.category.offer ) { %>
+                                        <p class="mb-0"><del>₹ <%= product.price %></del></p>
+                                        <h5 class="mb-0 fw-700">₹ <%= product.price - discount %> <span
+                                                    class="badge badge-success"> Save ₹ <%= discount %> </span></h5>
+                                        <% } else { %>
+                                            <h5>₹ <%= product.price %>
+                                            </h5>
+                                            <% } %>
+                                                <p>
+                                                    <%= product.description %>
+                                                </p>
+                                                <div class="product__details__option">
+                                                    <div class="product__details__option__size">
+                                                        <span>Size:</span>
+                                                        <label class="active" for="size">
+                                                            <%= product.size %>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="product__details__cart__option">
+                                                    <button class="primary-btn" data-product-id="<%= product._id %>">add
+                                                        to cart</button>
+                                                </div>
+                                                <div class="product__details__btns__option">
+                                                    <button onclick="addToWishlist('<%= product._id %>')"><i
+                                                            class="fa fa-heart"></i> add to
+                                                        wishlist</button>
+                                                </div>
+                                                <div class="product__details__last__option">
+                                                    <h5><span>Guaranteed Safe Checkout</span></h5>
+                                                    <img src="user/img/shop-details/details-payment.png" alt="">
+                                                    <ul>
+                                                        <li><span>SKU:</span> 3812912</li>
+                                                        <li><span>Categories:</span>
+                                                            <% if (product.category) { %>
+                                                                <%= product.category.name %>
+                                                                    <% } else { %>
+                                                                        No category found
+                                                                        <% } %>
+                                                        </li>
+                                                    </ul>
+                                                </div>
                         </div>
                     </div>
                 </div>

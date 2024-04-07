@@ -1,0 +1,114 @@
+<%- include('../partials/adminPartials/adminHead') -%> <%- include('../partials/adminPartials/adminSideNavbar') -%> <%-
+            include('../partials/adminPartials/adminNavbarHead') -%>
+
+            <div class="container mt-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-6" style="margin-left: 25%; margin-top: 3%;">
+                        <div class="card">
+                            <div class="card-body">
+                                <h2 class="card-title text-center">Add Offer</h2>
+                                <form id="offerForm" action="/admin/add-offer" method="POST">
+                                    <div class="form-group">
+                                        <label for="offerName">Offer Name:</label>
+                                        <input type="text" class="form-control" id="offerName" name="offerName"
+                                            required>
+                                        <span id="nameError" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="startingDate">Starting Date:</label>
+                                        <input type="date" class="form-control" id="startingDate" name="startingDate"
+                                            required>
+                                        <span id="startingError" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="expiryDate">Expiry Date:</label>
+                                        <input type="date" class="form-control" id="expiryDate" name="expiryDate"
+                                            required>
+                                        <span id="expiryError" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="percentage">Percentage:</label>
+                                        <input type="text" class="form-control" id="percentage" name="percentage"
+                                            required>
+                                        <span id="percentError" class="text-danger"></span>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-block">Submit</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                const addOfferForm = document.getElementById('offerForm');
+                addOfferForm.addEventListener('submit', (event) => {
+                    const offerName = document.getElementById('offerName').value.trim();
+                    const startingDate = document.getElementById('startingDate').value.trim();
+                    const expiryDate = document.getElementById('expiryDate').value.trim();
+                    const percentage = document.getElementById('percentage').value.trim();
+                    document.getElementById('nameError').textContent = '';
+                        document.getElementById('startingError').textContent = '';
+                        document.getElementById('expiryError').textContent = '';
+                        document.getElementById('percentError').textContent = '';
+                    const now = new Date();
+                    if( !offerName || !startingDate || !expiryDate || !percentage) {
+                        event.preventDefault();
+                        document.getElementById('nameError').textContent = 'Please enter offer name';
+                        document.getElementById('startingError').textContent = 'Please enter starting date';
+                        document.getElementById('expiryError').textContent = 'Please enter expiry date';
+                        document.getElementById('percentError').textContent = 'Please enter percentage';
+                    }
+
+                    if(offerName.length < 5) {
+                        event.preventDefault();
+                        document.getElementById('nameError').textContent = 'Offer name must be at least 5 characters';
+                    }
+
+                    const pattern = /^[a-zA-Z0-9]+$/
+                    if(!pattern.test(offerName)) {
+                        event.preventDefault();
+                        document.getElementById('nameError').textContent = 'Offer name can only contain letters and numbers';
+                    }
+
+                    if( startingDate > expiryDate || expiryDate<now) {
+                        event.preventDefault();
+                        document.getElementById('startingError').textContent = 'Starting date must be before expiry date';
+                        document.getElementById('expiryError').textContent = 'Expiry date must be after today';
+                    }
+
+                    if( percentage < 0 || percentage > 100) {
+                        event.preventDefault();
+                        document.getElementById('percentError').textContent = 'Percentage must be between 0 and 100';
+                    }
+                    addOfferForm.addEventListener('submit', async (event) => {
+                        event.preventDefault();
+                        const formData = new FormData(addOfferForm);
+                        const jsonData = Object.fromEntries(formData.entries());
+                        const response = await fetch('/admin/add-offer', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(jsonData)
+                        });
+                        const data = await response.json();
+                        if(data.success) {
+                            Swal.fire({
+                                title: 'Success',
+                                text: data.message,
+                                icon: 'success'
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Error',
+                                text: data.message,
+                                icon: 'error'
+                            });
+                        }
+                    })
+                })
+            </script>
+
+
+            <%- include('../partials/adminPartials/adminFooter') -%>

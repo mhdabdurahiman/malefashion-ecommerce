@@ -4,6 +4,7 @@ const categoryController = require("../controllers/categoryController");
 const authMiddleware = require("../middleware/authMiddleware");
 const productController = require("../controllers/productController");
 const orderController = require("../controllers/orderController");
+const offerController = require("../controllers/offerController");
 const upload = require( "../middleware/multer" );
 
 
@@ -15,7 +16,6 @@ const adminRoute = express();
 adminRoute.get("/login", authMiddleware.isAdminAlreadyLoggedIn ,authMiddleware.adminLoggedOut, authenticationController.loadAdminLogin);
 adminRoute.get("/logout",  authenticationController.doAdminLogout);
 adminRoute.post("/login", authMiddleware.adminLoggedOut, authenticationController.doAdminLogin);
-
 
 // Dashboard
 adminRoute.get("/dashboard", authMiddleware.adminAuth, adminController.loadAdminDashboard);
@@ -48,5 +48,17 @@ adminRoute.delete( '/delete-product/:id', authMiddleware.adminAuth, productContr
 adminRoute.get( '/orders', authMiddleware.adminAuth, orderController.loadAdminOrderList);
 adminRoute.get( '/order-details/:id', authMiddleware.adminAuth, orderController.loadAdminOrderDetails);
 adminRoute.patch( '/change-order-status', authMiddleware.adminAuth, orderController.adminChangeOrderStatus );
+
+// Offer-management-routes
+adminRoute.get( '/offers', authMiddleware.adminAuth, offerController.loadAdminOffer);
+adminRoute.get( '/add-offer', authMiddleware.adminAuth, offerController.loadAddOffer);
+adminRoute.post( '/add-offer', authMiddleware.adminAuth, offerController.doAddOffer);
+adminRoute.post( '/apply-product-offer', authMiddleware.adminAuth, offerController.applyProductOffer);
+adminRoute.post( '/remove-product-offer', authMiddleware.adminAuth, offerController.removeProductOffer);
+adminRoute.post( '/apply-category-offer', authMiddleware.adminAuth, offerController.applyCategoryOffer);
+adminRoute.post( '/remove-category-offer', authMiddleware.adminAuth, offerController.removeCategoryOffer);
+
+// Sales-report-routes
+adminRoute.get( '/sales-report', authMiddleware.adminAuth, orderController.loadSalesReport);
 
 module.exports = adminRoute;

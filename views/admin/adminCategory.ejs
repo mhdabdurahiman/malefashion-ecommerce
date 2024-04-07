@@ -44,6 +44,7 @@
                       <tr>
                         <th>Name</th>
                         <th>Description</th>
+                        <th>Offer action</th>
                         <th class="text-end">Action</th>
                       </tr>
                     </thead>
@@ -56,33 +57,45 @@
                           <td>
                             <%= category.description %>
                           </td>
-                          <%= console.log(category.isList) %>
-                            <td class="text-end">
-                              <div class="action-buttons">
-                                <% if (category.isList==true) { %>
-                                  <button type="button" class="btn list-unlist-btn btn-secondary btn-sm"
-                                    style="padding: 5px; width: 50px" data-category-id="<%= category._id %>"
-                                    data-is-list="<%= category.isList %>">
-                                    Unlist
-                                  </button>
-                                  <% } else { %>
-                                    <button type="button" class="btn list-unlist-btn btn-secondary btn-sm"
-                                      style="padding: 5px; width: 50px" data-category-id="<%= category._id %>"
-                                      data-is-list="<%= category.isList %>">
-                                      List
-                                    </button>
-                                    <% } %>
-                                      <a href="/admin/edit-category/<%= category._id %>">
-                                        <button type="button" class="btn edit-btn btn-primary btn-sm"
-                                          style="padding: 5px" data-category-id="<%= category._id %>">
-                                          Edit
-                                        </button></a>
-                                      <button type="button" class="btn delete-btn btn-danger btn-sm"
-                                        style="padding: 5px" data-category-id="<%= category._id %>">
-                                        Delete
-                                      </button>
-                              </div>
-                            </td>
+                          <% if (!category.offer){ %>
+                            <td><button class="btn btn-sm btn-warning font-sm addOfferBtn" data-toggle="modal"
+                                data-target="#offerModal" data-category-id="<%= category._id %>">Add Offer</button>
+                              <p>No Offer</p></td>
+
+                            <% }else{ %>
+                              <td><button type="button" class="btn btn-danger btn-sm font-sm"
+                                  onclick="removeCategoryOffer('<%= category._id %>')">Remove Offer</button>
+                                <p>Offer: <%= category.offer.name %>(<%= category.offer.percentage %>%)</p></td>
+
+                              <% } %>
+
+                                <%= console.log(category.isList) %>
+                                  <td class="text-end">
+                                    <div class="action-buttons">
+                                      <% if (category.isList==true) { %>
+                                        <button type="button" class="btn list-unlist-btn btn-secondary btn-sm"
+                                          style="padding: 5px; width: 50px" data-category-id="<%= category._id %>"
+                                          data-is-list="<%= category.isList %>">
+                                          Unlist
+                                        </button>
+                                        <% } else { %>
+                                          <button type="button" class="btn list-unlist-btn btn-secondary btn-sm"
+                                            style="padding: 5px; width: 50px" data-category-id="<%= category._id %>"
+                                            data-is-list="<%= category.isList %>">
+                                            List
+                                          </button>
+                                          <% } %>
+                                            <a href="/admin/edit-category/<%= category._id %>">
+                                              <button type="button" class="btn edit-btn btn-primary btn-sm"
+                                                style="padding: 5px" data-category-id="<%= category._id %>">
+                                                Edit
+                                              </button></a>
+                                            <button type="button" class="btn delete-btn btn-danger btn-sm"
+                                              style="padding: 5px" data-category-id="<%= category._id %>">
+                                              Delete
+                                            </button>
+                                    </div>
+                                  </td>
                         </tr>
                         <% } %>
                     </tbody>
@@ -127,6 +140,48 @@
         </div>
       </section>
       <!-- content-main end// -->
+
+      <div class="modal fade" id="offerModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Select Offer</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <% if(offers && offers.length> 0) { %>
+                <ul class="list-group">
+                  <% offers.forEach((offerItem)=> { %>
+                    <li class="list-group-item">
+                      <div>
+                        <h6>
+                          <%= offerItem.name %>
+                        </h6>
+                        <p>Starting Date: <%= offerItem.startingDate.toLocaleDateString() %>
+                        </p>
+                        <p>Expiry Date: <%= offerItem.expiryDate.toLocaleDateString() %>
+                        </p>
+
+                        <a href="#" class="btn btn-warning btn-sm apply-btn" data-offerid="<%= offerItem._id %>">Apply</a>
+                      </div>
+                    </li>
+                    <% }) %>
+                </ul>
+                <% } else { %>
+                  <p>No offers available.</p>
+                  <% } %>
+            </div>
+
+            <!-- <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Save changes</button>
+            </div> -->
+          </div>
+        </div>
+      </div>
 
       <script>
 
@@ -268,7 +323,7 @@
                   let messageElement = $(`<p>${response.message}</p>`).appendTo(myAlert);
                   setTimeout(() => {
                     alertContainer.removeClass("d-block").addClass("d-none");
-                    messageElement.remove(); 
+                    messageElement.remove();
                   }, 3000);
 
 
@@ -287,7 +342,7 @@
                   let messageElement = $(`<p>${response.message}</p>`).appendTo(myAlert);
                   setTimeout(() => {
                     alertContainer.removeClass("d-block").addClass("d-none");
-                    messageElement.remove(); 
+                    messageElement.remove();
                   }, 3000);
                 }
 
@@ -298,8 +353,58 @@
 
           }
 
-
         });
+
+        $(document).ready(function () {
+          $('.addOfferBtn').on('click', function () {
+            let button = $(this);
+            let categoryId = button.data('category-id');
+            $('#offerModal').modal('show');
+
+            function applyOffer(offerId, categoryId) {
+              console.log(`offerid: ${offerId}, categoryid: ${categoryId}`);
+              fetch('/admin/apply-category-offer', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ offerId: offerId, categoryId: categoryId })
+              })
+                .then(response => response.json())
+                .then(data => {
+                  if (data.success) {
+                    alert('Offer applied successfully');
+                    window.location.reload();
+                  }
+                })
+                .catch(error => {
+                  console.error('Error applying offer:', error);
+                });
+            }
+
+            $('#offerModal').find('.apply-btn').on('click', function () {
+              let offerId = $(this).data('offerid');
+              applyOffer(offerId, categoryId);
+            });
+          });
+        });
+
+        function removeCategoryOffer(categoryId) {
+          fetch('/admin/remove-category-offer', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ categoryId: categoryId })
+          })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                alert('Offer removed successfully');
+                window.location.reload();
+              }
+            })
+        }
 
         // Initial binding
         bindEventHandlers();

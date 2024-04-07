@@ -23,6 +23,7 @@
                                 <div class="col-lg-2 col-sm-2 col-4">Price</div>
                                 <div class="col-lg-2 col-sm-2 col-4">Status</div>
                                 <div class="col-lg-1 col-sm-2 col-4">Stock</div>
+                                <div class="col-lg-1 col-sm-2 col-4">Offer Action</div>
                                 <div class="col-lg-2 col-sm-2 col-4 text-end">Action</div>
                             </div>
                         </header>
@@ -54,6 +55,23 @@
                                         <span>
                                             <%= product.stock %>
                                         </span>
+                                    </div>
+                                    <div class="col-lg-1 col-sm-2 col-4 col-offer">
+                                        <% if(!product.offer){ %>
+                                            <button type="button"
+                                                class="addOfferBtn btn btn-warning btn-sm font-sm offerbtn"
+                                                data-toggle="modal" data-target="#offerModal"
+                                                data-productId="<%= product._id %>">
+                                                Add offer
+                                            </button>
+                                            <p>No offer</p>
+                                            <% }else{ %>
+                                                <button type="button" class="btn btn-danger btn-sm font-sm"
+                                                    onclick="removeProductOffer('<%= product._id %>')">
+                                                    Remove offer
+                                                </button>
+                                                <p>Offer: <%= product.offer.name %>(<%= product.offer.percentage %>%)</p>
+                                                <% } %>
                                     </div>
                                     <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
                                         <div class="action-buttons">
@@ -94,6 +112,48 @@
                     </div>
                 </div>
                 <!-- card-body end// -->
+                <div class="modal fade" id="offerModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Select Offer</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <% if(offers && offers.length> 0) { %>
+                                    <ul class="list-group">
+                                        <% offers.forEach((offerItem)=> { %>
+                                            <li class="list-group-item">
+                                                <div>
+                                                    <h6>
+                                                        <%= offerItem.name %>
+                                                    </h6>
+                                                    <p>Starting Date: <%= offerItem.startingDate.toLocaleDateString() %>
+                                                    </p>
+                                                    <p>Expiry Date: <%= offerItem.expiryDate.toLocaleDateString() %>
+                                                    </p>
+
+                                                    <a href="#" class="btn btn-warning btn-sm apply-btn" data-offerid="<%= offerItem._id %>"
+                                                        >Apply</a>
+                                                </div>
+                                            </li>
+                                            <% }) %>
+                                    </ul>
+                                    <% } else { %>
+                                        <p>No offers available.</p>
+                                        <% } %>
+                            </div>
+
+                            <!-- <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                          <button type="button" class="btn btn-primary">Save changes</button>
+                        </div> -->
+                        </div>
+                    </div>
+                </div>
                 <!-- Pagination links -->
                 <% if (totalPages) { %>
                     <div class="pagination-area mt-30 mb-50">
@@ -134,10 +194,10 @@
                 }
 
                 function updateProductList(products) {
-                        let productListDiv = document.getElementById('product-list-div');
-                        productListDiv.innerHTML = '';
-                        products.forEach(product => {
-                            var productItem = `
+                    let productListDiv = document.getElementById('product-list-div');
+                    productListDiv.innerHTML = '';
+                    products.forEach(product => {
+                        var productItem = `
                         <article class="itemlist">
                             <div class="row align-items-center">
                                 <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
@@ -172,13 +232,13 @@
                                                 data-is-list="${product.isList}">
                                                 Unlist
                                             </button>` :
-                                    `<button type="button" class="btn list-unlist-btn btn-secondary btn-sm"
+                                `<button type="button" class="btn list-unlist-btn btn-secondary btn-sm"
                                                 style="padding: 5px; width: 50px"
                                                 data-product-id="${product._id}"
                                                 data-is-list="${product.isList}">
                                                 List
                                             </button>`
-                                }
+                            }
                                         <a href="/admin/edit-product/${product._id}">
                                             <button type="button" class="btn edit-btn btn-primary btn-sm"
                                                 style="padding: 5px" data-product-id="${product._id}">
@@ -195,11 +255,61 @@
                             <!-- row .// -->
                         </article>
                         `;
-                            productListDiv.innerHTML += productItem;
+                        productListDiv.innerHTML += productItem;
 
+                    })
+                }
+
+                $(document).ready(function () {
+                    $('.addOfferBtn').on('click', function () {
+                        let button = $(this);
+                        let productId = button.data('productid');
+                        $('#offerModal').modal('show');
+
+                        function applyOffer(offerId, productId) {
+                            console.log(`offerid: ${offerId}, productid: ${productId}`);
+                            fetch('/admin/apply-product-offer', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ offerId: offerId, productId: productId })
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        alert('Offer applied successfully');
+                                        window.location.reload();
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error applying offer:', error);
+                                });
+                        }
+
+                        $('#offerModal').find('.apply-btn').on('click', function () {
+                            let offerId = $(this).data('offerid'); 
+                            applyOffer(offerId, productId); 
+                        });
+                    });
+                });
+
+                function removeProductOffer(productId) {
+                        fetch('/admin/remove-product-offer', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ productId: productId })
                         })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert('Offer removed successfully');
+                                    window.location.reload();
+                                }
+                            })
                     }
-
 
             </script>
 

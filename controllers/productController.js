@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const Category = require("../models/categoryModel");
 const Product = require("../models/productModel");
+const Offer = require("../models/offerModel");
 const paginationHelper = require("../helpers/paginationHelper");
 const { render } = require("ejs");
 
@@ -17,17 +18,21 @@ const loadProductList = async (req, res) => {
     );
     const productList = await Product.find()
       .skip((page - 1)*limitValue)
-      .limit(limitValue);
+      .limit(limitValue)
+      .populate("offer");
+    const offers = await Offer.find();
     if(req.query.page){
       res.json({
         products: productList,
         page: page,
         totalPages: totalPages,
+        offers: offers,
       })
     }else {
       res.render("admin/adminProductList", {
         products: productList,
         totalPages: totalPages,
+        offers: offers
       });
     }
     

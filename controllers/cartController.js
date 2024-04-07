@@ -6,13 +6,32 @@ const cartHelper = require("../helpers/cartHelper");
 const loadCart = async (req, res) => {
   try {
     const userId = req.session.userId;
-    console.log("userid", userId);
-    const cartData = await Cart.findOne({ userId: userId }).populate(
-      "items.productId"
-    );
+    const cartData = await Cart.findOne({ userId: userId }).populate({
+      path: "items.productId",
+      populate: [{
+        path: "category",
+        populate: {
+          path: "offer",
+        },
+      },
+        {
+          path: "offer",
+        }
+      ]
+    });
     const totalCartPrice = await cartHelper.totalCartPrice(userId);
-    console.log("totalCartPrice:", totalCartPrice);
-    console.log("cartData:", cartData);
+    console.log('totalprice in the cart:  ',totalCartPrice)
+    if( cartData && cartData.items.length > 0 ){
+      cartData.items = cartData.items.map(( items ) => {
+          if( items.productId.offer && items.productId.offer.startingDate <= new Date() && items.productId.offer.expiryDate >= new Date() ) {
+              items.productId.price = (items.productId.price * ( 1 - ( items.productId.offer.percentage / 100 ))).toFixed(0)
+          }else if ( items.productId.category.offer && items.productId.category.offer.startingDate <= new Date() && items.productId.category.offer.expiryDate >= new Date() ) {
+              items.productId.price = (items.productId.price * ( 1 - ( items.productId.category.offer.percentage / 100 ))).toFixed(0)
+          }
+          return items
+      })
+      console.log('cartData item after updation:', cartData)
+    } 
     res.render("shop/shopping-cart", {
       cartData: cartData,
       totalCartPrice: totalCartPrice,
@@ -81,7 +100,6 @@ const addToCart = async (req, res) => {
               .status(200)
               .json({ success: true, message: "Quantity increased in cart" });
           } else {
-            // Product not in cart, check if available stock allows adding
             if (availableStock > 0) {
               const cartItems = await Cart.updateOne(
                 { userId: userId },
