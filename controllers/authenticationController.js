@@ -238,7 +238,7 @@ const doAdminLogin = async (req, res) => {
 
 const doAdminLogout = async (req, res) => {
   try {
-    req.session.token = null;
+    req.session.adminToken = null;
     req.session.adminId = null;
     res.redirect("/admin/login");
   } catch (error) {
