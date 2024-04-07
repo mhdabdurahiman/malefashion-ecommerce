@@ -1,0 +1,246 @@
+<%- include('../partials/adminPartials/adminHead') -%>
+
+    <%- include('../partials/adminPartials/adminSideNavbar') -%>
+
+        <%- include('../partials/adminPartials/adminNavbarHead') -%>
+
+            <section class="content-main">
+                <div class="row reportheaderdiv">
+                    <div class="col-md-10">
+                        <p class="fw-bold">Find Report</p>
+
+                        <span class="fw-bold">From : </span><input type="date" class="dateinput" id="startdate">
+                        <span class="fw-bold">To : </span><input type="date" class="dateinput" id="enddate">
+                        <button id="dateFilter" class="btn btn-sm btn-warning font-sm">Submit</button>
+                        <button class="btn btn-sm btn-danger font-sm" onclick="clearButton()">Clear</button>
+                    </div>
+
+                    <div class="col-md-2">
+                        <button class="btn btn-sm btn-info" id="downloadbtn"
+                            onclick="printDiv('salesReportDiv')">Download
+                            Report</button>
+                        <button class="btn btn-sm btn-success my-3 " id="downloadbtn" onclick="downloadExcel()">Download
+                            Excel</button>
+                    </div>
+                    <p id="dateError" class="text-danger"></p>
+                </div>
+                </div>
+                </div>
+                <div class="card mb-4" id="download-content">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-9">
+                                <h2 class="content-title card-title">Sales Report</h2>
+                            </div>
+                        </div>
+                        <div class="table-responsive" id="salesReportDiv">
+                            <table id="sales-report-table" class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Ordered Date</th>
+                                        <th scope="col">Order ID</th>
+                                        <th scope="col">Customer</th>
+                                        <th scope="col">Payment Method</th>
+                                        <th scope="col">Order Status</th>
+                                        <th scope="col">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="listdiv">
+                                    <% for (let order of orderList) { %>
+                                        <tr>
+                                            <td>
+                                                <%= order.createdAt.toLocaleDateString() %>
+                                            </td>
+                                            <td>
+                                                <%= order.orderId %>
+                                            </td>
+                                            <td>
+                                                <%= order.userId.fullname %>
+                                            </td>
+                                            <td>
+                                                <%= order.paymentOption %>
+                                            </td>
+                                            <td>
+                                                <%= order.orderStatus %>
+                                            </td>
+                                            <td>
+                                                <%= order.totalPrice %>
+                                            </td>
+                                        </tr>
+                                        <% } %>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- table responsive end -->
+                    <div class="row">
+                        <div class="col-md-9">
+                        </div>
+                        <div class="col-md-3">
+                            <div class="row">
+                                <!-- <div class="col-md-6 mb-4">
+                                    <h6>Total Orders: </h6>
+                                    <h6>Total Sales: </h6>
+                                </div> -->
+
+                                <div class="col-md-6">
+                                    <h6 id="salesCount">Total Order: <%= totalOrders %>
+                                    </h6>
+                                    <h6 id="salesAmount">Total Sales: ₹<%= totalSales %></h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- card-body end// -->
+                </div>
+                <!-- card end// -->
+                <!-- <div class="pagination-area mt-15 mb-50">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-start">
+                        <li class="page-item active"><a class="page-link" href="#">01</a></li>
+                        <li class="page-item"><a class="page-link" href="#">02</a></li>
+                        <li class="page-item"><a class="page-link" href="#">03</a></li>
+                        <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                        <li class="page-item"><a class="page-link" href="#">16</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a>
+                        </li>
+                    </ul>
+                </nav>
+            </div> -->
+            </section>
+            <script>
+
+
+                const salesReportModule = {
+                    queryParams: {
+                        from: '',
+                        to: '',
+                    },
+
+                    fetchSalesReport: async () => {
+                        const response = await fetch(`/admin/sales-report?${new URLSearchParams(salesReportModule.queryParams)}`);
+                        const data = await response.json();
+                        updateUI(data);
+                    },
+
+                    updateDateParams: () => {
+                        const startDate = new Date(document.getElementById("startdate").value);
+                        const endDate = new Date(document.getElementById("enddate").value);
+                        const currentDate = new Date();
+
+                        if (startDate > endDate) {
+                            alert("Start date must be before end date");
+                            return;
+                        }
+
+                        if (startDate > currentDate) {
+                            alert("Start date must be before current date");
+                            return;
+                        }
+
+                        if (isNaN(startDate) || isNaN(endDate)) {
+                            alert("Invalid date");
+                            return;
+                        }
+
+                        salesReportModule.queryParams.from = startDate.toISOString();
+                        salesReportModule.queryParams.to = endDate.toISOString();
+                        console.log(salesReportModule.queryParams);
+                    },
+
+                    handleDateFilterClick: () => {
+                        salesReportModule.updateDateParams();
+                        salesReportModule.fetchSalesReport();
+                    },
+
+                    clearDateFilters: () => {
+                        document.getElementById("startdate").value = "";
+                        document.getElementById("enddate").value = "";
+                        salesReportModule.queryParams = {
+                            from: "",
+                            to: ""
+                        };
+                        salesReportModule.fetchSalesReport();
+                    },
+                };
+                let totalSales = 0;
+
+                function updateUI(data) {
+                    const orderList = data.orderList;
+
+                    // Clear previous table data
+                    const tbody = document.getElementById("listdiv");
+                    tbody.innerHTML = "";
+
+                    const totalOrders = orderList.length;
+
+                    // Populate table with new data
+                    orderList.forEach(order => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td>${new Date(order.createdAt).toLocaleDateString()}</td>
+                            <td>${order.orderId}</td>
+                            <td>${order.userId.fullname}</td>
+                            <td>${order.paymentOption}</td>
+                            <td>${order.orderStatus}</td>
+                            <td>${order.totalPrice}</td>
+                        `;
+                        tbody.appendChild(row);
+
+                        totalSales += order.totalPrice
+                    });
+
+                    const salesCountElement = document.getElementById("salesCount");
+                    salesCountElement.textContent = totalOrders;
+
+                    const salesAmountElement = document.getElementById("salesAmount");
+                    salesAmountElement.textContent = `₹${totalSales.toFixed(2)}`;
+                }
+
+                const dateFilter = document.getElementById("dateFilter");
+                dateFilter.addEventListener("click", salesReportModule.handleDateFilterClick);
+
+                function downloadExcel() {
+                    // Get the table data
+                    var table = document.getElementById("sales-report-table");
+                    var wb = XLSX.utils.table_to_book(table, { sheet: "SheetJS" });
+                    var wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+                    var blob = new Blob([wbout], { type: "application/octet-stream" });
+
+                    var a = document.createElement("a");
+                    document.body.appendChild(a);
+                    a.style = "display: none";
+                    var url = window.URL.createObjectURL(blob);
+                    var today = formatDateToString(new Date())
+                    a.href = url;
+                    a.download = "sales-excel-" + today + ".xlsx";
+                    a.click();
+
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                }
+
+                function printDiv(divName) {
+                    const printContents = document.getElementById(divName).innerHTML
+                    const originalContents = document.body.innerHTML
+                    document.body.innerHTML = printContents;
+                    window.print()
+                    document.body.innerHTML = originalContents
+                    return
+                }
+
+                function formatDateToString(date) {
+                    if (!(date instanceof Date) || isNaN(date)) {
+                        return "Invalid Date";
+                    }
+                    const day = String(date.getDate()).padStart(2, "0");
+                    const month = String(date.getMonth() + 1).padStart(2, "0");
+                    const year = String(date.getFullYear());
+
+                    return `${day}-${month}-${year}`;
+                }
+            </script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
+            <%- include('../partials/adminPartials/adminFooter') -%>
