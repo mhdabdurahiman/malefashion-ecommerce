@@ -75,7 +75,14 @@
                                                 <span class="badge badge-pill badge-soft-danger">Canceled</span>
                                                 <% } else if (orderData.orderStatus==='Pending' ) {%>
                                                     <span class="badge badge-pill badge-soft-warning">Pending</span>
-                                                    <% } %><br />
+                                                    <% } else if (orderData.orderStatus==='Placed' ) {%>
+                                                        <span class="badge badge-pill badge-soft-primary">Placed</span>
+                                                        <% } else if (orderData.orderStatus==='Shipped' ) {%>
+                                                            <span class="badge badge-pill badge-soft-info">Shipped</span>
+                                                            <% } else if (orderData.orderStatus==='Delivered' ) {%>
+                                                                <span class="badge badge-pill badge-soft-success">Delivered</span>
+                                                                <% } %>
+                                                        <br />
                                                         Pay method: <%= orderData.paymentOption %> <br />
                                                             Status: new
                                         </p>

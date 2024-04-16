@@ -77,11 +77,17 @@
                                                         <span class="badge badge-pill badge-soft-warning">Pending</span>
                                                         <% } else if (order.orderStatus==='Placed' ) {%>
                                                             <span
-                                                                class="badge badge-pill badge-soft-success">Placed</span>
+                                                                class="badge badge-pill badge-soft-primary">Placed</span>
                                                             <% } else if (order.orderStatus==='Canceled' ) {%>
                                                                 <span
                                                                     class="badge badge-pill badge-soft-danger">Cancelled</span>
-                                                                <% } %>
+                                                                <% } else if (order.orderStatus === 'Shipped'){ %>
+                                                                    <span
+                                                                    class="badge badge-pill badge-soft-info">Shipped</span>
+                                                                    <% } else if (order.orderStatus === 'Delivered'){ %>
+                                                                        <span
+                                                                        class="badge badge-pill badge-soft-success">Delivered</span>
+                                                                        <% } %>
                                                 </td>
                                                 <td><i class="material-icons md-payment font-xxl text-muted mr-5"></i>
                                                     <%= order.paymentOption %>

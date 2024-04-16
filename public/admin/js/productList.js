@@ -37,12 +37,12 @@ function deleteProduct(productId) {
   console.log("productId:", productId);
   Swal.fire({
     title: "Are you sure?",
-    text: "You won't be able to revert this!",
+    text: "You can unarchive this product from archived product!",
     icon: "warning",
     showCancelButton: true,
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
-    confirmButtonText: "Yes, delete it!",
+    confirmButtonText: "Yes, archive it!",
   }).then((result) => {
     
     if (result.isConfirmed) {
@@ -62,8 +62,8 @@ function deleteProduct(productId) {
         },
       });
       Swal.fire({
-        title: "Deleted!",
-        text: "Your file has been deleted.",
+        title: "Archived!",
+        text: "Your file has been archived.",
         icon: "success",
       });
     }

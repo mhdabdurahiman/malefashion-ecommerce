@@ -44,8 +44,8 @@ const doAddOffer = async (req, res) => {
 
 const deleteOffer = async (req, res) => {
   try {
-    const offerId = req.body.offerId;
-    const offer = await Offer.findByIdAndDelete(offerId);
+    const offerId = req.params.id;
+    await Offer.findByIdAndDelete(offerId);
     res.status(200).json({ success: true, message: "Offer deleted successfully" });
   } catch (error) {
     console.log(error.message);

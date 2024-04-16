@@ -3,7 +3,9 @@ const Cart = require("../models/cartModel");
 const Address = require("../models/addressModel");
 const Order = require("../models/orderModel");
 const Product = require("../models/productModel");
+const Coupon = require("../models/couponModel")
 const cartHelper = require("../helpers/cartHelper");
+const couponHelper = require("../helpers/couponHelper")
 const onlinePayment = require("../utils/onlinePayment");
 const paginationHelper = require("../helpers/paginationHelper");
 const crypto = require("crypto");
@@ -17,12 +19,18 @@ const loadCheckout = async (req, res) => {
     const userData = await User.findById({ _id: userId })
       .populate("address")
       .exec();
-    const totalCartPrice = await cartHelper.totalCartPrice(userId);
+      const totalCartPrice = await cartHelper.totalCartPrice(userId);
+    let discounted;
+    if (cartData && cartData.coupon && totalCartPrice && totalCartPrice.length > 0){
+      discounted = await couponHelper.discountPrice( cartData.coupon, totalCartPrice[0].total )
+    }
+    
     console.log(totalCartPrice);
     res.render("shop/checkout", {
       cartData: cartData,
       userData: userData,
       totalCartPrice: totalCartPrice,
+      discounted: discounted,
     });
   } catch (error) {
     res.redirect("/error500");
@@ -48,9 +56,26 @@ const doPlaceOrder = async (req, res) => {
       quantity: items.quantity,
       price: items.totalPrice / items.quantity,
     }));
-
-    const totalPrice = totalAmount[0].total;
-
+    const cart = await Cart.findOne({ userId: userId })
+    let discounted;
+    if( cart && cart.coupon && totalAmount && totalAmount.length > 0){
+      discounted = await couponHelper.discountPrice(
+        cart.coupon,
+        totalAmount[0].total
+      );
+      await Coupon.updateOne(
+        {_id: cart.coupon, maxUses: {$gt: 0}},
+        {
+          $push: {
+            usedBy: userId,
+          },
+          $inc: {
+            maxUses: -1
+          }
+        },
+      )
+    }
+    const totalPrice = discounted && discounted.discountedTotal ? discounted.discountedTotal : totalAmount[0].total
     let amountPayable = totalPrice;
     let orderStatus;
     paymentOption === "cod"
@@ -171,21 +196,21 @@ const loadAdminOrderList = async (req, res) => {
     const limitValue = paginationHelper.ADMIN_ORDER_PER_PAGE;
     const skipValue = (page - 1) * limitValue;
     const totalPages = Math.ceil(totalOrders / limitValue);
-    console.log('page: ', page);
-    console.log('totalOrders: ', totalOrders);
-    console.log('totalPages: ', totalPages);
-    console.log('skipValue: ', skipValue);
-    console.log('limitValue: ', limitValue);
+    console.log("page: ", page);
+    console.log("totalOrders: ", totalOrders);
+    console.log("totalPages: ", totalPages);
+    console.log("skipValue: ", skipValue);
+    console.log("limitValue: ", limitValue);
     const orderList = await Order.find()
       .sort({ createdAt: -1 })
       .skip(skipValue)
       .limit(limitValue);
-    if (req.query.page){
+    if (req.query.page) {
       res.json({
         orders: orderList,
         page: page,
         totalPages: totalPages,
-      })
+      });
     } else {
       res.render("admin/adminOrderList", {
         orders: orderList,
@@ -193,7 +218,6 @@ const loadAdminOrderList = async (req, res) => {
         totalPages: totalPages,
       });
     }
-      
   } catch (error) {
     error.message;
   }
@@ -271,7 +295,9 @@ const doUserCancelOrder = async (req, res) => {
 
     // Check if the order exists
     if (!order) {
-      return res.status(404).json({ success: false, message: "Order not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Order not found" });
     }
 
     for (let product of order.products) {
@@ -297,7 +323,6 @@ const doUserCancelOrder = async (req, res) => {
       );
     }
 
-
     await Order.updateOne({ _id: orderId }, { $set: { orderStatus: status } });
 
     const updatedOrder = await Order.findOne({ _id: orderId });
@@ -305,11 +330,9 @@ const doUserCancelOrder = async (req, res) => {
     res.status(200).json({ success: true, status: updatedOrder.orderStatus });
   } catch (error) {
     console.error(error);
-    res.redirect("/500"); 
+    res.redirect("/500");
   }
 };
-
-
 
 const doUserReturnOrder = async (req, res) => {
   try {
@@ -341,7 +364,48 @@ const doUserReturnOrder = async (req, res) => {
     res.render("error/error500");
     console.log(error.message);
   }
-}
+};
+
+const loadSalesReport = async (req, res) => {
+  try {
+    const fromDate = req.query.from;
+    const toDate = req.query.to;
+
+    if (fromDate && toDate) {
+      const dateFilter = {};
+
+      if (fromDate && toDate) {
+        dateFilter.createdAt = {
+          $gte: new Date(fromDate),
+          $lte: new Date(toDate),
+        };
+      }
+      const orderList = await Order.find(dateFilter)
+        .populate({ path: "userId", select: "fullname" })
+        .lean();
+
+      res.json({ orderList: orderList });
+    } else {
+      const orderList = await Order.find().populate({
+        path: "userId",
+        select: "fullname",
+      });
+      let totalSales = 0;
+      const totalOrders = orderList.length;
+      orderList.forEach((order) => {
+        totalSales += order.totalPrice;
+      });
+      res.render("admin/adminSalesReport", {
+        orderList: orderList,
+        totalSales: totalSales,
+        totalOrders: totalOrders,
+      });
+    }
+  } catch (error) {
+    res.render("error/error500");
+    console.log(error.message);
+  }
+};
 
 module.exports = {
   loadCheckout,
@@ -355,4 +419,5 @@ module.exports = {
   adminChangeOrderStatus,
   doUserCancelOrder,
   doUserReturnOrder,
+  loadSalesReport,
 };

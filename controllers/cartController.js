@@ -2,39 +2,73 @@ const Product = require("../models/productModel");
 const User = require("../models/userModel");
 const Cart = require("../models/cartModel");
 const cartHelper = require("../helpers/cartHelper");
+const Coupon = require("../models/couponModel");
+const couponHelper = require("../helpers/couponHelper");
 
 const loadCart = async (req, res) => {
   try {
     const userId = req.session.userId;
-    const cartData = await Cart.findOne({ userId: userId }).populate({
+    let discounted;
+    const cartData = await Cart.findOne({ userId: userId }, ).populate({
       path: "items.productId",
-      populate: [{
-        path: "category",
-        populate: {
-          path: "offer",
+      populate: [
+        {
+          path: "category",
+          populate: {
+            path: "offer",
+          },
         },
-      },
         {
           path: "offer",
-        }
-      ]
+        },
+      ],
     });
     const totalCartPrice = await cartHelper.totalCartPrice(userId);
-    console.log('totalprice in the cart:  ',totalCartPrice)
-    if( cartData && cartData.items.length > 0 ){
-      cartData.items = cartData.items.map(( items ) => {
-          if( items.productId.offer && items.productId.offer.startingDate <= new Date() && items.productId.offer.expiryDate >= new Date() ) {
-              items.productId.price = (items.productId.price * ( 1 - ( items.productId.offer.percentage / 100 ))).toFixed(0)
-          }else if ( items.productId.category.offer && items.productId.category.offer.startingDate <= new Date() && items.productId.category.offer.expiryDate >= new Date() ) {
-              items.productId.price = (items.productId.price * ( 1 - ( items.productId.category.offer.percentage / 100 ))).toFixed(0)
+    console.log("totalprice in the cart:  ", totalCartPrice);
+    if (cartData && cartData.items.length > 0) {
+      cartData.items = cartData.items.map((items) => {
+        if (items.productId && items.productId.offer) {
+          if (
+            items.productId?.offer?.startingDate <= new Date() &&
+            items.productId?.offer?.expiryDate >= new Date()
+          ) {
+            items.productId.price = (
+              items.productId.price *
+              (1 - items.productId.offer.percentage / 100)
+            ).toFixed(0);
+          } else if (
+            items.productId?.category?.offer?.startingDate <= new Date() &&
+            items.productId?.category?.offer?.expiryDate >= new Date()
+          ) {
+            items.productId.price = (
+              (items.productId.price || 0) *
+              (1 - items.productId.category.offer.percentage / 100)
+            ).toFixed(0);
           }
-          return items
-      })
-      console.log('cartData item after updation:', cartData)
-    } 
+        }
+        return items;
+      });
+      console.log("cartData item after updation:", cartData);
+    }
+    if (
+      cartData &&
+      cartData.coupon &&
+      totalCartPrice &&
+      totalCartPrice.length > 0
+    ) {
+      discounted = await couponHelper.discountPrice(
+        cartData.coupon,
+        totalCartPrice[0].total
+      );
+    }
+    const availableCoupons = await Coupon.find({
+      expiresAt: { $gte: new Date() },
+    });
     res.render("shop/shopping-cart", {
       cartData: cartData,
       totalCartPrice: totalCartPrice,
+      availableCoupons: availableCoupons,
+      discounted: discounted,
     });
   } catch (error) {
     console.log(error.message);
@@ -191,9 +225,66 @@ const removeCartItem = async (req, res) => {
   }
 };
 
+const applyCoupon = async (req, res) => {
+  try {
+    const { couponCode, total } = req.body;
+    console.log("Coupon code and total: ", couponCode, total);
+    const { userId } = req.session;
+    const coupon = await Coupon.find({ code: couponCode });
+    if (coupon && coupon.length > 0) {
+      const now = new Date();
+      if (coupon[0].expiresAt >= now) {
+        const userIds = coupon[0].usedBy.map((userId) => String(userId));
+        const userExist = userIds.includes(userId);
+        if (userExist) {
+          res.json({
+            success: false,
+            message: "Coupon already used by the user",
+          });
+        } else {
+          if (total < coupon[0].minOrderAmount) {
+            res.json({
+              success: false,
+              message: "Order amount is not greater than Minimum order amount.",
+            });
+          } else {
+            await Cart.updateOne(
+              { userId: userId },
+              {
+                $set: {
+                  coupon: coupon[0]._id,
+                },
+              }
+            );
+            console.log("else part worked in applying coupon");
+            const cart = await Cart.findOne({ userId: userId });
+            let discounted;
+            if (cart.coupon) {
+              discounted = await couponHelper.discountPrice(cart.coupon, total);
+            }
+            res.json({
+              success: true,
+              message: "Coupon Applied successfully",
+              discounted: discounted,
+            });
+          }
+        }
+      } else {
+        res.json({ success: false, message: "Invalid Coupon" });
+      }
+    } else {
+      res.json({ success: false, message: "Invalid Coupon" });
+    }
+  } catch (error) {
+    res.render("error/error500");
+    console.log(error.message);
+  }
+};
+
 module.exports = {
   loadCart,
   addToCart,
   decProductQuantity,
   removeCartItem,
+  applyCoupon,
 };

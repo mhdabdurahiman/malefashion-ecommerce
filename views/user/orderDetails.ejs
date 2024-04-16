@@ -24,6 +24,12 @@
                                         onclick="returnOrder('<%= orderData._id %>')" class="btn btn-warning rounded-0">
                                         Return</button>
                                     </div>
+                                        <button style="font-size: 14px;" id="download-invoice-btn"
+                                        onclick="downloadInvoice('<%= orderData._id %>')" class="btn btn-success  rounded-0">
+                                        Download Invoice</button>
+                                    <div>
+
+                                    </div>
                                 <% } else if (orderData.orderStatus == 'Canceled' ) { %>
                                     <div><p>Order Canceled</p></div>
                                 <% } %>
@@ -38,13 +44,13 @@
                                         <div class="card-body">
                                             <div class="row">
                                                 <div class="col-md-2">
-                                                    <img src="/images/product-images/<%= product.productId.image[0] %>"
-                                                        class="img-fluid" alt="Phone">
+                                                    <img src="/images/product-images/<% if(product.image && product.image.length > 0){product.image[0]}else{} %>"
+                                                        class="img-fluid" alt="Image">
                                                 </div>
                                                 <div
                                                     class="col-md-2 text-center d-flex justify-content-center align-items-center">
                                                     <p class="text-muted mb-0">
-                                                        <%= product.productId.name %>
+                                                        <%= product.name %>
                                                     </p>
                                                 </div>
                                                 <div
@@ -55,7 +61,7 @@
 
                                                 <div
                                                     class="col-md-1 text-center d-flex justify-content-center align-items-center">
-                                                    <p class="text-muted mb-0 small">Size: <%= product.productId.size %>
+                                                    <p class="text-muted mb-0 small">Size: <%= product.size %>
                                                     </p>
                                                 </div>
                                                 <div

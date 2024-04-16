@@ -52,61 +52,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- <div class="card">
-                                    <div class="card-heading">
-                                        <a data-toggle="collapse" data-target="#collapseThree">Filter Price</a>
-                                    </div>
-                                    <div id="collapseThree" class="collapse show" data-parent="#accordionExample">
-                                        <div class="card-body">
-                                            <div class="shop__sidebar__price">
-                                                <ul>
-                                                    <li><a href="#">₹0.00 - ₹400.00</a></li>
-                                                    <li><a href="#">₹400.00 - ₹800.00</a></li>
-                                                    <li><a href="#">₹800.00 - ₹1200.00</a></li>
-                                                    <li><a href="#">₹1200.00 - ₹1600.00</a></li>
-                                                    <li><a href="#">₹1600.00 - ₹2000.00</a></li>
-                                                    <li><a href="#">2000.00+</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div> -->
-                                <!-- <div class="card">
-                                    <div class="card-heading">
-                                        <a data-toggle="collapse" data-target="#collapseFour">Size</a>
-                                    </div>
-                                    <div id="collapseFour" class="collapse show" data-parent="#accordionExample">
-                                        <div class="card-body">
-                                            <div class="shop__sidebar__size">
-                                                <label for="xs">xs
-                                                    <input type="radio" id="xs">
-                                                </label>
-                                                <label for="sm">s
-                                                    <input type="radio" id="sm">
-                                                </label>
-                                                <label for="md">m
-                                                    <input type="radio" id="md">
-                                                </label>
-                                                <label for="xl">xl
-                                                    <input type="radio" id="xl">
-                                                </label>
-                                                <label for="2xl">2xl
-                                                    <input type="radio" id="2xl">
-                                                </label>
-                                                <label for="xxl">xxl
-                                                    <input type="radio" id="xxl">
-                                                </label>
-                                                <label for="3xl">3xl
-                                                    <input type="radio" id="3xl">
-                                                </label>
-                                                <label for="4xl">4xl
-                                                    <input type="radio" id="4xl">
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div> -->
-
                             </div>
                         </div>
                     </div>
@@ -152,30 +97,18 @@
                                             <%= product.name %>
                                         </h6>
                                         <a href="#" class="add-cart">+ Add To Cart</a>
-                                        <!-- <div class="rating">
-                                            <i class="fa fa-star-o"></i>
-                                            <i class="fa fa-star-o"></i>
-                                            <i class="fa fa-star-o"></i>
-                                            <i class="fa fa-star-o"></i>
-                                            <i class="fa fa-star-o"></i>
-                                        </div> -->
-                                        <% if ( product.offer){ var discount=(product.price * product.offer.percentage /
-                                            100).toFixed(0) } else if ( product.category.offer ) {var discount=(
-                                            product.price * product.category.offer.percentage / 100 ).toFixed(0) } %>
-                                            <% if ( product.offer) {%>
-                                                <p class="mb-0"><del>₹ <%= product.price %></del></p>
-                                                <h5 class="mb-0">₹ <%= product.price - discount %> <span
-                                                            class="badge badge-success"> Save ₹ <%= discount %> </span>
-                                                </h5>
-                                                <% } else if ( product.category.offer) { %>
-                                                    <p class="mb-0"><del>₹ <%= product.price %></del></p>
-                                                    <h5 class="mb-0 fw-700">₹ <%= product.price - discount %> <span
-                                                                class="badge badge-success"> Save ₹ <%= discount %>
-                                                            </span></h5>
-                                                    <% } else { %>
-                                                        <h5>₹<%= product.price %>
-                                                                <% } %>
-                                                        </h5>
+                                        
+                                        <% if (product.offer && product.offer.percentage) { %>
+                                            <% var discount = (product.price * product.offer.percentage / 100).toFixed(0); %>
+                                            <p class="mb-0"><del>₹ <%= product.price %></del></p>
+                                            <h5 class="mb-0">₹ <%= product.price - discount %> <span class="badge badge-success"> Save ₹ <%= discount %> </span></h5>
+                                        <% } else if (product.category && product.category.offer && product.category.offer.percentage) { %>
+                                            <% var discount = (product.price * product.category.offer.percentage / 100).toFixed(0); %>
+                                            <p class="mb-0"><del>₹ <%= product.price %></del></p>
+                                            <h5 class="mb-0 fw-700">₹ <%= product.price - discount %> <span class="badge badge-success"> Save ₹ <%= discount %></span></h5>
+                                        <% } else { %>
+                                            <h5>₹ <%= product.price %></h5>
+                                        <% } %>
                                     </div>
                                 </div>
                             </div>

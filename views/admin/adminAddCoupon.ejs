@@ -1,0 +1,177 @@
+<%- include('../partials/adminPartials/adminHead') -%> <%- include('../partials/adminPartials/adminSideNavbar') -%> <%-
+      include('../partials/adminPartials/adminNavbarHead') -%>
+
+      <section class="container-fluid">
+        <div class="row justify-content-center" id="addcoupondiv">
+          <div class="card mb-4" style="max-width: 700px;">
+            <div class="card-body">
+              <h4 class="card-title text-center">Add Coupon</h4>
+              <div id="successContainer" class="alert alert-success" style="display: none;"></div>
+              <div id="errorContainer" class="alert alert-danger" style="display: none;"></div>
+              <div id="reloadDiv">
+                <form id="couponForm" class="forms-sample">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group mb-4">
+                        <label class="form-label" for="coupon-code">Coupon Code</label>
+                        <input type="text" class="form-control" id="couponCode" name="couponCode"
+                          placeholder="Enter coupon code" required>
+                        <span id="codeError" class="text-danger"></span>
+                      </div>
+                      <div class="form-group mb-4">
+                        <label class="form-label" for="">Minimum Order Amount</label>
+                        <input type="text" class="form-control" id="minAmount" name="minAmount"
+                          placeholder="Enter minimum amount" required>
+                        <span id="minError" class="text-danger"></span>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group mb-4">
+                        <label class="form-label" for="">Discount Type</label>
+                        <select id="discountType" name="discountType" class="form-select">
+                          <option value="fixed">Fixed</option>
+                          <option value="percent">Percent</option>
+                        </select>
+                        <span id="discountTypeError" class="text-danger"></span>
+                      </div>
+                      <div class="form-group mb-4">
+                        <label class="form-label" for="">Discount Amount</label>
+                        <input type="text" class="form-control" id="discountAmount" name="discountAmount"
+                          placeholder="Enter discount amount" required>
+                        <span id="discountAmountError" class="text-danger"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group mb-4">
+                    <label class="form-label" for="">Maximum number of uses</label>
+                    <input type="text" class="form-control" id="maxUses" name="maxUses"
+                      placeholder="Enter maximum numbers the coupon can be used" required>
+                    <span id="maxNumUseError" class="text-danger"></span>
+                  </div>
+                  <div class="form-group mb-4">
+                    <label class="form-label" for="">Expiry Date</label>
+                    <input type="date" class="form-control" id="expiryDate" name="expiryDate" required>
+                    <span id="expError" class="text-danger"></span>
+                  </div>
+                  <div class="mt-4 text-center mt-4">
+                    <button type="submit" id="addCouponBtn" class="btn btn-primary mr-2">Submit</button>
+                    <a href="/admin/coupon" class="btn btn-secondary">Cancel</a>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <script>
+        const form = document.getElementById('couponForm');
+        const addCouponBtn = document.getElementById('addCouponBtn');
+
+        addCouponBtn.addEventListener('click', async function (event) {
+          event.preventDefault();
+
+          if (form.checkValidity() === false) {
+            event.stopPropagation();
+            form.classList.add('was-validated'); // Trigger Bootstrap validation styles
+          } else {
+            const formData = new FormData(form);
+
+            // Custom validation before submitting
+            const couponCode = formData.get('couponCode').trim();
+            const minAmount = parseFloat(formData.get('minAmount'));
+            const discountType = formData.get('discountType');
+            const discountAmount = parseFloat(formData.get('discountAmount'));
+            const maxUses = parseInt(formData.get('maxUses'), 10);
+            const expiryDate = new Date(formData.get('expiryDate'));
+
+            let isValid = true;
+
+            // Validate Coupon Code
+            if (!couponCode || couponCode.trim() === '') {
+              document.getElementById('codeError').textContent = 'Coupon code is required.';
+              isValid = false;
+            }
+
+            const pattern = /^[a-zA-Z0-9]+$/
+            if (!pattern.test(couponCode)) {
+              document.getElementById('codeError').textContent = 'Coupon code can only contain letters and numbers.';
+              isValid = false;
+            }
+
+            // Validate Minimum Order Amount
+            if (isNaN(minAmount) || minAmount <= 0) {
+              document.getElementById('minError').textContent = 'Enter a valid minimum amount.';
+              isValid = false;
+            }
+
+            // Validate Discount Type
+            if (!discountType) {
+              document.getElementById('discountTypeError').textContent = 'Select a discount type.';
+              isValid = false;
+            }
+
+            // Validate Discount Amount based on Type
+            if (discountType === 'fixed' && (isNaN(discountAmount) || discountAmount <= 0)) {
+              document.getElementById('discountAmountError').textContent = 'Enter a valid discount amount.';
+              isValid = false;
+            } else if (discountType === 'percent' && (isNaN(discountAmount) || discountAmount <= 0 || discountAmount > 100)) {
+              document.getElementById('discountAmountError').textContent = 'Enter a valid percentage (1-100).';
+              isValid = false;
+            }
+
+            // Validate Maximum Number of Uses
+            if (isNaN(maxUses) || maxUses <= 0) {
+              document.getElementById('maxNumUseError').textContent = 'Enter a valid maximum number of uses.';
+              isValid = false;
+            }
+
+            // Validate Expiry Date
+            if (expiryDate <= new Date()) {
+              document.getElementById('expError').textContent = 'Expiry date must be in the future.';
+              isValid = false;
+            }
+
+            // Submit the form if all validations pass
+            if (isValid) {
+              document.querySelectorAll('.text-danger').forEach(error => error.textContent = '');
+
+              // Perform AJAX request or submit form
+              // Example: Use fetch() or axios.post() to send formData to the server
+              const response = await fetch('/admin/add-coupon', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(Object.fromEntries(formData))
+              });
+
+              try {
+                const json = await response.json();
+                if (json.success === true) {
+                Swal.fire({
+                  title: "Coupon Added",
+                  text: "Coupon has been added successfully, please go to the coupons page to see the newly created coupon",
+                  icon: "success",
+                });
+              } else if (json.success === false) {
+                Swal.fire({
+                  title: "Error",
+                  text: json.message,
+                  icon: "error"
+                })
+              } else {
+                console.log('Error during fetch:', json.error)
+              }
+              } catch (error) {
+                console.error('Error parsing JSON:', error)
+              }
+              
+            }
+          }
+        });
+
+      </script>
+
+
+      <%- include('../partials/adminPartials/adminFooter') -%>

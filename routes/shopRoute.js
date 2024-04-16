@@ -18,6 +18,7 @@ shopRoute.get("/cart" , authMiddleware.userAuth, isBlockedMiddleware.checkIsBloc
 shopRoute.post("/add-to-cart", cartController.addToCart);
 shopRoute.post("/decrease-product-quantity", cartController.decProductQuantity);
 shopRoute.post("/remove-cart-item", cartController.removeCartItem);
+shopRoute.post("/apply-coupon", cartController.applyCoupon);
 
 shopRoute.get("/wishlist", authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, wishlistController.loadWishlist);
 shopRoute.post("/add-to-wishlist", authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked ,wishlistController.addToWishlist);

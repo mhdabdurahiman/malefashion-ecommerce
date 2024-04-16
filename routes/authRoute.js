@@ -11,7 +11,6 @@ authRoute.post("/register", authMiddleware.userLoggedOut, authenticationControll
 authRoute.post("/login", authMiddleware.userLoggedOut, authenticationController.doUserLogin);
 authRoute.post("/send-otp", authMiddleware.userLoggedOut, authenticationController.doVerfiyRegisterOtp);
 authRoute.post("/resend-otp", authMiddleware.userLoggedOut, authenticationController.doResendOtp);
-// userRoute.get("/enter-otp", authMiddleware.userLoggedOut, authenticationController.loadVerifyOTP);
 authRoute.get("/logout", authMiddleware.userAuth, authenticationController.doUserLogout);
 authRoute.post("/reset-password", authMiddleware.userAuth, authenticationController.resetPassword);
 
