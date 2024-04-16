@@ -46,7 +46,7 @@
         <div class="col-lg-6">
             <div class="card mb-4">
                 <div class="card-body">
-                    <form method="POST" action="/admin/add-product" enctype="multipart/form-data" id="add-product-form">
+                    <form method="POST" action="/admin/add-product" enctype="multipart/form-data" id="add-product-form" class="needs-validation">
                         <div class="row">
                             <div class="col-md-3">
                                 <h6>1. General info</h6>
@@ -54,19 +54,23 @@
                             <div class="col-md-9">
                                 <div class="mb-4">
                                     <label class="form-label">Product Name</label>
-                                    <input id="name" name="name" type="text" placeholder="Type here" class="form-control">
+                                    <input id="name" name="name" type="text" placeholder="Type here" class="form-control" required>
+                                    <div class="invalid-feedback">Please enter a product name.</div>
                                 </div>
                                 <div class="mb-4">
                                     <label class="form-label">Description</label>
-                                    <textarea id="description" name="description" placeholder="Type here" class="form-control" rows="4"></textarea>
+                                    <textarea id="description" name="description" placeholder="Type here" class="form-control" rows="4" required></textarea>
+                                    <div class="invalid-feedback">Please enter product description.</div>
                                 </div>
                                 <div class="mb-4">
                                         <label class="form-label">Brand Name</label>
-                                        <input id="brand" name="brand" type="text" placeholder="Type here" class="form-control">
+                                        <input id="brand" name="brand" type="text" placeholder="Type here" class="form-control" required>
+                                        <div class="invalid-feedback">Please enter a brand name.</div>
                                 </div>
                                 <div class="mb-4">
                                     <label class="form-label">Size</label>
-                                    <input id="size" name="size" type="text" placeholder="Type here" class="form-control">
+                                    <input id="size" name="size" type="text" placeholder="Type here" class="form-control" required>
+                                    <div class="invalid-feedback">Please enter size.</div>
                             </div>
                             </div> <!-- col.// -->
                         </div> <!-- row.// -->
@@ -78,7 +82,8 @@
                             <div class="col-md-9">
                                 <div class="mb-4">
                                     <label class="form-label">Cost in Rupees</label>
-                                    <input name="price" type="text" placeholder="00.0" class="form-control">
+                                    <input name="price" type="text" placeholder="00.0" class="form-control" required>
+                                    <div class="invalid-feedback">Please enter the cost of product.</div>
                                 </div>
                             </div> <!-- col.// -->
                         </div> <!-- row.// -->
@@ -105,7 +110,8 @@
                             <div class="col-md-9">
                                 <div class="mb-4">
                                     <label class="form-label">Stock quantity</label>
-                                    <input id="stock" name="stock" type="text" placeholder="Type here" class="form-control">
+                                    <input id="stock" name="stock" type="text" placeholder="Type here" class="form-control" required>
+                                    <div class="invalid-feedback">Please enter product stock quantity.</div>
                                 </div>
                             </div> <!-- col.// -->
                         </div> <!-- row.// -->
@@ -117,7 +123,8 @@
                             <div class="col-md-9">
                                 <div class="mb-4">
                                     <label class="form-label">Images</label>
-                                    <input name="images" id="inputImage" class="form-control" type="file" multiple="multiple" accept="image/jpeg, image/png, image/jpg">
+                                    <input name="images" id="inputImage" class="form-control" type="file" multiple="multiple" accept="image/jpeg, image/png, image/jpg" required>
+                                    <div class="invalid-feedback">Please provide images</div>
                                 </div>
                             </div> <!-- col.// -->
                         </div> 
@@ -144,9 +151,22 @@
     let imagesArray = [];
 
     input.addEventListener("change", () => {
+        let allowedExtensions = 
+            /\.(jpg|jpeg|png|)$/i;  
         const files = input.files;
         for (let i = 0; i < files.length; i++) {
-            imagesArray.push(files[i]);
+            const file = files[i];
+            const fileName = file.name;
+            const fileSize = file.size;
+            if (!allowedExtensions.test(fileName)){
+                alert(`Invalid file type for ${fileName}. Only JPG, JPEG, or PNG files are allowed`);
+                file = ''
+            } else if (fileSize > 5 * 1024 * 1024) {
+                alert(`File size exceeds 5MB limit for ${fileName}.`)
+                file = ''
+            } else {
+                imagesArray.push(file);
+            }
         }
         displayImages()
     });

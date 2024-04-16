@@ -45,7 +45,7 @@
                     <div class="col-lg-6">
                         <div class="card mb-4">
                             <div class="card-body">
-                                <form method="POST" action="/admin/edit-product" enctype="multipart/form-data"
+                                <form id="edit-product-form" method="POST" action="/admin/edit-product" enctype="multipart/form-data"
                                     id="edit-product-form">
                                     <div class="row">
                                         <div class="col-md-3">
@@ -83,7 +83,7 @@
                                         <div class="col-md-9">
                                             <div class="mb-4">
                                                 <label class="form-label">Cost in Rupees</label>
-                                                <input name="price" type="text" value="<%= product.price %>"
+                                                <input name="price" id="price" type="number" value="<%= product.price %>"
                                                     class="form-control">
                                             </div>
                                         </div> <!-- col.// -->
@@ -98,16 +98,19 @@
                                                 <select id="category" name="categoryId">
                                                     <% for( let category of categories ) { %>
                                                         <% if (product.category) {%>
-                                                            <option value="<%= category._id %>" <% if (product.category.name==category.name) {%>selected<%} %>>
-                                                                <%= category.name %>
-                                                        </option>
+                                                            <option value="<%= category._id %>" <% if
+                                                                (product.category.name==category.name) {%>selected<%} %>
+                                                                    >
+                                                                    <%= category.name %>
+                                                            </option>
                                                             <% } else { %>
-                                                        <option value="none" selected disabled hidden>Select a category</option>
-                                                        <option value="<%= category._id %>" >
-                                                                <%= category.name %>
-                                                        </option>
-                                                        <% } %>
-                                                        <% } %>
+                                                                <option value="none" selected disabled hidden>Select a
+                                                                    category</option>
+                                                                <option value="<%= category._id %>">
+                                                                    <%= category.name %>
+                                                                </option>
+                                                                <% } %>
+                                                                    <% } %>
                                                 </select>
                                             </div>
                                         </div> <!-- col.// -->
@@ -120,7 +123,7 @@
                                         <div class="col-md-9">
                                             <div class="mb-4">
                                                 <label class="form-label">Stock quantity</label>
-                                                <input id="stock" name="stock" type="text" value="<%= product.stock %>"
+                                                <input id="stock" name="stock" type="number" value="<%= product.stock %>"
                                                     class="form-control">
                                             </div>
                                         </div> <!-- col.// -->
@@ -139,10 +142,7 @@
                                         </div> <!-- col.// -->
                                     </div>
                                     <!-- Image preview div -->
-                                    <div id="imagePreview1" class="row">
-                                    </div>
-                                    <!-- Image preview div 2 -->
-                                    <div id="imagePreview2" class="row">
+                                    <div id="imagePreview" class="row">
                                     </div>
                                     <hr class="mb-4 mt-0">
                                     <div class="row">
@@ -160,58 +160,178 @@
             </section> <!-- content-main end// -->
 
             <script>
-                const output1 = document.getElementById("imagePreview1");
-                const output2 = document.getElementById("imagePreview2");
+                const output = document.getElementById("imagePreview");
                 const input = document.getElementById("inputImage");
-                imagesString = "<%=product.image%>"
-                let imagesArrayDB = imagesString.split(',')
-                let imagesArray = []
+                let imagesArrayDB = [];
 
-
-                displayDbImages();
-                displayImages()
-
-                function displayDbImages() {
-                    let images = "";
-                    images = '<p>Images in DB</p>'
-                    imagesArrayDB.forEach((image, index) => {
-                        images += `<div class="col-md-3 m-3 image" >
-                            <img src="/images/product-images/${image}" alt="image">
-                            <span onclick="deleteImage(${index})">&times;</span>
-                        </div>`
-                    })
-
-                    output1.innerHTML = images;
+                if ('<%= product.image %>') {
+                    const imagesString = "<%= product.image %>";
+                    imagesArrayDB = imagesString.split(',');
                 }
 
+                let imagesArray = [];
 
-
-                input.addEventListener("change", () => {
-                    const files = input.files;
-                    for (let i = 0; i < files.length; i++) {
-                        imagesArray.push(files[i]);
-                    }
-                    displayImages()
-                });
+                displayImages();
 
                 function displayImages() {
-                    let fileImages = "";
-                    fileImages = '<p>Images selected now</p>'
+                    const productId = '<%= product._id %>';
+                    let imagesHTML = "";
+                    
+                    imagesArrayDB.forEach((image, index) => {
+                        const imageSrc = '/images/product-images/' + image;
+                        imagesHTML += `
+                            <div class="col-md-3 m-3 image" id="image-${index}" data-from-db="true">
+                                <img src="${imageSrc}" alt="image">
+                                <span onclick="deleteDbImage('${productId}', '${image}', ${index})">&times;</span>
+                            </div>
+                        `;
+                    });
+
                     imagesArray.forEach((image, index) => {
-                        fileImages += `<div class="col-md-3 m-3 image" >
-                                <img src="${URL.createObjectURL(image)}" alt="image">
-                                <span onclick="deleteImage(${index})">&times;</span>
-                            </div>`
-                    })
-                    output2.innerHTML = fileImages;
+                        imagesHTML += `
+                            <div class="col-md-3 m-3 image" id="uploaded-image-${index}" data-from-db="false">
+                                <img src="${URL.createObjectURL(image)}" alt="uploaded-image">
+                                <span onclick="deleteLocalImage(${index})">&times;</span>
+                            </div>
+                        `;
+                    });
+
+                    output.innerHTML = imagesHTML;
                 }
 
+                input.addEventListener("change", () => {
+                    let allowedExtensions = 
+                        /\.(jpg|jpeg|png|)$/i;  
+                    const files = input.files;
+                    for (let i = 0; i < files.length; i++) {
+                        const file = files[i];
+                        const fileName = file.name;
+                        const fileSize = file.size;
+                        if (!allowedExtensions.test(fileName)){
+                            alert(`Invalid file type for ${fileName}. Only JPG, JPEG, or PNG files are allowed`);
+                            file = ''
+                        } else if (fileSize > 5 * 1024 * 1024) {
+                            alert(`File size exceeds 5MB limit for ${fileName}.`)
+                            file = ''
+                        } else {
+                            imagesArray.push(file);
+                        }
+                    }
+                    displayImages();
+                });
 
-                function deleteImage(index) {
-                    imagesArray.splice(index, 1)
-                    displayDbImages()
+                function deleteLocalImage(index) {
+                    imagesArray.splice(index, 1);
+                    displayImages();
                 }
+
+                function deleteDbImage(productId, image, index) {
+                    Swal.fire({
+                        title: "Are you sure?",
+                        text: "You cannot retrieve this!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#3085d6",
+                        cancelButtonColor: "#d33",
+                        confirmButtonText: "Yes, delete it!"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch('/admin/delete-product-image', {
+                                method: 'DELETE',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    productId: productId,
+                                    image: image
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(json => {
+                                if(json.success == false){
+                                    Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: json.message
+                                });
+                                } else {
+                                    const imageElement = document.getElementById(`image-${index}`);
+                                    if (imageElement) {
+                                        imageElement.remove();
+                                    } else {
+                                        throw new Error('Failed to delete image from the db');
+                                    }
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error deleting image from the db:', error);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'Failed to delete image from the db. Please try again.'
+                                });
+                            });
+                        }
+                    });
+                }
+
+                const sweetAlert = function(message){
+                    Swal.fire({
+                            icon: 'error',
+                            title: 'Validation Error',
+                            text: message,
+                        });
+                }
+
+                const editProductForm = document.getElementById("edit-product-form");
+
+                editProductForm.addEventListener("submit", (event) => {
+                    event.preventDefault(); 
+                    
+                    // Perform form validation here
+                    const productName = document.getElementById("name").value;
+                    const description = document.getElementById("description").value;
+                    const brand = document.getElementById("brand").value;
+                    const size = document.getElementById("size").value;
+                    const price = parseFloat(document.getElementById("price").value);
+                    const category = document.getElementById("category").value;
+                    const stock = parseFloat(document.getElementById("stock").value);
+
+                    console.log(productName)
+
+                    if (productName.trim() === '') {
+                        sweetAlert('Product name is required')
+                        return; 
+                    }
+                    if (description.trim() === '') {
+                        sweetAlert('Description is required')
+                        return; 
+                    }
+                    if (brand.trim() === '') {
+                        sweetAlert('Brand is required')
+                        return; 
+                    }
+                    if (size.trim() === ''){
+                        sweetAlert('Size is required')
+                        return
+                    }
+                    if (isNaN(price) || typeof price != 'number'){
+                        sweetAlert('Price cannot be empty or only can only be number')
+                        return
+                    }
+                    if (isNaN(stock) || typeof stock != 'number'){
+                        sweetAlert('Stock cannot be empty or can only be number')
+                        return
+                    }
+                
+                    editProductForm.submit();
+                });
+
+                <% if (typeof errorMessage !== 'undefined') { %>
+                    alert('<%= errorMessage %>')
+                <% } %>
             </script>
+
 
 
             <%- include('../partials/adminPartials/adminFooter') -%>

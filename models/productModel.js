@@ -38,12 +38,14 @@ const productSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
+    isDeleted: {
+      type: Boolean,
+      default: false
+    },
     offer : {
       type : mongoose.Schema.Types.ObjectId,
       ref : 'Offer'
-  }
-
-
+    }
   },
   {timestamps: true });
   

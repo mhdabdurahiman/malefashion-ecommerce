@@ -1,0 +1,181 @@
+<%- include('../partials/adminPartials/adminHead') -%>
+
+    <%- include('../partials/adminPartials/adminSideNavbar') -%>
+
+        <%- include('../partials/adminPartials/adminNavbarHead') -%>
+
+            <section class="content-main">
+                <div class="content-header">
+                    <div>
+                        <h2 class="content-title card-title">Archived products</h2>
+                        <p>View and unarchive products.</p>
+                    </div>
+                    <div>
+
+                    </div>
+                </div>
+                <div class="card mb-4">
+                    <div id="product-list-div">
+                        <header class="card-header">
+                            <div class="row align-items-center">
+
+                                <div class="col-lg-4 col-sm-4 col-8 flex-grow-1">Product</div>
+                                <div class="col-lg-2 col-sm-2 col-4">Price</div>
+                                <div class="col-lg-1 col-sm-2 col-4">Stock</div>
+                                <div class="col-lg-2 col-sm-2 col-4 text-end">Action</div>
+                            </div>
+                        </header>
+                        <!-- card-header end// -->
+                        <!-- itemlist  .// -->
+                        <% for( let product of products ) { %>
+                            <article class="itemlist">
+                                <div class="row align-items-center">
+                                    <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
+                                        <a class="itemside" href="#">
+                                            <div class="left">
+                                                <img src="/images/product-images/<%= product.image[0] %>"
+                                                    class="img-sm img-thumbnail" alt="Item" />
+                                            </div>
+                                            <div class="info">
+                                                <h6 class="mb-0">
+                                                    <%= product.name %>
+                                                </h6>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <div class="col-lg-2 col-sm-2 col-4 col-price"><span>
+                                            <%= product.price %>
+                                        </span></div>
+                                    <div class="col-lg-1 col-sm-2 col-4 col-stock">
+                                        <span>
+                                            <%= product.stock %>
+                                        </span>
+                                    </div>
+                                    <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
+                                        <div class="action-buttons">
+                                            <button type="button" class="btn delete-btn btn-success btn-sm"
+                                                style="padding: 5px" onclick="unarchiveProduct('<%= product._id %>')">
+                                                Unarchive
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- row .// -->
+                            </article>
+                            <!-- itemlist  .// -->
+                            <% } %>
+                    </div>
+                </div>
+                <!-- card-body end// -->
+
+                <!-- Pagination links -->
+                <% if (totalPages) { %>
+                    <div class="pagination-area mt-30 mb-50">
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination justify-content-start">
+                                <% for (let i=1; i <=totalPages; i++) { %>
+                                    <li class="page-item">
+                                        <a class="page-link" href="javascript:void(0)" onclick="fetchProduct(<%= i %>)">
+                                            <%= i %>
+                                        </a>
+                                    </li>
+                                    <% } %>
+                            </ul>
+                        </nav>
+                    </div>
+                    <% } %>
+            </section>
+
+
+            <script>
+
+                function fetchProduct(page) {
+                    fetch(`/admin/archived-products?page=${page}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log(data.products)
+                            updateProductList(data.products)
+                        })
+                        .catch(error => {
+                            console.error('Error fetching products:', error);
+                        });
+                }
+
+                function unarchiveProduct(productId) {
+                    console.log(productId)
+                    fetch(`/admin/unarchive-product/${productId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Failed to update product');
+                            }
+                            return response.json(); 
+                        })
+                        .then(json => {
+                            if (json.success == true) {
+                                console.log('Product updated successfully');
+                                window.location.reload();
+                            }
+
+                        })
+                        .catch(error => {
+                            console.error('Error updating product:', error);
+                        });
+                }
+
+                function updateProductList(products) {
+                    let productListDiv = document.getElementById('product-list-div');
+                    productListDiv.innerHTML = '';
+                    products.forEach(product => {
+                        var productItem = `
+                        <article class="itemlist">
+                            <div class="row align-items-center">
+                                <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
+                                    <a class="itemside" href="#">
+                                        <div class="left">
+                                            <img src="/images/product-images/${product.image[0]}"
+                                                class="img-sm img-thumbnail" alt="Item" />
+                                        </div>
+                                        <div class="info">
+                                            <h6 class="mb-0">
+                                                ${product.name}
+                                            </h6>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-lg-2 col-sm-2 col-4 col-price">
+                                    <span>${product.price}</span>
+                                </div>
+                                <div class="col-lg-1 col-sm-2 col-4 col-stock">
+                                    <span>${product.stock}</span>
+                                </div>
+                                
+                                <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
+                                    <div class="action-buttons">
+                                        <button type="button" class="btn delete-btn btn-success btn-sm"
+                                            style="padding: 5px"
+                                            data-product-id="${product._id}">
+                                            Unarchive
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- row .// -->
+                        </article>`;
+                        productListDiv.innerHTML += productItem;
+
+                    });
+                }
+
+            </script>
+
+            <%- include('../partials/adminPartials/adminFooter') -%>

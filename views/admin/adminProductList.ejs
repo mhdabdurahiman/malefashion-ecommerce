@@ -12,6 +12,8 @@
                     </div>
                     <div>
                         <a href="/admin/add-product" class="btn btn-primary btn-sm rounded">Add new product</a>
+                        <a href="/admin/archived-products" class="btn btn-secondary btn-sm rounded">View archived
+                            products</a>
                     </div>
                 </div>
                 <div class="card mb-4">
@@ -49,7 +51,9 @@
                                             <%= product.price %>
                                         </span></div>
                                     <div class="col-lg-2 col-sm-2 col-4 col-status">
-                                        <span class="badge rounded-pill alert-warning">Archived</span>
+                                        <span
+                                            class="badge rounded-pill <% if(product.isList == false) {%>alert-warning">Unlisted
+                                            <% } else { %>alert-success">Listed<% } %></span>
                                     </div>
                                     <div class="col-lg-1 col-sm-2 col-4 col-stock">
                                         <span>
@@ -70,7 +74,8 @@
                                                     onclick="removeProductOffer('<%= product._id %>')">
                                                     Remove offer
                                                 </button>
-                                                <p>Offer: <%= product.offer.name %>(<%= product.offer.percentage %>%)</p>
+                                                <p>Offer: <%= product.offer.name %>(<%= product.offer.percentage %>%)
+                                                </p>
                                                 <% } %>
                                     </div>
                                     <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
@@ -100,7 +105,7 @@
                                                             </button></a>
                                                         <button type="button" class="btn delete-btn btn-danger btn-sm"
                                                             style="padding: 5px" data-product-id="<%= product._id %>">
-                                                            Delete
+                                                            Archive
                                                         </button>
                                         </div>
                                     </div>
@@ -136,8 +141,8 @@
                                                     <p>Expiry Date: <%= offerItem.expiryDate.toLocaleDateString() %>
                                                     </p>
 
-                                                    <a href="#" class="btn btn-warning btn-sm apply-btn" data-offerid="<%= offerItem._id %>"
-                                                        >Apply</a>
+                                                    <a href="#" class="btn btn-warning btn-sm apply-btn"
+                                                        data-offerid="<%= offerItem._id %>">Apply</a>
                                                 </div>
                                             </li>
                                             <% }) %>
@@ -160,7 +165,7 @@
                         <nav aria-label="Page navigation example">
                             <ul class="pagination justify-content-start">
                                 <% for (let i=1; i <=totalPages; i++) { %>
-                                    <li class="page-item">
+                                    <li class="page-item <% if(typeof page !== 'undefined' && page==i){%>active<%}  %>">
                                         <a class="page-link" href="javascript:void(0)" onclick="fetchProduct(<%= i %>)">
                                             <%= i %>
                                         </a>
@@ -176,6 +181,30 @@
 
             <script>
 
+                function applyOffer(offerId, productId) {
+                    fetch('/admin/apply-product-offer', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ offerId: offerId, productId: productId })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert('Offer applied successfully');
+                                $('#offerModal').modal('hide'); // Close modal after applying offer
+                                window.location.reload(); // Reload the page to reflect changes
+                            } else {
+                                alert('Failed to apply offer');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error applying offer:', error);
+                            alert('An error occurred while applying the offer');
+                        });
+                }
+
                 function fetchProduct(page) {
                     fetch(`/admin/products?page=${page}`)
                         .then(response => {
@@ -187,6 +216,7 @@
                         .then(data => {
                             console.log(data.products)
                             updateProductList(data.products)
+                            updatePaginationData(data.page)
                         })
                         .catch(error => {
                             console.error('Error fetching products:', error);
@@ -199,65 +229,102 @@
                     products.forEach(product => {
                         var productItem = `
                         <article class="itemlist">
-                            <div class="row align-items-center">
-                                <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
-                                    <a class="itemside" href="#">
-                                        <div class="left">
-                                            <img src="/images/product-images/${product.image[0]}"
-                                                class="img-sm img-thumbnail" alt="Item" />
-                                        </div>
-                                        <div class="info">
-                                            <h6 class="mb-0">
-                                                ${product.name}
-                                            </h6>
-                                        </div>
-                                    </a>
-                                </div>
-                                <div class="col-lg-2 col-sm-2 col-4 col-price"><span>
-                                        ${product.price}
-                                    </span></div>
-                                <div class="col-lg-2 col-sm-2 col-4 col-status">
-                                    <span class="badge rounded-pill alert-warning">Archived</span>
-                                </div>
-                                <div class="col-lg-1 col-sm-2 col-4 col-stock">
-                                    <span>
-                                        ${product.stock}
-                                    </span>
-                                </div>
-                                <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
-                                    <div class="action-buttons">
-                                        ${product.isList ? `
-                                            <button type="button" class="btn list-unlist-btn btn-secondary btn-sm"
-                                                style="padding: 5px; width: 50px" data-product-id="${product._id}"
-                                                data-is-list="${product.isList}">
-                                                Unlist
-                                            </button>` :
+            <div class="row align-items-center">
+                <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
+                    <a class="itemside" href="#">
+                        <div class="left">
+                            <img src="/images/product-images/${product.image[0]}"
+                                class="img-sm img-thumbnail" alt="Item" />
+                        </div>
+                        <div class="info">
+                            <h6 class="mb-0">
+                                ${product.name}
+                            </h6>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-2 col-sm-2 col-4 col-price">
+                    <span>${product.price}</span>
+                </div>
+                <div class="col-lg-2 col-sm-2 col-4 col-status">
+                    <span class="badge rounded-pill ${product.isList == false ? 'alert-warning">Unlisted' : 'alert-success">Listed'
+                            }</span>
+
+                </div>
+                <div class="col-lg-1 col-sm-2 col-4 col-stock">
+                    <span>${product.stock}</span>
+                </div>
+                <div class="col-lg-1 col-sm-2 col-4 col-offer">
+                    ${product.offer ? `
+                        <button type="button" class="btn btn-danger btn-sm font-sm"
+                            onclick="removeProductOffer('${product._id}')">
+                            Remove offer
+                        </button>
+                        <p>Offer: ${product.offer.name} (${product.offer.percentage}%)</p>
+                    ` : `
+                        <button type="button" class="addOfferBtn btn btn-warning btn-sm font-sm offerbtn"
+                            data-toggle="modal" data-target="#offerModal"
+                            data-productId="${product._id}">
+                            Add offer
+                        </button>
+                        <p>No offer</p>
+                    `}
+                </div>
+                <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
+                    <div class="action-buttons">
+                        ${product.isList ? `
+                            <button type="button" class="btn list-unlist-btn btn-secondary btn-sm"
+                                style="padding: 5px; width: 50px"
+                                data-product-id="${product._id}"
+                                data-is-list="${product.isList}">
+                                Unlist
+                            </button>` :
                                 `<button type="button" class="btn list-unlist-btn btn-secondary btn-sm"
-                                                style="padding: 5px; width: 50px"
-                                                data-product-id="${product._id}"
-                                                data-is-list="${product.isList}">
-                                                List
-                                            </button>`
+                                style="padding: 5px; width: 50px"
+                                data-product-id="${product._id}"
+                                data-is-list="${product.isList}">
+                                List
+                            </button>`
                             }
-                                        <a href="/admin/edit-product/${product._id}">
-                                            <button type="button" class="btn edit-btn btn-primary btn-sm"
-                                                style="padding: 5px" data-product-id="${product._id}">
-                                                Edit
-                                            </button>
-                                        </a>
-                                        <button type="button" class="btn delete-btn btn-danger btn-sm"
-                                            style="padding: 5px" data-product-id="${product._id}">
-                                            Delete
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- row .// -->
-                        </article>
-                        `;
+                        <a href="/admin/edit-product/${product._id}">
+                            <button type="button" class="btn edit-btn btn-primary btn-sm"
+                                style="padding: 5px"
+                                data-product-id="${product._id}">
+                                Edit
+                            </button>
+                        </a>
+                        <button type="button" class="btn delete-btn btn-danger btn-sm"
+                            style="padding: 5px"
+                            data-product-id="${product._id}">
+                            Archive
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- row .// -->
+        </article>`;
                         productListDiv.innerHTML += productItem;
 
-                    })
+                    });
+
+                    function updatePaginationData(page) {
+
+                    }
+
+                    bindAddOfferButtonListeners();
+                }
+
+                function bindAddOfferButtonListeners() {
+                    $('.addOfferBtn').off('click').on('click', function () {
+                        let button = $(this);
+                        let productId = button.data('productid');
+                        $('#offerModal').modal('show');
+
+                        $('#offerModal').find('.apply-btn').off('click').on('click', function () {
+                            let offerId = $(this).data('offerid');
+                            applyOffer(offerId, productId);
+                        });
+                    });
                 }
 
                 $(document).ready(function () {
@@ -266,50 +333,29 @@
                         let productId = button.data('productid');
                         $('#offerModal').modal('show');
 
-                        function applyOffer(offerId, productId) {
-                            console.log(`offerid: ${offerId}, productid: ${productId}`);
-                            fetch('/admin/apply-product-offer', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({ offerId: offerId, productId: productId })
-                            })
-                                .then(response => response.json())
-                                .then(data => {
-                                    if (data.success) {
-                                        alert('Offer applied successfully');
-                                        window.location.reload();
-                                    }
-                                })
-                                .catch(error => {
-                                    console.error('Error applying offer:', error);
-                                });
-                        }
-
                         $('#offerModal').find('.apply-btn').on('click', function () {
-                            let offerId = $(this).data('offerid'); 
-                            applyOffer(offerId, productId); 
+                            let offerId = $(this).data('offerid');
+                            applyOffer(offerId, productId);
                         });
                     });
                 });
 
                 function removeProductOffer(productId) {
-                        fetch('/admin/remove-product-offer', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ productId: productId })
+                    fetch('/admin/remove-product-offer', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ productId: productId })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert('Offer removed successfully');
+                                window.location.reload();
+                            }
                         })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    alert('Offer removed successfully');
-                                    window.location.reload();
-                                }
-                            })
-                    }
+                }
 
             </script>
 
