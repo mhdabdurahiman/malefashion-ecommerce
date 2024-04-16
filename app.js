@@ -41,7 +41,7 @@ app.use( nocache() )
 app.use( session ({
 
     resave : false,
-    secret : 'sdfsdfsd',
+    secret : process.env.USER_SESSION_SECRET,
     saveUninitialized: false
     
 }))
