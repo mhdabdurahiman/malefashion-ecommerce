@@ -136,6 +136,40 @@
                         </div>
                     </div>
                 </div>
+                <div class="modal fade" id="discountModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+
+                        <% if( availableCoupons && availableCoupons.length> 0) { %>
+                            <% for( coupon of availableCoupons ) { %>
+
+                                <div class="modal-content rounded-0">
+                                    <div class="modal-body text-center">
+                                        <div class="icon text-danger">
+                                            <i class="fas fa-gift"></i>
+                                        </div>
+                                        <div class="notice">
+                                            <% if( coupon.discountType==='percent' ) { %>
+                                                <h4>Get <%= coupon.discount %>% Discount</h4>
+                                            <% } else if( coupon.discountType==='fixed' ) { %>
+                                                    <h4>Get ₹ <%= coupon.discount %> Discount</h4>
+                                            <% } %>
+                                                <p>
+                                                    This coupon only available for purchase above ₹ <%= coupon.minOrderAmount %>
+                                                </p>
+                                                <p>And valid till <%= coupon.expiresAt.toLocaleDateString() %>
+                                                </p>
+                                                <p>Use promo code <spans style="font-size: medium;"
+                                                    class="badge badge-info">
+                                                    <%= coupon.code %></span></p>
+                                        </div>
+                                        <div class="code"></div>
+                                    </div>
+                                </div>
+                            <% } %>
+                        <% } %>
+                    </div>
+                </div>
                 <% } else { %>
                     <div class="col-12 mt-5">
                         <h1 class="text-center"><b>Cart is empty...</b></h1>
@@ -143,45 +177,11 @@
                         <h3 class="text-center shop-now"><a onmouseover="this.style.color='blue'"
                                 onmouseout="this.style.color='black'" href="/shop">Shop now</a></h3>
                     </div>
-                    <% } %>
+                <% } %>
         </div>
     </section>
     <!-- Shopping Cart Section End -->
-    <div class="modal fade" id="discountModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-
-            <% if( availableCoupons && availableCoupons.length> 0) { %>
-                <% for( coupon of availableCoupons ) { %>
-
-                    <div class="modal-content rounded-0">
-                        <div class="modal-body text-center">
-                            <div class="icon text-danger">
-                                <i class="fas fa-gift"></i>
-                            </div>
-                            <div class="notice">
-                                <% if( coupon.discountType==='percent' ) { %>
-                                    <h4>Get <%= coupon.discount %>% Discount</h4>
-                                    <% } else if( coupon.discountType==='fixed' ) { %>
-                                        <h4>Get ₹ <%= coupon.discount %> Discount</h4>
-                                        <% } %>
-                                            <p>This coupon only available for purchase above ₹ <%= coupon.minOrderAmount
-                                                    %>
-                                            </p>
-                                            <p>And valid till <%= coupon.expiresAt.toLocaleDateString() %>
-                                            </p>
-                                            <p>Use promo code <spans style="font-size: medium;"
-                                                    class="badge badge-info">
-                                                    <%= coupon.code %></span></p>
-                            </div>
-                            <div class="code"></div>
-                        </div>
-                    </div>
-                    <% } %>
-                        <% } %>
-
-        </div>
-    </div>
+    
 
 
     <script>

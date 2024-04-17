@@ -202,34 +202,6 @@
             }
         });
 
-        // function updateUI(data) {
-        //     const productList = document.getElementById('productList');
-        //     productList.innerHTML = '';
-
-        //     data.products.forEach(product => {
-        //         const productItem = document.createElement('div');
-        //         productItem.classList.add('col-lg-4', 'col-md-6', 'col-sm-6');
-        //         productItem.innerHTML = `
-        //     <div class="product__item">
-        //         <div style="cursor: pointer; background-image: url('/images/product-images/${product.image[0]}');"
-        //             onclick="window.location = '/product/${product._id}'"
-        //             class="product__item__pic set-bg">
-        //             <ul class="product__hover">
-        //                 <li><a href="#"><img src="user/img/icon/heart.png" alt=""></a></li>
-        //                 <li><a href="/product/${product._id}"><img src="user/img/icon/search.png" alt=""></a></li>
-        //             </ul>
-        //         </div>
-        //         <div class="product__item__text">
-        //             <h6>${product.name}</h6>
-        //             <a href="#" class="add-cart">+ Add To Cart</a>
-        //             <h5>₹${product.price}</h5>
-        //         </div>
-        //     </div>
-        // `;
-        //         productList.appendChild(productItem);
-        //     });
-        // }
-
         function updateUI(data) {
             const productList = document.getElementById('productList');
             productList.innerHTML = '';
@@ -278,7 +250,6 @@
         function updatePaginationUI(data) {
             document.getElementById('currentPage').textContent = data.page;
             document.getElementById('currentPageInfo').textContent = data.page;
-
         }
     </script>
 
