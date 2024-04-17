@@ -12,7 +12,9 @@ const fetchCartCount = async (req, res, next) => {
 
       let totalItems = 0;
       if (cart.items && cart.items.length > 0) {
-        totalItems = cart.items.length;
+        cart.items.forEach(item => {
+          totalItems += item.quantity
+        });
         console.log(totalItems);
         res.locals.cartCount = totalItems;
         next();
