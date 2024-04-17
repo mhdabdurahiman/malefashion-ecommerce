@@ -82,8 +82,8 @@
                             <div class="col-md-9">
                                 <div class="mb-4">
                                     <label class="form-label">Cost in Rupees</label>
-                                    <input name="price" type="text" placeholder="00.0" class="form-control" required>
-                                    <div class="invalid-feedback">Please enter the cost of product.</div>
+                                    <input name="price" type="number" min="1" placeholder="00.0" class="form-control" required>
+                                    <div class="invalid-feedback">Please enter valid cost of product (greater than zero).</div>
                                 </div>
                             </div> <!-- col.// -->
                         </div> <!-- row.// -->
@@ -110,8 +110,8 @@
                             <div class="col-md-9">
                                 <div class="mb-4">
                                     <label class="form-label">Stock quantity</label>
-                                    <input id="stock" name="stock" type="text" placeholder="Type here" class="form-control" required>
-                                    <div class="invalid-feedback">Please enter product stock quantity.</div>
+                                    <input id="stock" name="stock" type="number" min="1" placeholder="Type here" class="form-control" required>
+                                    <div class="invalid-feedback">Please enter product stock quantity (greater than zero).</div>
                                 </div>
                             </div> <!-- col.// -->
                         </div> <!-- row.// -->

@@ -132,12 +132,12 @@
                                                         <% } %>
                                     </span></li>
                             </ul>
-                            <a href="/checkout" class="primary-btn">Proceed to checkout</a>
+                            <a href="/checkout" class="primary-btn" onclick="validateCartBeforeCheckout()">Proceed to checkout</a>
                         </div>
                     </div>
                 </div>
-                <div class="modal fade" id="discountModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                    aria-hidden="true">
+                <div class="modal fade" id="discountModal" tabindex="-1" role="dialog"
+                    aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
 
                         <% if( availableCoupons && availableCoupons.length> 0) { %>
@@ -151,23 +151,24 @@
                                         <div class="notice">
                                             <% if( coupon.discountType==='percent' ) { %>
                                                 <h4>Get <%= coupon.discount %>% Discount</h4>
-                                            <% } else if( coupon.discountType==='fixed' ) { %>
+                                                <% } else if( coupon.discountType==='fixed' ) { %>
                                                     <h4>Get ₹ <%= coupon.discount %> Discount</h4>
-                                            <% } %>
-                                                <p>
-                                                    This coupon only available for purchase above ₹ <%= coupon.minOrderAmount %>
-                                                </p>
-                                                <p>And valid till <%= coupon.expiresAt.toLocaleDateString() %>
-                                                </p>
-                                                <p>Use promo code <spans style="font-size: medium;"
-                                                    class="badge badge-info">
-                                                    <%= coupon.code %></span></p>
+                                                    <% } %>
+                                                        <p>
+                                                            This coupon only available for purchase above ₹ <%=
+                                                                coupon.minOrderAmount %>
+                                                        </p>
+                                                        <p>And valid till <%= coupon.expiresAt.toLocaleDateString() %>
+                                                        </p>
+                                                        <p>Use promo code <spans style="font-size: medium;"
+                                                                class="badge badge-info">
+                                                                <%= coupon.code %></span></p>
                                         </div>
                                         <div class="code"></div>
                                     </div>
                                 </div>
-                            <% } %>
-                        <% } %>
+                                <% } %>
+                                    <% } %>
                     </div>
                 </div>
                 <% } else { %>
@@ -177,11 +178,11 @@
                         <h3 class="text-center shop-now"><a onmouseover="this.style.color='blue'"
                                 onmouseout="this.style.color='black'" href="/shop">Shop now</a></h3>
                     </div>
-                <% } %>
+                    <% } %>
         </div>
     </section>
     <!-- Shopping Cart Section End -->
-    
+
 
 
     <script>
@@ -189,10 +190,10 @@
         async function applyCoupon(event) {
             event.preventDefault()
             const totalCartPrice = document.getElementById('total');
-            console.log('total cart price: ',totalCartPrice, typeof totalCartPrice);
+            console.log('total cart price: ', totalCartPrice, typeof totalCartPrice);
             const couponDiscount = document.getElementById('coupon-discount')
             const total = Number(document.getElementById('total').innerHTML.trim().split(" ")[1])
-            console.log('total:',total);
+            console.log('total:', total);
             console.log('type of total: ', typeof total);
             const couponCode = document.getElementById('coupon-input').value.trim()
             const invalidRegex = /[ .]/
@@ -200,7 +201,7 @@
                 alert('Enter a valid Coupon code')
                 return
             }
-            requestData = {couponCode, total}
+            requestData = { couponCode, total }
             fetch('/apply-coupon', {
                 method: 'POST',
                 headers: {
@@ -215,7 +216,7 @@
                     return response.json();
                 })
                 .then(data => {
-                    console.log('data:',data)
+                    console.log('data:', data)
                     if (data.success) {
                         const couponMessage = document.getElementById('coupon-message');
                         couponMessage.innerHTML = '<p>Coupon applied</p>';
@@ -329,6 +330,38 @@
             });
 
         }
+
+        function validateCartBeforeCheckout() {
+            const cartItems = document.querySelectorAll('.product__cart__item');
+            console.log(cartItems);
+            let hasOutOfStock = false;
+
+            cartItems.forEach(item => {
+                const stockLabel = item.querySelector('#stockOut');
+                console.log('stocklabel: ', stockLabel);
+                if (stockLabel) {
+                    hasOutOfStock = true;
+                    // Display SweetAlert to inform the user about out-of-stock items
+                    Swal.fire({
+                        title: "Out of Stock",
+                        text: "Some items in your cart are out of stock. Please remove them before proceeding.",
+                        icon: "warning",
+                        buttons: {
+                            confirm: {
+                                text: "OK",
+                                value: true
+                            }
+                        }
+                    });
+                    return;
+                }
+            });
+
+            if (!hasOutOfStock) {
+                // window.location.href = "/checkout";
+            }
+        }
+
 
         $(document).ready(function () {
             $('#discountModal').modal('show');

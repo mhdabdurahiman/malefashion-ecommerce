@@ -124,59 +124,62 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <% for (product of orderData.products) { %>
-                                                <% let singleProductTotalPrice=product.quantity * product.price %>
-                                                    <tr>
-                                                        <td>
-                                                            <a class="itemside" href="#">
-                                                                <div class="left">
-                                                                    <img src="/images/product-images/<%= product.productId.image[0] %>"
-                                                                        width="40" height="40" class="img-xs"
-                                                                        alt="Item" />
-                                                                </div>
-                                                                <div class="info">
-                                                                    <%= product.productId.name %>
-                                                                </div>
-                                                            </a>
-                                                        </td>
-                                                        <td>₹ <%= product.productId.price %>
-                                                        </td>
-                                                        <td>
-                                                            <%= product.quantity %>
-                                                        </td>
-                                                        <td class="text-end">₹ <%= singleProductTotalPrice %>
-                                                        </td>
-                                                    </tr>
-                                                    <% } %>
-
+                                            <% if (orderData.products.productId) {%>
+                                                <% for (product of orderData.products) { %>
+                                                    <% let singleProductTotalPrice=product.quantity * product.price %>
                                                         <tr>
-                                                            <td colspan="4">
-                                                                <article class="float-end">
-                                                                    <dl class="dlist">
-                                                                        <dt>Subtotal:</dt>
-                                                                        <dd>₹ <%= orderData.totalPrice %>
-                                                                        </dd>
-                                                                    </dl>
-                                                                    <dl class="dlist">
-                                                                        <dt>Shipping cost:</dt>
-                                                                        <dd>₹ 0</dd>
-                                                                    </dl>
-                                                                    <dl class="dlist">
-                                                                        <dt>Grand total:</dt>
-                                                                        <dd><b class="h5">₹ <%= orderData.totalPrice %>
-                                                                            </b></dd>
-                                                                    </dl>
-                                                                    <dl class="dlist">
-                                                                        <dt class="text-muted">Status:</dt>
-                                                                        <dd>
-                                                                            <span
-                                                                                class="badge rounded-pill alert-success text-success">Payment
-                                                                                done</span>
-                                                                        </dd>
-                                                                    </dl>
-                                                                </article>
+                                                            <td>
+                                                                <a class="itemside" href="#">
+                                                                    <div class="left">
+                                                                        <img src="/images/product-images/<%if(product.productId){%>product.productId.image[0]<%} %>"
+                                                                            width="40" height="40" class="img-xs"
+                                                                            alt="Item" />
+                                                                    </div>
+                                                                    <div class="info">
+                                                                        <%= product.productId.name %>
+                                                                    </div>
+                                                                </a>
+                                                            </td>
+                                                            <td>₹ <%= product.productId.price %>
+                                                            </td>
+                                                            <td>
+                                                                <%= product.quantity %>
+                                                            </td>
+                                                            <td class="text-end">₹ <%= singleProductTotalPrice %>
                                                             </td>
                                                         </tr>
+                                                <% } %>
+                                            <% } %>
+                                            
+
+                                                <tr>
+                                                    <td colspan="4">
+                                                        <article class="float-end">
+                                                            <dl class="dlist">
+                                                                <dt>Subtotal:</dt>
+                                                                <dd>₹ <%= orderData.totalPrice %>
+                                                                </dd>
+                                                            </dl>
+                                                            <dl class="dlist">
+                                                                <dt>Shipping cost:</dt>
+                                                                <dd>₹ 0</dd>
+                                                            </dl>
+                                                            <dl class="dlist">
+                                                                <dt>Grand total:</dt>
+                                                                <dd><b class="h5">₹ <%= orderData.totalPrice %>
+                                                                    </b></dd>
+                                                            </dl>
+                                                            <dl class="dlist">
+                                                                <dt class="text-muted">Status:</dt>
+                                                                <dd>
+                                                                    <span
+                                                                        class="badge rounded-pill alert-success text-success">Payment
+                                                                        done</span>
+                                                                </dd>
+                                                            </dl>
+                                                        </article>
+                                                    </td>
+                                                </tr>
                                         </tbody>
                                     </table>
                                 </div>

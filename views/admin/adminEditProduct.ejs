@@ -315,12 +315,12 @@
                         sweetAlert('Size is required')
                         return
                     }
-                    if (isNaN(price) || typeof price != 'number'){
-                        sweetAlert('Price cannot be empty or only can only be number')
+                    if (isNaN(price) || typeof price != 'number' || price <= 0){
+                        sweetAlert('Price cannot be empty and zero or only can only be number')
                         return
                     }
-                    if (isNaN(stock) || typeof stock != 'number'){
-                        sweetAlert('Stock cannot be empty or can only be number')
+                    if (isNaN(stock) || typeof stock != 'number' || stock <= 0){
+                        sweetAlert('Stock cannot be empty and zero or can only be number')
                         return
                     }
                 
