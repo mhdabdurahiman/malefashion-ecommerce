@@ -28,7 +28,9 @@ shopRoute.get("/checkout", authMiddleware.userAuth, isBlockedMiddleware.checkIsB
 shopRoute.get("/order-confirmation", authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, orderController.loadOrderConfirmation);
 shopRoute.post("/place-order", authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, orderController.doPlaceOrder);
 shopRoute.post("/verify-razorpay-payment", authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, orderController.verifyPayment);
+shopRoute.patch("/razorpay-payment-failed", authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, orderController.razorpayPaymentFailure);
 shopRoute.get("/payment-failure", authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, orderController.loadPaymentFailure);
+shopRoute.post("/retry-order-payment", authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, orderController.retryPayment)
 
 shopRoute.post("/cancel-order", authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, orderController.doUserCancelOrder);
 shopRoute.post("/return-order", authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, orderController.doUserReturnOrder);

@@ -129,8 +129,9 @@
                                             <th>Date</th>
                                             <th>Order Id</th>
                                             <th>Amount</th>
-                                            <th>Status</th>
+                                            <th>Order Status</th>
                                             <th>Payment method</th>
+                                            <th>Payment Status</th>
                                         </thead>
                                         <% for( order of orderData ) { %>
                                             <div class="table-data">
@@ -150,6 +151,9 @@
                                                         </td>
                                                         <td>
                                                             <%= order.paymentOption %>
+                                                        </td>
+                                                        <td>
+                                                            <%= order.paymentStatus %>
                                                         </td>
 
                                                         <td><a type="button" id="orderDetails" style="font-size: 10px;"

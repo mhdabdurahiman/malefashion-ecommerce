@@ -1,5 +1,7 @@
 <%- include('../partials/userPartials/header') -%>
 
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
 
     <!-- Breadcrumb Section Begin -->
     <section class="breadcrumb-option">
@@ -208,16 +210,14 @@
 
                 var options = {
                     "key": rzpay_key,
-                    "amount": order.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                    "amount": order.amount, 
                     "currency": "INR",
                     "name": "Male Fashion",
                     "description": "Test Transaction",
                     "image": "https://example.com/your_logo",
-                    "order_id": order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+                    "order_id": order.id, 
                     "handler": function (response) {
-                        // alert(response.razorpay_payment_id);
-                        // alert(response.razorpay_order_id);
-                        // alert(response.razorpay_signature);
+                        
                         verifyRazorpayPayment(response, order);
 
                     },
@@ -230,13 +230,25 @@
                 };
                 var rzp1 = new Razorpay(options);
                 rzp1.on('payment.failed', function (response) {
-                    alert(response.error.code);
-                    alert(response.error.description);
-                    alert(response.error.source);
-                    alert(response.error.step);
-                    alert(response.error.reason);
-                    alert(response.error.metadata.order_id);
-                    alert(response.error.metadata.payment_id);
+                    // alert(response.error.code);
+                    // alert(response.error.description);
+                    console.log('Payment failed:', response);
+                    fetch('/razorpay-payment-failed', {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            order_id: order.id
+                        })
+                    })
+                    .then(response => {
+                        console.log('Payment failure status updated successfully');
+                        window.location.reload('/payment-failure')
+                    })
+                    .catch(error => {
+                        console.error('Failed to update payment status:', error);
+                    })
                 });
                 rzp1.open();
             }

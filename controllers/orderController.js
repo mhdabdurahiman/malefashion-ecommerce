@@ -144,6 +144,7 @@ const verifyPayment = async (req, res) => {
           $set: {
             paymentId: response.razorpay_payment_id,
             orderStatus: "Placed",
+            paymentStatus: "Completed",
             "products.$[elem].orderStatus": "Placed",
           },
         },
@@ -167,6 +168,42 @@ const verifyPayment = async (req, res) => {
     console.log(error.message);
   }
 };
+
+const razorpayPaymentFailure = async (req, res) => {
+  try {
+    const orderId = req.body.order_id;
+    await Order.findOneAndUpdate({orderId: orderId}, {paymentStatus: 'Failed'})
+    res.status(200).json({message:'Payment failure status updated successfully'})
+  } catch (error) {
+    console.error('Error updating payment status:', error);
+    res.redirect("/error500")
+  }
+}
+
+const retryPayment = async (req, res) => {
+  try {
+    const orderId = req.body.orderId;
+    const order = await Order.findById(orderId);
+
+    if (!order){
+      return res.status(404).json({ success: false, message: 'Order not found'})
+    }
+
+    const razorpayOnlinePayment = await onlinePayment.razorpayPayment(
+      order.orderId,
+      order.amountPayable
+    );
+
+    await Order.findOneAndUpdate( {orderId: orderId}, {paymentStatus: 'Pending'} )
+    res.json({
+      razorpayOnlinePayment: razorpayOnlinePayment,
+      success: true
+    })
+  } catch (error) {
+    console.error('Error while retrying payment: ', error);
+    res.redirect("/error500")
+  }
+}
 
 const loadOrderConfirmation = async (req, res) => {
   try {
@@ -411,8 +448,10 @@ module.exports = {
   loadCheckout,
   doPlaceOrder,
   verifyPayment,
+  razorpayPaymentFailure,
   loadOrderConfirmation,
   loadPaymentFailure,
+  retryPayment,
   loadAdminOrderList,
   loadAdminOrderDetails,
   loadUserOrderDetails,
