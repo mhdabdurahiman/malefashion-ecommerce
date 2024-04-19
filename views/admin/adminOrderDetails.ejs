@@ -84,9 +84,7 @@
                                                                 <% } %>
                                                         <br />
                                                         Pay method: <%= orderData.paymentOption %> <br />
-                                                            Status: new
                                         </p>
-                                        <a href="#">Download info</a>
                                     </div>
                                 </article>
                             </div>
@@ -104,7 +102,6 @@
                                                     <%= orderData.address.landmark %> <br />
                                                         Pincode: <%= orderData.address.pincode %>
                                         </p>
-                                        <a href="#">View profile</a>
                                     </div>
                                 </article>
                             </div>
@@ -172,9 +169,19 @@
                                                             <dl class="dlist">
                                                                 <dt class="text-muted">Status:</dt>
                                                                 <dd>
-                                                                    <span
-                                                                        class="badge rounded-pill alert-success text-success">Payment
-                                                                        done</span>
+                                                                    <% if (orderData.paymentStatus == "Completed") {%>
+                                                                        <span
+                                                                            class="badge rounded-pill alert-success text-success">Payment
+                                                                            completed</span>
+                                                                    <% } else if (orderData.paymentStatus == "Failed") { %>
+                                                                        <span
+                                                                            class="badge rounded-pill alert-danger text-danger">Payment
+                                                                            failed</span>
+                                                                        <% } else {%>
+                                                                            <span
+                                                                            class="badge rounded-pill alert-warning text-warning">Payment
+                                                                            pending</span>
+                                                                        <% } %>
                                                                 </dd>
                                                             </dl>
                                                         </article>
