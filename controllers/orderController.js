@@ -409,21 +409,24 @@ const loadSalesReport = async (req, res) => {
     const toDate = req.query.to;
 
     if (fromDate && toDate) {
-      const dateFilter = {};
+      const filter = {};
 
       if (fromDate && toDate) {
-        dateFilter.createdAt = {
+        filter.createdAt = {
           $gte: new Date(fromDate),
           $lte: new Date(toDate),
         };
       }
-      const orderList = await Order.find(dateFilter)
+
+      filter.orderStatus = 'Delivered';
+      console.log('filter: ',filter);
+      const orderList = await Order.find(filter)
         .populate({ path: "userId", select: "fullname" })
         .lean();
 
       res.json({ orderList: orderList });
     } else {
-      const orderList = await Order.find().populate({
+      const orderList = await Order.find({orderStatus: 'Delivered'}).populate({
         path: "userId",
         select: "fullname",
       });
