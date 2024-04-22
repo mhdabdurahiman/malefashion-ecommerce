@@ -184,7 +184,7 @@
                             title: 'Order Placed!',
                             text: 'Thank you for your order!',
                         });
-                        window.location.replace("/order-confirmation?orderId=" + json.orderId);
+                        window.location.replace("/order-confirmation");
                     } else if (json.success == false) {
                         razorpayPayment(json.razorpayOnlinePayment)
                     } else {

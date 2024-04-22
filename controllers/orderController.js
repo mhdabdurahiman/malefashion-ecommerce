@@ -207,12 +207,7 @@ const retryPayment = async (req, res) => {
 
 const loadOrderConfirmation = async (req, res) => {
   try {
-    const orderId = req.query.orderId;
-    console.log("orderid:", orderId);
-    const orderData = await Order.findById({ _id: orderId }).populate(
-      "products.productId"
-    );
-    res.render("shop/order-confirmation", { orderData: orderData });
+    res.render("shop/order-confirmation");
   } catch (error) {
     console.log(error.message);
   }
