@@ -4,8 +4,21 @@
 <section class="wallet spad">
     <div class="container">
         <div class="col">
-               
-        <h2>Wallet</h2>
+        <div class="row">
+            <div class="col">
+                <h2>Wallet</h2>
+            </div>
+            <div class="col">
+                <% let totalBalance = 0; %>
+                <% if( user.walletHistory ) { %>
+                    <% for( let items of user.walletHistory ) { %>
+                         <% totalBalance += items.amount %>
+                        <% } %>
+                    <% } %>
+                <h3>Total balance: <span style="color: green;">₹<%= totalBalance %></span></h3>
+            </div>
+        </div>
+        
             
         <div class="table-responsive py-5"> 
             <table class="table table-bordered table-hover">
@@ -17,6 +30,7 @@
                 </tr>
             </thead>
             <tbody>
+                
                <% if( user.walletHistory ) { %>
                    <% for( let items of user.walletHistory ) { %>
                         <tr>

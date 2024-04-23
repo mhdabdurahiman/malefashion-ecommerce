@@ -18,5 +18,6 @@ userRoute.get('/order-details/:id', authMiddleware.userAuth, isBlockedMiddleware
 
 userRoute.get('/wallet-history', authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, userController.getWalletHistory);
 
+userRoute.get( '/invoice_download', authMiddleware.userAuth, isBlockedMiddleware.checkIsBlocked, userController.downloadInvoice)
 
 module.exports = userRoute;
