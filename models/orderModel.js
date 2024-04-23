@@ -60,6 +60,16 @@ const orderSchema = new mongoose.Schema(
       type: Number,
       required: false,
     },
+    shippingCost: {
+      type: Number,
+      default: 100,
+      required: true,
+    },
+    discountAmount: {
+      type: Number,
+      default: 0,
+      required: true,
+    }
   },
 
   { timestamps: true }

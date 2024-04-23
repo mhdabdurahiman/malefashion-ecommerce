@@ -150,9 +150,9 @@
                                         </div>
                                         <div class="notice">
                                             <% if( coupon.discountType==='percent' ) { %>
-                                                <h4>Get <%= coupon.discount %>% Discount</h4>
+                                                <h4>Get <%= coupon.discountAmount %>% Discount</h4>
                                                 <% } else if( coupon.discountType==='fixed' ) { %>
-                                                    <h4>Get ₹ <%= coupon.discount %> Discount</h4>
+                                                    <h4>Get ₹ <%= coupon.discountAmount %> Discount</h4>
                                                     <% } %>
                                                         <p>
                                                             This coupon only available for purchase above ₹ <%=

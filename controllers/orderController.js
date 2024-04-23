@@ -75,8 +75,14 @@ const doPlaceOrder = async (req, res) => {
         },
       )
     }
-    const totalPrice = discounted && discounted.discountedTotal ? discounted.discountedTotal : totalAmount[0].total
-    let amountPayable = totalPrice;
+    const totalPrice = discounted && discounted.discountedTotal ? discounted.discountedTotal : totalAmount[0].total;
+    const discountAmount = discounted && discounted.discountAmount ? discounted.discountAmount : 0;
+    let amountPayable = 0;
+    let shippingCost = 0;
+    totalPrice >= 1000
+      ? (shippingCost = 0)
+      : (shippingCost = 100);
+    amountPayable = totalPrice + shippingCost;
     let orderStatus;
     paymentOption === "cod"
       ? (orderStatus = "Placed")
@@ -90,6 +96,8 @@ const doPlaceOrder = async (req, res) => {
       orderStatus: orderStatus,
       address: address,
       amountPayable: amountPayable,
+      shippingCost: shippingCost,
+      discountAmount: discountAmount,
     });
     const savedOrder = await order.save();
     // Decreasing the product quantity
