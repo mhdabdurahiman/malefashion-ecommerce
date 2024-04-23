@@ -1,82 +1,225 @@
 <%- include('../partials/adminPartials/adminHead') -%>
 
-<%- include('../partials/adminPartials/adminSideNavbar') -%>
+    <%- include('../partials/adminPartials/adminSideNavbar') -%>
 
-<%- include('../partials/adminPartials/adminNavbarHead') -%>
+        <%- include('../partials/adminPartials/adminNavbarHead') -%>
 
-<section class="content-main">
-    <div class="content-header">
-        <div>
-            <h2 class="content-title card-title">Dashboard</h2>
-            <p>Whole data about your business here</p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-lg-3">
-            <div class="card card-body mb-4">
-                <article class="icontext">
-                    <span class="icon icon-sm rounded-circle bg-primary-light"><i class="text-primary material-icons md-monetization_on"></i></span>
-                    <div class="text">
-                        <h6 class="mb-1 card-title">Revenue</h6>
-                        <span>$13,456.5</span>
-                        <span class="text-sm"> Shipping fees are not included </span>
+            <section class="content-main">
+                <div class="content-header">
+                    <div>
+                        <h2 class="content-title card-title">Dashboard</h2>
+                        <p>Whole data about your business here</p>
                     </div>
-                </article>
-            </div>
-        </div>
-        <div class="col-lg-3">
-            <div class="card card-body mb-4">
-                <article class="icontext">
-                    <span class="icon icon-sm rounded-circle bg-success-light"><i class="text-success material-icons md-local_shipping"></i></span>
-                    <div class="text">
-                        <h6 class="mb-1 card-title">Orders</h6>
-                        <span>53.668</span>
-                        <span class="text-sm"> Excluding orders in transit </span>
+                </div>
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class="card card-body mb-4">
+                            <article class="icontext">
+                                <span class="icon icon-sm rounded-circle bg-primary-light"><i
+                                        class="text-primary material-icons md-monetization_on"></i></span>
+                                <div class="text">
+                                    <h6 class="mb-1 card-title">Revenue</h6>
+                                    <span>₹<%= totalRevenue %></span>
+                                    <span class="text-sm"> Total Revenue </span>
+                                </div>
+                            </article>
+                        </div>
                     </div>
-                </article>
-            </div>
-        </div>
-        <div class="col-lg-3">
-            <div class="card card-body mb-4">
-                <article class="icontext">
-                    <span class="icon icon-sm rounded-circle bg-warning-light"><i class="text-warning material-icons md-qr_code"></i></span>
-                    <div class="text">
-                        <h6 class="mb-1 card-title">Products</h6>
-                        <span>9.856</span>
-                        <span class="text-sm"> In 19 Categories </span>
+                    <div class="col-lg-3">
+                        <div class="card card-body mb-4">
+                            <article class="icontext">
+                                <span class="icon icon-sm rounded-circle bg-success-light"><i
+                                        class="text-success material-icons md-local_shipping"></i></span>
+                                <div class="text">
+                                    <h6 class="mb-1 card-title">Orders</h6>
+                                    <span>
+                                        <%= numberOfOrders %>
+                                    </span>
+                                    <span class="text-sm"> Excluding orders in transit </span>
+                                </div>
+                            </article>
+                        </div>
                     </div>
-                </article>
-            </div>
-        </div>
-        <div class="col-lg-3">
-            <div class="card card-body mb-4">
-                <article class="icontext">
-                    <span class="icon icon-sm rounded-circle bg-info-light"><i class="text-info material-icons md-shopping_basket"></i></span>
-                    <div class="text">
-                        <h6 class="mb-1 card-title">Monthly Earning</h6>
-                        <span>$6,982</span>
-                        <span class="text-sm"> Based in your local time. </span>
+                    <div class="col-lg-3">
+                        <div class="card card-body mb-4">
+                            <article class="icontext">
+                                <span class="icon icon-sm rounded-circle bg-warning-light"><i
+                                        class="text-warning material-icons md-qr_code"></i></span>
+                                <div class="text">
+                                    <h6 class="mb-1 card-title">Products</h6>
+                                    <span>
+                                        <%= productCount %>
+                                    </span>
+                                    <span class="text-sm"> Excluding unlisted products </span>
+                                </div>
+                            </article>
+                        </div>
                     </div>
-                </article>
-            </div>
-        </div>
-    </div>
-    
-    <!-- <div class="pagination-area mt-30 mb-50">
-        <nav aria-label="Page navigation example">
-            <ul class="pagination justify-content-start">
-                <li class="page-item active"><a class="page-link" href="#">01</a></li>
-                <li class="page-item"><a class="page-link" href="#">02</a></li>
-                <li class="page-item"><a class="page-link" href="#">03</a></li>
-                <li class="page-item"><a class="page-link dot" href="#">...</a></li>
-                <li class="page-item"><a class="page-link" href="#">16</a></li>
-                <li class="page-item">
-                    <a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a>
-                </li>
-            </ul>
-        </nav>
-    </div> -->
-</section>
-<!-- content-main end// -->
+                    <div class="col-lg-3">
+                        <div class="card card-body mb-4">
+                            <article class="icontext">
+                                <span class="icon icon-sm rounded-circle bg-info-light"><i
+                                        class="text-info material-icons md-shopping_basket"></i></span>
+                                <div class="text">
+                                    <h6 class="mb-1 card-title">Monthly Earning</h6>
+                                    <span>₹<%= monthlyEarning %></span>
+                                    <span class="text-sm"> Based in your local time. </span>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-8 col-lg-12">
+                        <div class="card mb-4">
+                            <article class="card-body">
+                                <h5 class="card-title">Category wise sales</h5>
+                                <canvas id="categorywiseSalesChart" height="356" width="892"
+                                    style="display: block; box-sizing: border-box; height: 285px; width: 714.3px;"></canvas>
+                            </article>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div class="card mb-4">
+                                    <article class="card-body">
+                                        <h5 class="card-title">Top 10 Best Selling Products</h5>
+                                        <ul class="list-group">
+                                            <% topTen.topSellingProducts.forEach(product => { %>
+                                                <li class="list-group-item"><%= product.productName %> - <%=product.totalQuantity%> units</li>
+                                            <% }); %>
+                                        </ul>
+                                    </article>
+                                </div>
+                            </div>
+                            
+                            <!-- Top 10 Best Selling Categories -->
+                            <div class="col-lg-4">
+                                <div class="card mb-4">
+                                    <article class="card-body">
+                                        <h5 class="card-title">Top 10 Best Selling Categories</h5>
+                                        <ul class="list-group">
+                                            <% topTen.topSellingCategories.forEach(category => { %>
+                                                <li class="list-group-item"><%= category.categoryName %> - <%=category.totalQuantity%> units</li>
+                                            <% }); %>
+                                        </ul>
+                                    </article>
+                                </div>
+                            </div>
+                            
+                            <!-- Top 10 Best Selling Brands -->
+                            <div class="col-lg-4">
+                                <div class="card mb-4">
+                                    <article class="card-body">
+                                        <h5 class="card-title">Top 10 Best Selling Brands</h5>
+                                        <ul class="list-group">
+                                            <% topTen.topSellingBrands.forEach(brand => { %>
+                                                <li class="list-group-item"><%= brand.brandName %> - <%=brand.totalQuantity%> units</li>
+                                            <% }); %>
+                                        </ul>
+                                    </article>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-12">
+                        <div class="card mb-4">
+                            <article class="card-body">
+                                <h5 class="card-title">Revenue Base on Area</h5>
+                                <canvas id="myChart2" height="292" width="404"
+                                    style="display: block; box-sizing: border-box; height: 234px; width: 323.6px;"></canvas>
+                            </article>
+                        </div>
+                        <div class="card mb-4">
+                            <article class="card-body">
+                                <h5 class="card-title">Marketing Chanel</h5>
+                                <span class="text-muted font-xs">Facebook</span>
+                                <div class="progress mb-3">
+                                    <div class="progress-bar" role="progressbar" style="width: 15%">15%</div>
+                                </div>
+                                <span class="text-muted font-xs">Instagram</span>
+                                <div class="progress mb-3">
+                                    <div class="progress-bar" role="progressbar" style="width: 65%">65%</div>
+                                </div>
+                                <span class="text-muted font-xs">Google</span>
+                                <div class="progress mb-3">
+                                    <div class="progress-bar" role="progressbar" style="width: 51%">51%</div>
+                                </div>
+                                <span class="text-muted font-xs">Twitter</span>
+                                <div class="progress mb-3">
+                                    <div class="progress-bar" role="progressbar" style="width: 80%">80%</div>
+                                </div>
+                                <span class="text-muted font-xs">Other</span>
+                                <div class="progress mb-3">
+                                    <div class="progress-bar" role="progressbar" style="width: 80%">80%</div>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+                </div>
 
-<%- include('../partials/adminPartials/adminFooter') -%>
+            </section>
+            <!-- content-main end// -->
+            <script src="/admin/js/vendors/chart.js"></script>
+            <!-- <script src="/admin/js/custom-chart1.js" type="text/javascript"></script> -->
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const encodedData = '<%= productCategoryDistribution %>';
+                    const decodedData = JSON.parse(
+                        new DOMParser().parseFromString(encodedData, 'text/html').body.textContent
+                    );
+
+                    const categories = decodedData.map(item => item._id?.name || 'Unknown');
+                    const counts = decodedData.map(item => item.count);
+                    console.log('categories: ', categories);
+                    console.log('counts: ', counts);
+                    const backgroundColors = [
+                        'rgba(255, 99, 132, 0.2)',   // Red
+                        'rgba(54, 162, 235, 0.2)',   // Blue
+                        'rgba(255, 206, 86, 0.2)',   // Yellow
+                        'rgba(75, 192, 192, 0.2)',   // Green
+                        'rgba(153, 102, 255, 0.2)',  // Purple
+                        'rgba(255, 159, 64, 0.2)'    // Orange
+                    ];
+
+                    const borderColors = [
+                        'rgba(255, 99, 132, 1)',   // Red
+                        'rgba(54, 162, 235, 1)',   // Blue
+                        'rgba(255, 206, 86, 1)',   // Yellow
+                        'rgba(75, 192, 192, 1)',   // Green
+                        'rgba(153, 102, 255, 1)',  // Purple
+                        'rgba(255, 159, 64, 1)'    // Orange
+                        
+                    ];
+                    const chartData = {
+                        labels: categories,
+                        datasets: [{
+                            label: 'Category Wise Sales',
+                            data: counts,
+                            backgroundColor: backgroundColors,
+                            borderColor: borderColors,
+                            fill: true,
+                            tension: 0.1
+                        }]
+                    };
+
+                    const ctx = document.getElementById('categorywiseSalesChart').getContext('2d');
+
+                    const myChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: chartData,
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    suggestedMin: 0,  
+                                    suggestedMax: Math.max(...counts) + 1,  
+                                    ticks: {
+                                        stepSize: 1  
+                                    }
+                                }
+                            }
+                        }
+                    });
+                });
+            </script>
+            <%- include('../partials/adminPartials/adminFooter') -%>

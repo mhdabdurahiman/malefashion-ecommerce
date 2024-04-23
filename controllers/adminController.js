@@ -1,12 +1,28 @@
 const User = require("../models/userModel");
 const paginationHelper = require("../helpers/paginationHelper");
+const dashboardHelper = require("../helpers/dashboardHelper")
 
 
 const loadAdminDashboard = async (req, res) => {
     try {
-        res.render(
-            "admin/adminDashboard",
-            {page_name: 'dashboard'})
+        const totalRevenue = await dashboardHelper.totalRevenue();
+        const amountPerPaymentMethod = await dashboardHelper.amountPerPaymentMethod();
+        const productCategoryDistribution = await dashboardHelper.productCategoryDistribution();
+        const numberOfOrders = await dashboardHelper.numberOfOrders();
+        const productCount = await dashboardHelper.productCount();
+        const monthlyEarning = await dashboardHelper.monthlyEarning();
+        const topTen = await dashboardHelper.topTen();
+
+        res.render( "admin/adminDashboard",{
+            page_name: 'dashboard',
+            totalRevenue: totalRevenue,
+            amountPerPaymentMethod: amountPerPaymentMethod,
+            productCategoryDistribution: JSON.stringify(productCategoryDistribution),
+            numberOfOrders: numberOfOrders,
+            productCount: productCount,
+            monthlyEarning: monthlyEarning,
+            topTen: topTen,
+        })
     } catch (error) {
         console.log(error.message);
     }
