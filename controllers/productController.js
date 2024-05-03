@@ -32,7 +32,7 @@ const loadProductList = async (req, res) => {
         products: productList,
         totalPages: totalPages,
         offers: offers
-      });
+      }); 
     }
     
   } catch (error) {
