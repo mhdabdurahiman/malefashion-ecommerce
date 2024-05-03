@@ -24,7 +24,6 @@ const loadCart = async (req, res) => {
       ],
     });
     const totalCartPrice = await cartHelper.totalCartPrice(userId);
-    console.log("totalprice in the cart:  ", totalCartPrice);
     if (cartData && cartData.items.length > 0) {
       cartData.items = cartData.items.map((items) => {
         if (items.productId && items.productId.offer) {
@@ -48,7 +47,6 @@ const loadCart = async (req, res) => {
         }
         return items;
       });
-      console.log("cartData item after updation:", cartData);
     }
     if (
       cartData &&
@@ -123,17 +121,18 @@ const addToCart = async (req, res) => {
                 error: true,
                 message: "Exceeds available stock",
               });
+            }else{
+              const cartItems = await Cart.updateOne(
+                { userId: userId, "items.productId": productId },
+                { $set: { "items.$.quantity": newQuantity } }
+              );
+  
+              return res
+                .status(200)
+                .json({ success: true, message: "Quantity increased in cart" });
             }
-
-            const cartItems = await Cart.updateOne(
-              { userId: userId, "items.productId": productId },
-              { $set: { "items.$.quantity": newQuantity } }
-            );
-
-            return res
-              .status(200)
-              .json({ success: true, message: "Quantity increased in cart" });
-          } else {
+            }
+             else {
             if (availableStock > 0) {
               const cartItems = await Cart.updateOne(
                 { userId: userId },

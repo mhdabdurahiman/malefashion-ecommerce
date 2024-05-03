@@ -6,6 +6,5 @@ module.exports = function(req, res, next) {
     }else{
         res.locals.isAuthenticated = false;
     }
-    console.log(res.locals.isAuthenticated)
     next();
 }

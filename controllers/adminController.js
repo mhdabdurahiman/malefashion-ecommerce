@@ -58,7 +58,6 @@ const loadUserList = async (req, res) => {
 };
 
 const doBlockUser = async (req, res) => {
-    console.log("params id:",req.params['id'])
     try {
         const userId = req.params.id;
         const userData = await User.findById( userId );
@@ -88,7 +87,6 @@ const doUnblockUser = async (req, res) => {
     try {
 
         const userId = req.params.id;
-        console.log(userId);
         const userData = await User.findById( userId );
         await userData.updateOne({ $set : { isBlocked : false }})
         res.json( { success: true} )

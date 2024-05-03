@@ -93,10 +93,8 @@ const doVerfiyRegisterOtp = async (req, res) => {
         mobile: mobile,
         password: password,
       });
-      console.log(user);
 
       const userData = await user.save();
-      console.log(userData);
       res.redirect("/login");
     }
   } catch (error) {

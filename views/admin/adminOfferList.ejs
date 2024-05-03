@@ -49,7 +49,7 @@
                                                     <%= offer.percentage %>%
                                                 </td>
                                                 <td>
-                                                    <% if(offer.status===true){ %>
+                                                    <% if(offer.status===true || offer.expiryDate >= new Date()){ %>
                                                         <span class="badge rounded-pill alert-success">Active</span>
                                                         <% }else{ %>
                                                             <span

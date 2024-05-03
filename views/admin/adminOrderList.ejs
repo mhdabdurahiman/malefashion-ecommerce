@@ -41,21 +41,19 @@
                                                 <td>₹ <%= order.totalPrice %>
                                                 </td>
                                                 <td>
-                                                    <% if (order.orderStatus==='Pending' ) { %>
-                                                        <span class="badge badge-pill badge-soft-warning">Pending</span>
-                                                        <% } else if (order.orderStatus==='Placed' ) {%>
-                                                            <span
-                                                                class="badge badge-pill badge-soft-info">Placed</span>
-                                                            <% } else if (order.orderStatus==='Canceled' ) {%>
-                                                                <span
-                                                                    class="badge badge-pill badge-soft-danger">Cancelled</span>
-                                                                <% } else if (order.orderStatus === 'Shipped'){ %>
-                                                                    <span
-                                                                    class="badge badge-pill badge-soft-info">Shipped</span>
-                                                                    <% } else if (order.orderStatus === 'Delivered'){ %>
-                                                                        <span
-                                                                        class="badge badge-pill badge-soft-primary">Delivered</span>
-                                                                        <% } %>
+                                                    <% if (order.orderStatus==='Canceled' ){ %>
+                                                        <span class="badge badge-pill badge-soft-danger">Canceled</span>
+                                                        <% } else if (order.orderStatus==='Pending' ) {%>
+                                                            <span class="badge badge-pill badge-soft-warning">Pending</span>
+                                                            <% } else if (order.orderStatus==='Placed' ) {%>
+                                                                <span class="badge badge-pill badge-soft-primary">Placed</span>
+                                                                <% } else if (order.orderStatus==='Shipped' ) {%>
+                                                                    <span class="badge badge-pill badge-soft-info">Shipped</span>
+                                                                    <% } else if (order.orderStatus==='Delivered' ) {%>
+                                                                        <span class="badge badge-pill badge-soft-success">Delivered</span>
+                                                                        <% } else if (order.orderStatus==='Returned' ) {%>
+                                                                                <span class="badge badge-pill badge-soft-warning">Returned</span>
+                                                                                    <% } %>
                                                 </td>
                                                 <td><i class="material-icons md-payment font-xxl text-muted mr-5"></i>
                                                     <%= order.paymentOption %>
@@ -132,8 +130,15 @@
                                 ${order.orderStatus === 'Pending' 
                                     ? '<span class="badge badge-pill badge-soft-warning">Pending</span>' 
                                     : order.orderStatus === 'Placed' 
-                                        ? '<span class="badge badge-pill badge-soft-success">Placed</span>' 
-                                        : '<span class="badge badge-pill badge-soft-danger">Cancelled</span>'}
+                                        ? '<span class="badge badge-pill badge-soft-primary">Placed</span>'
+                                        : order.orderStatus === 'Canceled' 
+                                            ? '<span class="badge badge-pill badge-soft-danger">Canceled</span>'
+                                            : order.orderStatus === 'Shipped'
+                                                ? '<span class="badge badge-pill badge-soft-info">Shipped</span>'
+                                                : order.orderStatus === 'Delivered'
+                                                    ? '<span class="badge badge-pill badge-soft-success">Delivered</span>'
+                                                    : '<span class="badge badge-pill badge-soft-warning">Returned</span>'}
+
                             </td>
                             <td><i class="material-icons md-payment font-xxl text-muted mr-5"></i>
                                 ${order.paymentOption}

@@ -254,7 +254,7 @@
                     })
                     .then(response => {
                         console.log('Payment failure status updated successfully');
-                        window.location.reload('/payment-failure')
+                        window.location.replace('/payment-failure')
                     })
                     .catch(error => {
                         console.error('Failed to update payment status:', error);

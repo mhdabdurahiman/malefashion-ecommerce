@@ -70,7 +70,7 @@
                                     <div class="text">
                                         <h6 class="mb-1">Order info</h6>
                                         <p class="mb-1">
-                                            Order Status:
+                                            Order Status: <%= orderData.orderStatus %>
                                             <% if (orderData.orderStatus==='Canceled' ){ %>
                                                 <span class="badge badge-pill badge-soft-danger">Canceled</span>
                                                 <% } else if (orderData.orderStatus==='Pending' ) {%>
@@ -81,7 +81,9 @@
                                                             <span class="badge badge-pill badge-soft-info">Shipped</span>
                                                             <% } else if (orderData.orderStatus==='Delivered' ) {%>
                                                                 <span class="badge badge-pill badge-soft-success">Delivered</span>
-                                                                <% } %>
+                                                                <% } else if (orderData.orderStatus==='Returned' ) {%>
+                                                                        <span class="badge badge-pill badge-soft-warning">Returned</span>
+                                                                            <% } %>
                                                         <br />
                                                         Pay method: <%= orderData.paymentOption %> <br />
                                         </p>
@@ -121,14 +123,15 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <% if (orderData.products.productId) {%>
+                                            
+                                            <% if (orderData.products) {%>
                                                 <% for (product of orderData.products) { %>
                                                     <% let singleProductTotalPrice=product.quantity * product.price %>
                                                         <tr>
                                                             <td>
                                                                 <a class="itemside" href="#">
                                                                     <div class="left">
-                                                                        <img src="/images/product-images/<%if(product.productId){%>product.productId.image[0]<%} %>"
+                                                                        <img src="/images/product-images/<%= product.productId.image[0] %>"
                                                                             width="40" height="40" class="img-xs"
                                                                             alt="Item" />
                                                                     </div>
@@ -212,7 +215,6 @@
             <!-- content-main end// -->
 
             <script>
-
                 async function fetchUpdatedStatus() {
                     try {
                         const statusSelect = document.querySelector('#statusSelect')

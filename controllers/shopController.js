@@ -25,7 +25,7 @@ const loadShop = async (req, res) => {
     const limitValue = paginationHelper.SHOP_PRODUCTS_PER_PAGE;
     const skipValue = (page - 1) * limitValue;
 
-    const query = { isList: true };
+    const query = { isList: true, isDeleted: false };
     if (filters.length > 0) {
       query.category = { $in: filters };
     }
@@ -49,7 +49,6 @@ const loadShop = async (req, res) => {
       .sort({ price: sort })
       .skip(skipValue)
       .limit(limitValue);
-    console.log('productlist:',productList);
     const totalPages = Math.ceil(totalProducts / limitValue);
     const categoryList = await Category.find({ isList: true });
     if (
@@ -95,7 +94,7 @@ const loadProductDetails = async (req, res) => {
           match: {startingDate: {$lte: new Date()}, expiryDate: {$gte: new Date()}}
         }})
       .exec();
-    console.log(product);
+    console.log(product)
     res.render("shop/product-details", { product: product });
   } catch (error) {
     res.render("error/error500");

@@ -284,6 +284,7 @@ const loadUserOrderDetails = async (req, res) => {
     const orderData = await Order.findById({ _id: orderId }).populate(
       "products.productId"
     );
+    console.log("order data: ", orderData)
     res.render("user/orderDetails", {
       orderData: orderData,
     });

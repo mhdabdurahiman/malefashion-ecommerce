@@ -8,14 +8,12 @@ const fetchCartCount = async (req, res, next) => {
       return next();
     }
       const cart = await Cart.findOne({ userId: userId });
-      console.log('cart', cart);
 
       let totalItems = 0;
       if (cart.items && cart.items.length > 0) {
         cart.items.forEach(item => {
           totalItems += item.quantity
         });
-        console.log(totalItems);
         res.locals.cartCount = totalItems;
         next();
       } else {

@@ -82,14 +82,6 @@
                             <h4>
                                 <%= product.name %>
                             </h4>
-                            <div class="rating">
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star-o"></i>
-                                <span> - 5 Reviews</span>
-                            </div>
                             <% if ( product.offer){ var discount=(product.price * product.offer.percentage /
                                 100).toFixed(0) } else if ( product.category.offer ) {var discount=( product.price
                                 * product.category.offer.percentage / 100 ).toFixed(0) } %>
